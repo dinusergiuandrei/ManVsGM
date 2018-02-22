@@ -279,7 +279,7 @@ public class Table {
         return !(getSquare(column, line)==null);
     }
 
-    public void updatePossibleMoves(Table.Square startSquare, Table.Square endSquare){
+    public void updatePossibleMoves(Square startSquare, Square endSquare){
         Piece piece = this.squareToPieceMap.get(startSquare);
 
         if(piece == Piece.whiteKing){

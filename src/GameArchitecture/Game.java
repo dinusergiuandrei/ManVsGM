@@ -134,7 +134,7 @@ public class Game {
         if(this.toMove==Color.White)
             this.toMove=Color.Black;
         else if(this.toMove==Color.Black)
-                this.toMove=Color.White;
+            this.toMove=Color.White;
     }
 
 }

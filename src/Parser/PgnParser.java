@@ -137,7 +137,7 @@ public class PgnParser {
         while(movesString.contains(startToken)){
             if(movesString.contains(endToken)){
                 if(!movesString.contains(startToken)||
-                !movesString.contains(endToken)){
+                        !movesString.contains(endToken)){
                     System.out.println("Hol up");
                 }
                 movePairString = movesString.substring(
