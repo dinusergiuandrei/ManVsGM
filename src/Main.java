@@ -17,10 +17,10 @@ public class Main {
     static String dataBasePath = "database/players";
 
     public static void main(String[] args) throws IOException {
-        Long startTime = System.currentTimeMillis();
-        startGame();
-        //computePgnFilePaths(dataBasePath);
-        //parseDatabase();
+        //Long startTime = System.currentTimeMillis();
+        //startGame();
+        computePgnFilePaths(dataBasePath);
+        parseDatabase();
         //System.out.println(gamesCount + " total games in database");
         //System.out.println("Run time = " + ((System.currentTimeMillis()-startTime)/1000) + " seconds");
     }

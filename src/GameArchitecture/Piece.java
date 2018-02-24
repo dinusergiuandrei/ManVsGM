@@ -13,7 +13,7 @@ public enum Piece {
     blackRook("R", "rook", Color.Black),
     blackQueen("Q", "queen", Color.Black),
     blackKing("K", "king", Color.Black),
-    noPiece("NO PIECE", "NO PIECE", null);
+    noPiece("NoP", "NO PIECE", null);
 
 
     String name;
