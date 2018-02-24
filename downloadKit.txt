@@ -1,0 +1,113 @@
+import GameArchitecture.Game;
+import GameArchitecture.Player;
+import Parser.GameDetails;
+import Parser.PgnParser;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.*;
+
+public class Main {
+
+    static Map<String, String> fileNameToTokenMap = new LinkedHashMap<>();
+
+    static List<String> pgnFilePaths = new LinkedList<>();
+
+    public static void main(String[] args) throws IOException {
+
+
+    }
+
+    public static void computePlayerNames() throws FileNotFoundException {
+        String path = "databasesite.txt";
+        FileReader fileReader = new FileReader(path);
+        Scanner scanner = new Scanner(fileReader);
+        String line;
+        String startToken;
+        String endToken;
+        while(scanner.hasNextLine()){
+            line = scanner.nextLine();
+            startToken = "\"";
+            endToken = ".pgn";
+            if(!line.contains(startToken)||!line.contains(endToken))
+                continue;
+            if(line.contains(".zip"))
+                endToken = ".zip";
+            String name = line.substring(line.indexOf(startToken)+1, line.indexOf(endToken));
+            if(!name.contains("www"))
+                fileNameToTokenMap.put(name, endToken);
+        }
+    }
+
+    public static void downloadAllDatabase(){
+        fileNameToTokenMap.forEach(
+                ( fileName, fileType ) -> {
+                    download(fileName, fileType);
+                }
+        );
+    }
+
+    public static void download(String fileName, String fileType) {
+        try {
+            URL url = new URL("http://www.pgnmentor.com/" + fileName + fileType);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            InputStream in = null;
+
+            in = connection.getInputStream();
+
+            createNewFile("data/downloadtest/" + fileName + fileType);
+            FileOutputStream out = new FileOutputStream("data/downloadtest/" + fileName + fileType);
+            copy(in, out, 1024);
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void createNewFile(String path){
+        File file = new File(path);
+        file.setWritable(true);
+        file.setReadable(true);
+        file.getParentFile().mkdirs();
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void copy(InputStream input, OutputStream output, int bufferSize) throws IOException {
+        byte[] buf = new byte[bufferSize];
+        int n = input.read(buf);
+        while (n >= 0) {
+            output.write(buf, 0, n);
+            n = input.read(buf);
+        }
+        output.flush();
+    }
+
+    public static void computePgnFilePaths() {
+
+    }
+
+    public static void parseLocalDatabase() throws FileNotFoundException {
+        PgnParser pgnParser = null;
+        pgnParser = new PgnParser("data/PGN database/Anand.pgn");
+        List<GameDetails> gamesDetails = pgnParser.parseGames();
+    }
+
+    public static void startGame(){
+        int playerId = 0;
+        Player whitePlayer = new Player(++playerId, "White", "Player", false);
+        Player blackPlayer = new Player(++playerId, "Black", "Player", true);
+
+        Game game = new Game(whitePlayer, blackPlayer);
+        game.setUp();
+
+        game.start();
+    }
+
+}
