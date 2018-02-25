@@ -52,9 +52,8 @@ public class Table {
         }
     }
 
-    public Square getSquare(int column, int line){
+    public static Square getSquare(int column, int line){
         if(column<'a'||column>'h'||line<1||line>8){
-            //System.out.println((char) column + line + " is not a valid square");
             return null;
         }
         for(Square square : Square.values()){
@@ -64,19 +63,128 @@ public class Table {
         return null;
     }
 
-    public Boolean isValidPosition(Color toMove){
-        Color otherPlayer;
-        if(toMove==Color.White) otherPlayer = Color.Black;
-        else if(toMove==Color.Black) otherPlayer = Color.White;
-
-        return true;
+    public static Square getSquare(String squareName){
+        for (Square square : Square.values()) {
+            if(Objects.equals(squareName, square.name))
+                return square;
+        }
+        return null;
     }
 
-    public Integer getNumberOfAttacks(){
-        return 0;
+    public static List<Square> getAllMoves(Square startSquare, int columnDifference[], int lineDifference[], Range range){
+        List<Square> candidateMoves = new LinkedList<>();
+        if(range == Range.CLOSE) {
+            for (int i = 0; i < columnDifference.length; ++i) {
+                int column = startSquare.column + columnDifference[i];
+                int line = startSquare.line + lineDifference[i];
+                Square square = getSquare(column, line);
+                if (square == null)
+                    continue;
+                candidateMoves.add(square);
+            }
+        }
+        if(range == Range.DISTANCE){
+            for(int i=0; i<columnDifference.length; ++i){
+                    for(int distance=1; ; ++distance) {
+                        int column = startSquare.column + distance*columnDifference[i];
+                        int line = startSquare.line + distance*lineDifference[i];
+                        Square square = getSquare(column, line);
+                        if (square == null)
+                            break;
+                        candidateMoves.add(square);
+                    }
+                }
+        }
+        return candidateMoves;
     }
 
-    public List<Square> getMoves(Square startSquare){
+    public static List<Square> getAllKingMoves(Square endingSquare){
+        int[] lineDifference   = {-1, -1, -1, 0, 1, 1, 1, 0};
+        int[] columnDifference = {-1, 0, 1, 1, 1, 0, -1, -1};
+
+        return getAllMoves(endingSquare, columnDifference, lineDifference, Range.CLOSE);
+    }
+
+    public static List<Square> getAllQueenMoves(Square endingSquare){
+        int[] lineDifference   = {-1, -1, -1, 0, 1, 1, 1, 0};
+        int[] columnDifference = {-1, 0, 1, 1, 1, 0, -1, -1};
+
+        return getAllMoves(endingSquare, columnDifference, lineDifference, Range.DISTANCE);
+    }
+
+    public static List<Square> getAllRookMoves(Square endingSquare){
+        int[] lineDifference   = {1, -1, 0, 0};
+        int[] columnDifference = {0, 0, 1, -1};
+
+        return getAllMoves(endingSquare, columnDifference, lineDifference, Range.DISTANCE);
+    }
+
+    public static List<Square> getAllBishopMoves(Square endingSquare){
+        int[] lineDifference   = {1, -1, 1, -1};
+        int[] columnDifference = {1, 1, -1, -1};
+
+        return getAllMoves(endingSquare, columnDifference, lineDifference, Range.DISTANCE);
+    }
+
+    public static List<Square> getAllKnightMoves(Square endingSquare){
+        int[] lineDifference   = {2, 1, -1, -2, -2, -1, 1, 2};
+        int[] columnDifference = {1, 2, 2, 1, -1, -2, -2, -1};
+
+        return getAllMoves(endingSquare, columnDifference, lineDifference, Range.CLOSE);
+    }
+
+    public static List<Square> getAllPawnMoves(Square endingSquare, Color color) {
+        List<Square> possibleSquares = new LinkedList<>();
+
+        if(color == Color.White){
+            Square square1 = getSquare(endingSquare.column, endingSquare.line-1);
+            if(square1!=null)
+                possibleSquares.add(square1);
+
+            Square square2 = getSquare(endingSquare.column+1, endingSquare.line-1);
+            if(square2!=null)
+                possibleSquares.add(square2);
+
+            Square square3 = getSquare(endingSquare.column-1, endingSquare.line-1);
+            if(square3!=null)
+                possibleSquares.add(square3);
+            if(endingSquare.line == 4)
+                possibleSquares.add(getSquare(endingSquare.column, 2));
+
+        }
+        if(color == Color.Black){
+            Square square1 = getSquare(endingSquare.column, endingSquare.line+1);
+            if(square1!=null)
+                possibleSquares.add(square1);
+
+            Square square2 = getSquare(endingSquare.column+1, endingSquare.line+1);
+            if(square2!=null)
+                possibleSquares.add(square2);
+
+            Square square3 = getSquare(endingSquare.column-1, endingSquare.line+1);
+            if(square3!=null)
+                possibleSquares.add(square3);
+
+            if(endingSquare.line == 5)
+                possibleSquares.add(getSquare(endingSquare.column, 7));
+        }
+
+        return possibleSquares;
+    }
+
+    public static List<Square> getAllMoves(Piece piece, Square endSquare){
+        List<Square> moves = null;
+        switch (piece){
+            case whiteKing:   case blackKing:   moves = getAllKingMoves   (endSquare);   break;
+            case whiteQueen:  case blackQueen:  moves = getAllQueenMoves  (endSquare);   break;
+            case whiteRook:   case blackRook:   moves = getAllRookMoves   (endSquare);   break;
+            case whiteBishop: case blackBishop: moves = getAllBishopMoves (endSquare);   break;
+            case whiteKnight: case blackKnight: moves = getAllKnightMoves (endSquare);   break;
+        }
+        return moves;
+    }
+
+    public List<Square> getLegalMoves(Square startSquare){
         Piece piece = this.squareToPieceMap.get(startSquare);
         List<Square> moves = null;
         switch (piece){
@@ -96,7 +204,7 @@ public class Table {
         int[] lineDifference   = {-1, -1, -1, 0, 1, 1, 1, 0};
         int[] columnDifference = {-1, 0, 1, 1, 1, 0, -1, -1};
 
-        possibleMoves.addAll(getMoves(startSquare, columnDifference, lineDifference, Range.CLOSE));
+        possibleMoves.addAll(getLegalMoves(startSquare, columnDifference, lineDifference, Range.CLOSE));
 
         if(color == Color.White){
             if(possibleWhiteShortCastle)
@@ -120,7 +228,7 @@ public class Table {
         int[] lineDifference   = {-1, -1, -1, 0, 1, 1, 1, 0};
         int[] columnDifference = {-1, 0, 1, 1, 1, 0, -1, -1};
 
-        return getMoves(startSquare, columnDifference, lineDifference, Range.DISTANCE);
+        return getLegalMoves(startSquare, columnDifference, lineDifference, Range.DISTANCE);
     }
 
     public List<Square> getRookMoves(Square startSquare){
@@ -129,7 +237,7 @@ public class Table {
         int[] lineDifference   = {1, -1, 0, 0};
         int[] columnDifference = {0, 0, 1, -1};
 
-        return getMoves(startSquare, columnDifference, lineDifference, Range.DISTANCE);
+        return getLegalMoves(startSquare, columnDifference, lineDifference, Range.DISTANCE);
     }
 
     public List<Square> getBishopMoves(Square startSquare){
@@ -138,14 +246,14 @@ public class Table {
         int[] lineDifference   = {1, -1, 1, -1};
         int[] columnDifference = {1, 1, -1, -1};
 
-        return getMoves(startSquare, columnDifference, lineDifference, Range.DISTANCE);
+        return getLegalMoves(startSquare, columnDifference, lineDifference, Range.DISTANCE);
     }
 
     public List<Square> getKnightMoves(Square startSquare){
         int[] lineDifference   = {2, 1, -1, -2, -2, -1, 1, 2};
         int[] columnDifference = {1, 2, 2, 1, -1, -2, -2, -1};
 
-        return getMoves(startSquare, columnDifference, lineDifference, Range.CLOSE);
+        return getLegalMoves(startSquare, columnDifference, lineDifference, Range.CLOSE);
     }
 
     public List<Square> getPawnMoves(Square startSquare) {
@@ -223,7 +331,7 @@ public class Table {
         return possibleSquares;
     }
 
-    public List<Square> getMoves(Square startSquare, int columnDifference[], int lineDifference[], Range range){
+    public List<Square> getLegalMoves(Square startSquare, int columnDifference[], int lineDifference[], Range range){
         Color color = squareToPieceMap.get(startSquare).color;
         List<Square> candidateMoves = new LinkedList<>();
         if(range == Range.CLOSE){
@@ -269,14 +377,6 @@ public class Table {
             }
             System.out.println();
         }
-    }
-
-    public Boolean isEmpty(Square square){
-        return this.squareToPieceMap.get(square)==Piece.noPiece;
-    }
-
-    public Boolean isSquare(int column, int line){
-        return !(getSquare(column, line)==null);
     }
 
     public void updatePossibleMoves(Square startSquare, Square endSquare){

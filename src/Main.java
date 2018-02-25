@@ -8,19 +8,19 @@ import java.util.*;
 
 public class Main {
 
-    static Integer gamesCount = 0;
+    private static Integer gamesCount = 0;
 
-    static List<String> pgnFilePaths = new LinkedList<>();
+    private static List<String> pgnFilePaths = new LinkedList<>();
 
-    static Map<String, List<GameDetails>> playerToGamesMap = new LinkedHashMap<>();
+    private static Map<String, List<GameDetails>> playerToGamesMap = new LinkedHashMap<>();
 
     static String dataBasePath = "database/players";
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         //Long startTime = System.currentTimeMillis();
-        //startGame();
-        computePgnFilePaths(dataBasePath);
-        parseDatabase();
+        startGame();
+        //computePgnFilePaths(dataBasePath);
+        //parseDatabase();
         //System.out.println(gamesCount + " total games in database");
         //System.out.println("Run time = " + ((System.currentTimeMillis()-startTime)/1000) + " seconds");
     }
@@ -51,7 +51,7 @@ public class Main {
         pgnFilePaths.forEach(
                 path -> {
                     try {
-                        cleanFile(path);
+                        //cleanFile(path);
 
                         PgnParser pgnParser = new PgnParser(path);
                         List<GameDetails> gamesDetails = pgnParser.parseGames();

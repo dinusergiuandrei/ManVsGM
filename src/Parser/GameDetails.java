@@ -1,5 +1,7 @@
 package Parser;
 
+import GameArchitecture.Game;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -15,4 +17,5 @@ public class GameDetails{
         whiteMoves = new LinkedList<>();
         blackMoves = new LinkedList<>();
     }
+
 }

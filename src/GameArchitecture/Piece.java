@@ -1,5 +1,7 @@
 package GameArchitecture;
 
+import java.util.Objects;
+
 public enum Piece {
     whitePawn("P", "pawn", Color.White),
     whiteKnight("N", "knight", Color.White),
@@ -15,7 +17,6 @@ public enum Piece {
     blackKing("K", "king", Color.Black),
     noPiece("NoP", "NO PIECE", null);
 
-
     String name;
     String alias;
     Color color;
@@ -24,6 +25,14 @@ public enum Piece {
         this.alias = alias;
         this.name = name;
         this.color = color;
+    }
+
+    public static Piece getPiece(String alias){
+        for(Piece piece : Piece.values()){
+            if(Objects.equals(piece.alias, alias))
+                return piece;
+        }
+        return null;
     }
 
     @Override

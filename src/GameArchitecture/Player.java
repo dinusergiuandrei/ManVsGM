@@ -4,17 +4,17 @@ import java.util.Scanner;
 
 public class Player {
 
-    int id;
+    private int id;
 
-    String familyName;
+    private String familyName;
 
-    String givenName;
+    private String givenName;
 
-    boolean isAI;
+    private boolean isAI;
 
-    Scanner scanner;
+    private Scanner scanner;
 
-    public Player(int id, String familyName, String givenName, boolean isAI){
+    public Player(int id, String familyName, String givenName, boolean isAI) {
         this.id = id;
         this.familyName = familyName;
         this.givenName = givenName;
@@ -22,26 +22,36 @@ public class Player {
         scanner = new Scanner(System.in);
     }
 
-    public void move(Game game){
+    public void move(Game game) {
         Boolean madeMove = false;
-        while(!madeMove) {
-            System.out.println("First square: ");
-            String startSquareString = scanner.nextLine();
-
-            System.out.println("Second square: ");
-            String endSquareString = scanner.nextLine();
-
-            Table.Square startSquare = game.table.getSquare(startSquareString.charAt(0), startSquareString.charAt(1) - '0');
-            Table.Square endSquare = game.table.getSquare(endSquareString.charAt(0), endSquareString.charAt(1) - '0');
-
-            if (game.canMove(startSquare, endSquare)) {
-                game.doMove(startSquare, endSquare);
+        while (!madeMove) {
+            Move move = getSimpleMoveFromTerminal(game);
+            if (game.canMove(move.startSquare, move.endSquare)) {
+                game.doMove(move.startSquare, move.endSquare);
                 game.table.displayTable();
                 madeMove = true;
             } else {
-                System.out.println("Could not move " + startSquareString + "-" + endSquareString);
+                System.out.println("Could not move " + move.startSquare.toString() + "-" + move.endSquare.toString());
             }
         }
+    }
+
+    public Move getDetailedMoveFromTerminal(Game game) {
+        System.out.println("First square: ");
+        String startSquareString = scanner.nextLine();
+
+        System.out.println("Second square: ");
+        String endSquareString = scanner.nextLine();
+
+        Table.Square startSquare = Table.getSquare(startSquareString.charAt(0), startSquareString.charAt(1) - '0');
+        Table.Square endSquare = Table.getSquare(endSquareString.charAt(0), endSquareString.charAt(1) - '0');
+
+        return new Move(startSquare, endSquare);
+    }
+
+    private Move getSimpleMoveFromTerminal(Game game){
+        System.out.print("Simple move : ");
+        return game.getMove(scanner.nextLine());
     }
 
 }
