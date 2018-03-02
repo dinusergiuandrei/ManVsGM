@@ -2,6 +2,7 @@ package GameArchitecture;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import static GameArchitecture.Table.*;
 
@@ -15,19 +16,23 @@ public class Game {
 
     private Boolean isOver;
 
-    private Color toMove = Color.White;
+    private Color toMove;
 
-    public Game(Player whitePlayer, Player blackPlayer){
-        this.whitePlayer = whitePlayer;
-        this.blackPlayer = blackPlayer;
-    }
-
-    public void setUp(){
+    public Game(){
         this.isOver = false;
         toMove = Color.White;
         table = new Table();
         table.setUpPieces();
     }
+
+    public void setWhitePlayer(Player whitePlayer) {
+        this.whitePlayer = whitePlayer;
+    }
+
+    public void setBlackPlayer(Player blackPlayer) {
+        this.blackPlayer = blackPlayer;
+    }
+
 
     public void start() {
         while(!this.isOver){
@@ -133,29 +138,29 @@ public class Game {
     }
 
     public Move getMove(String moveString){
-        Piece piece = null;
+        moveString = cleanMoveString(moveString);
+
+        Piece piece = getPieceFromMoveString(moveString, this.toMove);
         Table.Square endSquare;
 
-        if(this.toMove==Color.White){
-            switch (moveString.substring(0, 1)){
-                case "N": piece = Piece.whiteKnight; break;
-                case "B": piece = Piece.whiteBishop; break;
-                case "K": piece = Piece.whiteKing;   break;
-                case "Q": piece = Piece.whiteQueen;  break;
-                case "R": piece = Piece.whiteRook;   break;
-                default: piece = Piece.whitePawn;
+        if(Objects.equals(moveString, "O-O")){
+            if(toMove==Color.White){
+                return new Move(getSquare('e', 1), getSquare('g', 1));
+            }
+            if(toMove==Color.Black){
+                return new Move(getSquare('e', 8), getSquare('g', 8));
             }
         }
-        if(this.toMove==Color.Black){
-            switch (moveString.substring(0, 1)){
-                case "N": piece = Piece.blackKnight; break;
-                case "B": piece = Piece.blackBishop; break;
-                case "K": piece = Piece.blackKing;   break;
-                case "Q": piece = Piece.blackQueen;  break;
-                case "R": piece = Piece.blackRook;   break;
-                default: piece = Piece.blackPawn;
+
+        if(Objects.equals(moveString, "O-O-O")){
+            if(toMove==Color.White){
+                return new Move(getSquare('e', 1), getSquare('c', 1));
+            }
+            if(toMove==Color.Black){
+                return new Move(getSquare('e', 8), getSquare('c', 8));
             }
         }
+
         if(moveString.length()==2){
             endSquare = getSquare(moveString);
             List<Table.Square> startingSquares = getAllPawnPushMoves(endSquare, toMove);
@@ -171,6 +176,8 @@ public class Game {
             if(legalStartingSquares.size()==1){
                 return new Move(legalStartingSquares.get(0), endSquare);
             }
+
+            return null;
         }
 
         if(moveString.length()==3){
@@ -199,9 +206,55 @@ public class Game {
             if(legalStartingSquares.size() == 1){
                 return new Move(legalStartingSquares.get(0), endSquare);
             }
+            return null;
         }
+
+
+
         return null;
     }
 
+    private Piece getPieceFromMoveString(String moveString, Color toMove){
+        Piece piece = null;
 
+        if(this.toMove==Color.White){
+            switch (moveString.substring(0, 1)){
+                case "N": piece = Piece.whiteKnight; break;
+                case "B": piece = Piece.whiteBishop; break;
+                case "K": piece = Piece.whiteKing;   break;
+                case "Q": piece = Piece.whiteQueen;  break;
+                case "R": piece = Piece.whiteRook;   break;
+                default: piece = Piece.whitePawn;
+            }
+        }
+        if(this.toMove==Color.Black){
+            switch (moveString.substring(0, 1)){
+                case "N": piece = Piece.blackKnight; break;
+                case "B": piece = Piece.blackBishop; break;
+                case "K": piece = Piece.blackKing;   break;
+                case "Q": piece = Piece.blackQueen;  break;
+                case "R": piece = Piece.blackRook;   break;
+                default: piece = Piece.blackPawn;
+            }
+        }
+
+        return piece;
+    }
+
+    private String cleanMoveString(String moveString){
+        StringBuilder result = new StringBuilder();
+        String extraCharacters = "+:x";
+        for(char c : moveString.toCharArray()){
+            if(extraCharacters.indexOf(c) == -1){
+                result.append(c);
+            }
+        }
+        return result.toString();
+    }
+
+    public void updateToMove(){
+        if(this.toMove==Color.White)
+            this.toMove = Color.Black;
+        else this.toMove = Color.White;
+    }
 }

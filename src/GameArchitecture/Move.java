@@ -10,4 +10,9 @@ public class Move{
         this.startSquare = startSquare;
         this.endSquare = endSquare;
     }
+
+    @Override
+    public String toString() {
+        return " ( "+startSquare + " - " + endSquare + " ) ";
+    }
 }

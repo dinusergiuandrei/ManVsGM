@@ -1,5 +1,6 @@
 package Parser;
 
+import GameArchitecture.GameDetails;
 import org.junit.Test;
 
 import java.util.List;
@@ -7,8 +8,8 @@ import java.util.List;
 public class PgnFileParserTest {
     @Test
     public void parseGamesTest() {
-        PgnFileParser pgnFileParser = new PgnFileParser("database/players/Christiansen.pgn");
+        PgnFileParser pgnFileParser = new PgnFileParser("database/players/Andreikin.pgn");
         List<GameDetails> games = pgnFileParser.parseGames();
-        System.out.println(games.get(1).toString());
+        System.out.println(games.get(0).toString());
     }
 }

@@ -1,5 +1,7 @@
 package Parser;
 
+import GameArchitecture.GameDetails;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.PrintWriter;
@@ -41,7 +43,7 @@ public class PgnFileParser {
         if (!scanner.hasNext())
             return null;
         gameDetails.tags = this.getTags();
-        this.getMoves(gameDetails.whiteMoves, gameDetails.blackMoves);
+        this.getMoves(gameDetails.whiteMovesString, gameDetails.blackMovesString);
 
         return gameDetails;
     }

@@ -1,24 +1,38 @@
 import GameArchitecture.Game;
+import GameArchitecture.GameDetails;
 import GameArchitecture.Player;
+import MoveGenerator.TerminalMoveGenerator;
 import Parser.PgnDatabaseReader;
 
 public class ManVsGM {
-
     public static void main(String[] args) {
-        PgnDatabaseReader parser = new PgnDatabaseReader(args[0]);
-        parser.computePgnFilePaths();
-        parser.parseDatabase();
+        parse();
     }
 
     public static void startGame(){
         int playerId = 0;
-        Player whitePlayer = new Player(++playerId, "White", "Player", false);
-        Player blackPlayer = new Player(++playerId, "Black", "Player", true);
+        Game game = new Game();
 
-        Game game = new Game(whitePlayer, blackPlayer);
-        game.setUp();
+        Player whitePlayer = new Player(++playerId, "White", "Player", new TerminalMoveGenerator(game));
+        Player blackPlayer = new Player(++playerId, "Black", "Player", new TerminalMoveGenerator(game));
+
+        game.setWhitePlayer(whitePlayer);
+        game.setBlackPlayer(blackPlayer);
 
         game.start();
+    }
+
+    public static void parse(){
+        PgnDatabaseReader parser = new PgnDatabaseReader("database/players/Adams.pgn");
+        parser.computePgnFilePaths();
+        parser.parseDatabase();
+        parser.getDatabase().computeAllGamesList();
+        parser.getDatabase().getAllGames().forEach(
+                GameDetails::computeMoves
+        );
+        int x;
+        x=3;
+        System.out.println(x);
     }
 
 }

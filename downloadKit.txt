@@ -1,6 +1,6 @@
 import GameArchitecture.Game;
 import GameArchitecture.Player;
-import Parser.GameDetails;
+import GameArchitecture.GameDetails;
 import Parser.PgnDatabaseReader;
 
 import java.io.*;

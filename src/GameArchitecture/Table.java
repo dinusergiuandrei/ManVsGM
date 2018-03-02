@@ -415,6 +415,18 @@ public class Table {
         }
     }
 
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for(int line = 8; line>=1; --line){
+            for(char column = 'a'; column<='h'; ++column){
+                stringBuilder.append(this.squareToPieceMap.get(getSquare(column, line))).append("  ");
+            }
+            stringBuilder.append("\n");
+        }
+        return stringBuilder.toString();
+    }
+
     public enum Range{
         CLOSE,
         DISTANCE

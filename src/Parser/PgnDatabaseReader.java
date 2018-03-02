@@ -1,11 +1,17 @@
 package Parser;
 
+import GameArchitecture.GameDetails;
+
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
 public class PgnDatabaseReader {
     private String dataBasePath;
+
+    public GameDatabase getDatabase() {
+        return database;
+    }
 
     private GameDatabase database;
 

@@ -1,5 +1,8 @@
 package Parser;
 
+import GameArchitecture.GameDetails;
+import GameArchitecture.Player;
+
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,6 +13,12 @@ public class GameDatabase {
     private List<GameDetails> allGames = new LinkedList<>();
 
     private Map<String, List<GameDetails>> playerToGamesMap = new LinkedHashMap<>();
+
+    private List<Player> players = new LinkedList<>();
+
+    public List<GameDetails> getAllGames() {
+        return allGames;
+    }
 
     GameDatabase() {
     }
@@ -28,6 +37,20 @@ public class GameDatabase {
     }
 
     public Integer getGamesCount(){
+        if(this.playerToGamesMap == null || this.playerToGamesMap.size() == 0)
+            computeAllGamesList();
         return this.allGames.size();
+    }
+
+    public Player addPlayer(String familyName, String givenName, Boolean isAI){
+        int id=0;
+        for (Player player : this.players) {
+            if(player.getId()>id)
+                id = player.getId();
+        }
+        id++;
+        Player newPlayer = new Player(id, familyName, givenName, null);
+        this.players.add(newPlayer);
+        return newPlayer;
     }
 }
