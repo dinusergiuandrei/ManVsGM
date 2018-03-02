@@ -1,7 +1,5 @@
 package Parser;
 
-import GameArchitecture.Game;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;

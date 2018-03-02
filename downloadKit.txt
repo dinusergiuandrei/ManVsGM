@@ -1,7 +1,7 @@
 import GameArchitecture.Game;
 import GameArchitecture.Player;
 import Parser.GameDetails;
-import Parser.PgnParser;
+import Parser.PgnDatabaseReader;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -94,9 +94,9 @@ public class ManVsGM {
     }
 
     public static void parseLocalDatabase() throws FileNotFoundException {
-        PgnParser pgnParser = null;
-        pgnParser = new PgnParser("data/PGN database/Anand.pgn");
-        List<GameDetails> gamesDetails = pgnParser.parseGames();
+        PgnParser pgnDatabaseReader = null;
+        pgnDatabaseReader = new PgnParser("data/PGN database/Anand.pgn");
+        List<GameDetails> gamesDetails = pgnDatabaseReader.parseGames();
     }
 
     public static void startGame(){
