@@ -8,6 +8,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 
+
+//Use this to download again the database. (either for an update, either in case of ruined files)
+
 public class ManVsGM {
 
     static Map<String, String> fileNameToTokenMap = new LinkedHashMap<>();
