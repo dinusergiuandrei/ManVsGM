@@ -16,4 +16,18 @@ public class GameDetails{
         blackMoves = new LinkedList<>();
     }
 
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder("");
+        tags.forEach(
+                (name, value) -> stringBuilder.append("[").append(name).append(" \"").append(value).append("\"]\n")
+        );
+        for(int i=0; i < blackMoves.size(); ++i){
+            stringBuilder.append(i + 1).append(".").append(whiteMoves.get(i)).append(" ").append(blackMoves.get(i)).append(" ");
+        }
+        if(whiteMoves.size()>blackMoves.size()){
+            stringBuilder.append(whiteMoves.size()).append(".").append(whiteMoves.get(whiteMoves.size() - 1));
+        }
+        return stringBuilder.toString();
+    }
 }
