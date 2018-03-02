@@ -6,7 +6,7 @@ import Parser.PgnParser;
 import java.io.*;
 import java.util.*;
 
-public class Main {
+public class ManVsGM {
 
     private static Integer gamesCount = 0;
 
