@@ -158,7 +158,7 @@ public class Game {
         }
         if(moveString.length()==2){
             endSquare = getSquare(moveString);
-            List<Table.Square> startingSquares = getAllPawnMoves(endSquare, toMove);
+            List<Table.Square> startingSquares = getAllPawnPushMoves(endSquare, toMove);
 
             List<Table.Square> legalStartingSquares = new LinkedList<>();
 

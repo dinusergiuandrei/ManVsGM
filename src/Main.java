@@ -14,14 +14,16 @@ public class Main {
 
     private static Map<String, List<GameDetails>> playerToGamesMap = new LinkedHashMap<>();
 
+    private static List<GameDetails> allGames = new LinkedList<>();
+
     static String dataBasePath = "database/players";
 
     public static void main(String[] args) {
         //Long startTime = System.currentTimeMillis();
         startGame();
-        //computePgnFilePaths(dataBasePath);
-        //parseDatabase();
-        //System.out.println(gamesCount + " total games in database");
+        computePgnFilePaths(dataBasePath);
+        parseDatabase();
+        System.out.println(gamesCount + " total games in database");
         //System.out.println("Run time = " + ((System.currentTimeMillis()-startTime)/1000) + " seconds");
     }
 
@@ -56,6 +58,7 @@ public class Main {
                         PgnParser pgnParser = new PgnParser(path);
                         List<GameDetails> gamesDetails = pgnParser.parseGames();
                         playerToGamesMap.put(path, gamesDetails);
+                        allGames.addAll(gamesDetails);
 
                         System.out.println(path + " " + gamesDetails.size()+ " games ");
                         gamesCount += gamesDetails.size();

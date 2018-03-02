@@ -133,7 +133,7 @@ public class Table {
         return getAllMoves(endingSquare, columnDifference, lineDifference, Range.CLOSE);
     }
 
-    public static List<Square> getAllPawnMoves(Square endingSquare, Color color) {
+    public static List<Square> getAllPawnPushMoves(Square endingSquare, Color color) {
         List<Square> possibleSquares = new LinkedList<>();
 
         if(color == Color.White){
@@ -141,13 +141,6 @@ public class Table {
             if(square1!=null)
                 possibleSquares.add(square1);
 
-            Square square2 = getSquare(endingSquare.column+1, endingSquare.line-1);
-            if(square2!=null)
-                possibleSquares.add(square2);
-
-            Square square3 = getSquare(endingSquare.column-1, endingSquare.line-1);
-            if(square3!=null)
-                possibleSquares.add(square3);
             if(endingSquare.line == 4)
                 possibleSquares.add(getSquare(endingSquare.column, 2));
 
@@ -157,6 +150,27 @@ public class Table {
             if(square1!=null)
                 possibleSquares.add(square1);
 
+            if(endingSquare.line == 5)
+                possibleSquares.add(getSquare(endingSquare.column, 7));
+        }
+
+        return possibleSquares;
+    }
+
+    public static List<Square> getAllPawnCaptureMoves(Square endingSquare, Color color) {
+        List<Square> possibleSquares = new LinkedList<>();
+
+        if(color == Color.White){
+            Square square2 = getSquare(endingSquare.column+1, endingSquare.line-1);
+            if(square2!=null)
+                possibleSquares.add(square2);
+
+            Square square3 = getSquare(endingSquare.column-1, endingSquare.line-1);
+            if(square3!=null)
+                possibleSquares.add(square3);
+
+        }
+        if(color == Color.Black){
             Square square2 = getSquare(endingSquare.column+1, endingSquare.line+1);
             if(square2!=null)
                 possibleSquares.add(square2);
@@ -164,9 +178,6 @@ public class Table {
             Square square3 = getSquare(endingSquare.column-1, endingSquare.line+1);
             if(square3!=null)
                 possibleSquares.add(square3);
-
-            if(endingSquare.line == 5)
-                possibleSquares.add(getSquare(endingSquare.column, 7));
         }
 
         return possibleSquares;
