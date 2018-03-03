@@ -9,6 +9,12 @@ import java.util.List;
 public class PgnDatabaseReader {
     private String dataBasePath;
 
+    public void setSeparators(String[] separators) {
+        this.separators = separators;
+    }
+
+    String[] separators = {" 1-0\n", " 1/2-1/2\n", " 0-1\n", "\n\n"};
+
     public GameDatabase getDatabase() {
         return database;
     }
@@ -47,8 +53,8 @@ public class PgnDatabaseReader {
     public void parseDatabase() {
         pgnFilePaths.forEach(
                 path -> {
-                    PgnFileParser parser = new PgnFileParser(path);
-                    List<GameDetails> gamesDetails = parser.parseGames();
+                    PgnFileParser parser = new PgnFileParser();
+                    List<GameDetails> gamesDetails = parser.parseGames(path, separators);
                     System.out.println(path);
                     this.database.addPlayerToGamesPair(path, gamesDetails);
                 }
@@ -62,8 +68,8 @@ public class PgnDatabaseReader {
     public void cleanAllFiles(){
         pgnFilePaths.forEach(
                 path-> {
-                    PgnFileParser parser = new PgnFileParser(path);
-                    parser.cleanFile();
+                    PgnFileParser parser = new PgnFileParser();
+                    parser.cleanFile(path);
                 }
         );
     }
