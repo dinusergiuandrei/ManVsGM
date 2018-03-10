@@ -1,6 +1,6 @@
 package Parser;
 
-import GameArchitecture.GameDetails;
+import ChessLogic.GameDetails;
 import GameArchitecture.Player;
 
 import java.util.LinkedHashMap;

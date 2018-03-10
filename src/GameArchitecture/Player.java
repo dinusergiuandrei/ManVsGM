@@ -1,5 +1,6 @@
 package GameArchitecture;
 
+import ChessLogic.Game;
 import MoveGenerator.MoveGenerator;
 
 import java.util.Scanner;
@@ -45,12 +46,12 @@ public class Player {
         while (!madeMove) {
             Move move = moveGenerator.getMove();
             if (move != null) {
-                if (game.canMove(move.startSquare, move.endSquare)) {
-                    game.doMove(move.startSquare, move.endSquare);
-                    game.table.displayTable();
+                if (game.canMove(move.getStartSquare(), move.getEndSquare())) {
+                    game.doMove(move.getStartSquare(), move.getEndSquare());
+                    game.getTable().displayTable();
                     madeMove = true;
                 } else {
-                    System.out.println("Could not move " + move.startSquare.toString() + "-" + move.endSquare.toString());
+                    System.out.println("Could not move " + move.getStartSquare().toString() + "-" + move.getEndSquare().toString());
                 }
             }
             else{

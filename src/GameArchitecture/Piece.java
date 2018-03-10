@@ -17,9 +17,21 @@ public enum Piece {
     blackKing("K", "king", Color.Black),
     noPiece("NoP", "NO PIECE", null);
 
-    String name;
-    String alias;
-    Color color;
+    private String name;
+    private String alias;
+    private Color color;
+
+    public String getName() {
+        return name;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public Color getColor() {
+        return color;
+    }
 
     Piece(String alias, String name, Color color){
         this.alias = alias;

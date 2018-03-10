@@ -1,14 +1,21 @@
-package GameArchitecture;
+package ChessLogic;
+
+import GameArchitecture.*;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import static GameArchitecture.Table.*;
+import static ChessLogic.SyntacticMoveValidator.*;
+import static GameArchitecture.Table.getSquare;
 
 public class Game {
 
-    public Table table;
+    public Table getTable() {
+        return table;
+    }
+
+    private Table table = new Table();
 
     private Player whitePlayer;
 
@@ -21,7 +28,6 @@ public class Game {
     public Game(){
         this.isOver = false;
         toMove = Color.White;
-        table = new Table();
         table.setUpPieces();
     }
 
@@ -32,7 +38,6 @@ public class Game {
     public void setBlackPlayer(Player blackPlayer) {
         this.blackPlayer = blackPlayer;
     }
-
 
     public void start() {
         while(!this.isOver){
@@ -47,32 +52,7 @@ public class Game {
         }
     }
 
-    private Boolean canMoveKing(Table.Square startSquare, Table.Square endSquare){
-        return this.table.getKingMoves(startSquare).contains(endSquare);
-    }
-
-    private Boolean canMoveQueen(Table.Square startSquare, Table.Square endSquare){
-        return this.table.getQueenMoves(startSquare).contains(endSquare);
-    }
-
-    private Boolean canMoveRook(Table.Square startSquare, Table.Square endSquare){
-        return this.table.getRookMoves(startSquare).contains(endSquare);
-    }
-
-    private Boolean canMoveBishop(Table.Square startSquare, Table.Square endSquare){
-        return this.table.getBishopMoves(startSquare).contains(endSquare);
-
-    }
-
-    private Boolean canMoveKnight(Table.Square startSquare, Table.Square endSquare){
-        return this.table.getKnightMoves(startSquare).contains(endSquare);
-    }
-
-    private Boolean canMovePawn(Table.Square startSquare, Table.Square endSquare){
-        return this.table.getPawnMoves(startSquare).contains(endSquare);
-    }
-
-    public Boolean canMove(Table.Square startSquare, Table.Square endSquare){
+    public Boolean canMove(Square startSquare, Square endSquare){
         if(startSquare == null || endSquare == null){
             System.out.println("Using a non valid square.");
             return false;
@@ -82,56 +62,49 @@ public class Game {
             System.out.println("Cannot move from a empty square!");
             return false;
         }
-        if(piece.color!=this.toMove){
+        if(piece.getColor()!=this.toMove){
             System.out.println("Wrong color to move!");
             return false;
         }
-        switch (piece){
-            case whiteKing: case blackKing: return canMoveKing(startSquare, endSquare);
-            case whiteQueen: case blackQueen: return canMoveQueen(startSquare, endSquare);
-            case whiteRook: case blackRook: return canMoveRook(startSquare, endSquare);
-            case whiteBishop: case blackBishop: return canMoveBishop(startSquare, endSquare);
-            case whiteKnight: case blackKnight: return canMoveKnight(startSquare, endSquare);
-            case whitePawn: case blackPawn: return canMovePawn(startSquare, endSquare);
-        }
-        return false;
+
+        return SemanticMoveValidator.isValidMoveSemanticly(this, new Move(startSquare, endSquare));
     }
 
-    public void doMove(Table.Square startSquare, Table.Square endSquare){
+    public void doMove(Square startSquare, Square endSquare){
         Piece piece1 = this.table.squareToPieceMap.get(startSquare);
 
         this.table.squareToPieceMap.put(startSquare, Piece.noPiece);
         this.table.squareToPieceMap.put(endSquare, piece1);
 
-        if(piece1 == Piece.whiteKing && startSquare.column=='e' && endSquare.column=='g'){
+        if(piece1 == Piece.whiteKing && startSquare.getColumn()=='e' && endSquare.getColumn()=='g'){
             this.table.squareToPieceMap.put(Table.getSquare('h', 1), Piece.noPiece);
             this.table.squareToPieceMap.put(Table.getSquare('f', 1), Piece.whiteRook);
         }
-        if(piece1 == Piece.whiteKing && startSquare.column=='e' && endSquare.column=='c'){
+        if(piece1 == Piece.whiteKing && startSquare.getColumn()=='e' && endSquare.getColumn()=='c'){
             this.table.squareToPieceMap.put(Table.getSquare('a', 1), Piece.noPiece);
             this.table.squareToPieceMap.put(Table.getSquare('d', 1), Piece.whiteRook);
         }
-        if(piece1 == Piece.blackKing && startSquare.column=='e' && endSquare.column=='g'){
+        if(piece1 == Piece.blackKing && startSquare.getColumn()=='e' && endSquare.getColumn()=='g'){
             this.table.squareToPieceMap.put(Table.getSquare('h', 8), Piece.noPiece);
             this.table.squareToPieceMap.put(Table.getSquare('f', 8), Piece.blackRook);
         }
-        if(piece1 == Piece.blackKing && startSquare.column=='e' && endSquare.column=='c'){
+        if(piece1 == Piece.blackKing && startSquare.getColumn()=='e' && endSquare.getColumn()=='c'){
             this.table.squareToPieceMap.put(Table.getSquare('a', 8), Piece.noPiece);
             this.table.squareToPieceMap.put(Table.getSquare('d', 8), Piece.blackRook);
         }
 
-        if(piece1 == Piece.whitePawn && endSquare.line == 8)
+        if(piece1 == Piece.whitePawn && endSquare.getLine() == 8)
             this.table.squareToPieceMap.put(endSquare, Piece.whiteQueen);
 
-        if(piece1 == Piece.blackPawn && endSquare.line == 1)
+        if(piece1 == Piece.blackPawn && endSquare.getLine() == 1)
             this.table.squareToPieceMap.put(endSquare, Piece.blackQueen);
 
         if(piece1 == Piece.whitePawn && this.table.squareToPieceMap.get(endSquare) == Piece.noPiece) {
-            this.table.squareToPieceMap.put(Table.getSquare(endSquare.column, 5), Piece.noPiece);
+            this.table.squareToPieceMap.put(Table.getSquare(endSquare.getColumn(), 5), Piece.noPiece);
         }
 
         if(piece1 == Piece.blackPawn && this.table.squareToPieceMap.get(endSquare) == Piece.noPiece) {
-            this.table.squareToPieceMap.put(Table.getSquare(endSquare.column, 4), Piece.noPiece);
+            this.table.squareToPieceMap.put(Table.getSquare(endSquare.getColumn(), 4), Piece.noPiece);
         }
 
         this.table.updatePossibleMoves(startSquare, endSquare);
@@ -141,7 +114,7 @@ public class Game {
         moveString = cleanMoveString(moveString);
 
         Piece piece = getPieceFromMoveString(moveString, this.toMove);
-        Table.Square endSquare;
+        Square endSquare;
 
         if(Objects.equals(moveString, "O-O")){
             if(toMove==Color.White){
@@ -163,9 +136,9 @@ public class Game {
 
         if(moveString.length()==2){
             endSquare = getSquare(moveString);
-            List<Table.Square> startingSquares = getAllPawnPushMoves(endSquare, toMove);
+            List<Square> startingSquares = getAllPawnPushMoves(endSquare, toMove);
 
-            List<Table.Square> legalStartingSquares = new LinkedList<>();
+            List<Square> legalStartingSquares = new LinkedList<>();
 
             for (Square startingSquare : startingSquares) {
                 if(this.table.squareToPieceMap.get(startingSquare) == Piece.whitePawn
@@ -182,10 +155,10 @@ public class Game {
 
         if(moveString.length()==3){
             endSquare = getSquare(moveString.substring(1));
-            List<Table.Square> startingSquares = null;
+            List<Square> startingSquares = null;
             if (piece != null) {
                 switch (piece){
-                    case whiteKing:   case blackKing:   startingSquares = getAllKingMoves   (endSquare);   break;
+                    case whiteKing:   case blackKing:   startingSquares = SyntacticMoveValidator. getAllKingMoves   (endSquare, this.toMove);   break;
                     case whiteQueen:  case blackQueen:  startingSquares = getAllQueenMoves  (endSquare);   break;
                     case whiteRook:   case blackRook:   startingSquares = getAllRookMoves   (endSquare);   break;
                     case whiteBishop: case blackBishop: startingSquares = getAllBishopMoves (endSquare);   break;
@@ -193,7 +166,7 @@ public class Game {
                 }
             }
 
-            List<Table.Square> legalStartingSquares = new LinkedList<>();
+            List<Square> legalStartingSquares = new LinkedList<>();
 
             if (startingSquares != null) {
                 for (Square startingSquare : startingSquares) {

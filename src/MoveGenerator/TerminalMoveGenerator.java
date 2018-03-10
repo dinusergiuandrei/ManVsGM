@@ -1,16 +1,17 @@
 package MoveGenerator;
 
-import GameArchitecture.Game;
+import ChessLogic.Game;
 import GameArchitecture.Move;
+import GameArchitecture.Square;
 import GameArchitecture.Table;
 
 import java.util.Scanner;
 
 public class TerminalMoveGenerator implements MoveGenerator {
 
-    Scanner scanner;
+    private Scanner scanner;
 
-    Game game;
+    private Game game;
 
     public TerminalMoveGenerator(Game game) {
         this.scanner = new Scanner(System.in);
@@ -29,8 +30,8 @@ public class TerminalMoveGenerator implements MoveGenerator {
         System.out.println("Second square: ");
         String endSquareString = scanner.nextLine();
 
-        Table.Square startSquare = Table.getSquare(startSquareString.charAt(0), startSquareString.charAt(1) - '0');
-        Table.Square endSquare = Table.getSquare(endSquareString.charAt(0), endSquareString.charAt(1) - '0');
+        Square startSquare = Table.getSquare(startSquareString.charAt(0), startSquareString.charAt(1) - '0');
+        Square endSquare = Table.getSquare(endSquareString.charAt(0), endSquareString.charAt(1) - '0');
 
         return new Move(startSquare, endSquare);
     }

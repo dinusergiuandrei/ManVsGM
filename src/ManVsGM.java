@@ -1,12 +1,12 @@
-import GameArchitecture.Game;
-import GameArchitecture.GameDetails;
+import ChessLogic.Game;
+import ChessLogic.GameDetails;
 import GameArchitecture.Player;
 import MoveGenerator.TerminalMoveGenerator;
 import Parser.PgnDatabaseReader;
 
 public class ManVsGM {
     public static void main(String[] args) {
-        parse();
+        startGame();
     }
 
     public static void startGame(){

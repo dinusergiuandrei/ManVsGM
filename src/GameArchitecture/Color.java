@@ -4,8 +4,13 @@ public enum Color {
     White("White"),
     Black("Black");
 
-    String name;
+    private String name;
+
     Color(String name){
         this.name=name;
+    }
+
+    public String getName() {
+        return name;
     }
 }

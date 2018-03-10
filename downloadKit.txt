@@ -1,6 +1,6 @@
-import GameArchitecture.Game;
+import ChessLogic.Game;
 import GameArchitecture.Player;
-import GameArchitecture.GameDetails;
+import ChessLogic.GameDetails;
 import Parser.PgnDatabaseReader;
 
 import java.io.*;

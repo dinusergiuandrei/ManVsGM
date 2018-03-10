@@ -1,6 +1,6 @@
 package Parser;
 
-import GameArchitecture.GameDetails;
+import ChessLogic.GameDetails;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

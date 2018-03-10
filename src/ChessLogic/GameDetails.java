@@ -1,4 +1,6 @@
-package GameArchitecture;
+package ChessLogic;
+
+import GameArchitecture.Move;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -17,7 +19,6 @@ public class GameDetails{
 
     public GameDetails(){
     }
-
 
     public void computeMoves(){
         Game game = new Game();
@@ -40,8 +41,6 @@ public class GameDetails{
             this.blackMoves.add(blackMove);
             game.updateToMove();
         }
-
-
     }
 
     @Override
