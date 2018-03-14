@@ -7,6 +7,7 @@ import Parser.PgnDatabaseReader;
 public class ManVsGM {
     public static void main(String[] args) {
         startGame();
+        System.out.println("shotwwkeafnajngfsoiojrpg");
     }
 
     public static void startGame(){
