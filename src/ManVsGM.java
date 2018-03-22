@@ -1,13 +1,11 @@
 import ChessLogic.Game;
-import ChessLogic.GameDetails;
 import GameArchitecture.Player;
 import MoveGenerator.TerminalMoveGenerator;
 import Parser.PgnDatabaseReader;
 
 public class ManVsGM {
     public static void main(String[] args) {
-        startGame();
-        System.out.println("shotwwkeafnajngfsoiojrpg");
+        parse();
     }
 
     public static void startGame(){
@@ -28,12 +26,22 @@ public class ManVsGM {
         parser.computePgnFilePaths();
         parser.parseDatabase();
         parser.getDatabase().computeAllGamesList();
-        parser.getDatabase().getAllGames().forEach(
-                GameDetails::computeMoves
-        );
-        int x;
-        x=3;
-        System.out.println(x);
+
+        //parser.getDatabase().getAllGames().get(0).computeMoves();
+
+//        parser.getDatabase().getAllGames().forEach(
+//                GameDetails::computeMoves
+//        );
+
+        for (int i = 0; i < parser.getDatabase().getAllGames().size(); i++) {
+            System.out.println(i);
+            parser.getDatabase().getAllGames().get(i).computeMoves();
+
+        }
+
+        //int x;
+        //x=3;
+        //System.out.println(x);
     }
 
 }

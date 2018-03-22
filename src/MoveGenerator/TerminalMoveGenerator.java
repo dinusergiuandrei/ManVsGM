@@ -20,7 +20,13 @@ public class TerminalMoveGenerator implements MoveGenerator {
 
     @Override
     public Move getMove() {
-        return getSimpleMoveFromTerminal(game);
+        Move move = null;
+        try {
+            move = getSimpleMoveFromTerminal(game);
+        } catch (Exception e) {
+            System.out.println("Could not determine a move! ( " + e.getMessage() + " ) ");
+        }
+        return move;
     }
 
     public Move getDetailedMoveFromTerminal(Game game) {
@@ -36,7 +42,7 @@ public class TerminalMoveGenerator implements MoveGenerator {
         return new Move(startSquare, endSquare);
     }
 
-    private Move getSimpleMoveFromTerminal(Game game) {
+    private Move getSimpleMoveFromTerminal(Game game) throws Exception {
         System.out.print("Simple move : ");
         return game.getMove(scanner.nextLine());
     }

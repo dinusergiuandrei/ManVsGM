@@ -22,15 +22,17 @@ public class GameDetails{
 
     public void computeMoves(){
         Game game = new Game();
-        this.whiteMoves.add(null);
-        this.blackMoves.add(null);
+        //this.whiteMoves.add(null);
+        //this.blackMoves.add(null);
         for(int moveCount = 0; moveCount < this.blackMovesString.size(); ++moveCount){
             Move whiteMove = game.getMove(this.whiteMovesString.get(moveCount));
             if(whiteMove == null){
                 System.out.println("Could not recognize white move: "+this.whiteMovesString.get(moveCount));
+                game.getTable().displayTable();
                 return;
             }
             this.whiteMoves.add(whiteMove);
+            game.doMove(whiteMove.getStartSquare(), whiteMove.getEndSquare());
             game.updateToMove();
 
             Move blackMove = game.getMove(this.blackMovesString.get(moveCount));
@@ -39,7 +41,10 @@ public class GameDetails{
                 return;
             }
             this.blackMoves.add(blackMove);
+            game.doMove(blackMove.getStartSquare(), blackMove.getEndSquare());
             game.updateToMove();
+
+
         }
     }
 

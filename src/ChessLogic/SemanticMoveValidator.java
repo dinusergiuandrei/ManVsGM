@@ -49,6 +49,8 @@ public class SemanticMoveValidator {
                         if(piece.getColor() == color)
                             break;
                         candidateMoves.add(square);
+                        if(piece != Piece.noPiece)
+                            break;
                     }
                 }
         }
@@ -182,7 +184,7 @@ public class SemanticMoveValidator {
         return getLegalMoves(table, startSquare, columnDifference, lineDifference, Table.Range.CLOSE);
     }
 
-    public static Boolean isValidMoveSemanticly(Game game, Move move){
+    public static Boolean isValidMoveSemantically(Game game, Move move){
         return getLegalMoves(game.getTable(), move.getStartSquare()).contains(move.getEndSquare());
     }
 }
