@@ -185,6 +185,20 @@ public class SemanticMoveValidator {
     }
 
     public static Boolean isValidMoveSemantically(Game game, Move move){
-        return getLegalMoves(game.getTable(), move.getStartSquare()).contains(move.getEndSquare());
+
+        if(!SyntacticMoveValidator.isValidMoveSintacticly(game.getTable(), move))
+            return false;
+
+        List<Square> legalStartingSquares = getLegalMoves(game.getTable(), move.getStartSquare());
+
+        List<Square> checkedStartingSquares = new LinkedList<>();
+
+        legalStartingSquares.forEach(
+                square -> {
+
+                }
+        );
+
+        return checkedStartingSquares.contains(move.getEndSquare());
     }
 }

@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import static ChessLogic.SemanticMoveValidator.isValidMoveSemantically;
 import static ChessLogic.SyntacticMoveValidator.*;
 import static GameArchitecture.Table.getSquare;
 
@@ -66,7 +67,7 @@ public class Game {
             return false;
         }
 
-        return SemanticMoveValidator.isValidMoveSemantically(this, new Move(startSquare, endSquare));
+        return isValidMoveSemantically(this, new Move(startSquare, endSquare));
     }
 
     public void doMove(Square startSquare, Square endSquare) {
@@ -146,10 +147,21 @@ public class Game {
                     legalStartingSquares.add(startingSquare);
             }
 
+
             if (legalStartingSquares.size() == 1) {
                 return new Move(legalStartingSquares.get(0), endSquare);
-            } else {
-                System.out.println();
+            }
+            if  (legalStartingSquares.size() == 2){
+                if(!isValidMoveSemantically(this, new Move(legalStartingSquares.get(0), endSquare)))
+                    return new Move(legalStartingSquares.get(1), endSquare);
+                if(!isValidMoveSemantically(this, new Move(legalStartingSquares.get(1), endSquare)))
+                    return new Move(legalStartingSquares.get(0), endSquare);
+
+            }
+
+            else {
+                System.out.println("Could not determine move of length 2: " + moveString);
+                this.table.displayTable();
             }
 
             return null;
@@ -217,12 +229,9 @@ public class Game {
                 Square square1 = legalStartingSquares.get(0);
                 Square square2 = legalStartingSquares.get(1);
 
-                if(Objects.equals(moveString, "Rb4") && this.getTable().squareToPieceMap.get(getSquare('d', 4)) == Piece.whiteRook){
-                    System.out.println();
-                }
-                if(!SemanticMoveValidator.isValidMoveSemantically(this, new Move(square1, endSquare)))
+                if(!isValidMoveSemantically(this, new Move(square1, endSquare)))
                     return new Move(square2, endSquare);
-                if(!SemanticMoveValidator.isValidMoveSemantically(this, new Move(square2, endSquare)))
+                if(!isValidMoveSemantically(this, new Move(square2, endSquare)))
                     return new Move(square1, endSquare);
 
                 if(square1.getLine() == square2.getLine()){

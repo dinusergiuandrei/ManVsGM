@@ -34,14 +34,14 @@ public class ManVsGM {
 //        );
 
         for (int i = 0; i < parser.getDatabase().getAllGames().size(); i++) {
-            System.out.println(i);
+            //System.out.println(i);
             parser.getDatabase().getAllGames().get(i).computeMoves();
 
         }
 
-        //int x;
-        //x=3;
-        //System.out.println(x);
+        int x;
+        x=3333;
+        System.out.println(x);
     }
 
 }

@@ -4,6 +4,7 @@ import GameArchitecture.*;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static GameArchitecture.Table.getSquare;
 
@@ -159,4 +160,108 @@ public class SyntacticMoveValidator {
         List<Square> moves = getAllMoves(piece, move.getEndSquare());
         return moves.contains(move.getStartSquare());
     }
+
+    public static Boolean hasKingAttacked(Table table, Color toMove){
+        Square kingSquare = getKingSquare(table, toMove);
+        Color otherColor = null;
+        if(toMove == Color.White){
+            otherColor = Color.Black;
+        }
+        else if(toMove == Color.Black){
+            otherColor = Color.White;
+        }
+
+        if(isAttackedByKnightOfColor(table, kingSquare, otherColor)){
+            return true;
+        }
+
+        if(isAttackedByBishopOfColor(table, kingSquare, otherColor)){
+            return true;
+        }
+
+        if(isAttackedByRookOfColor(table, kingSquare, otherColor)){
+            return true;
+        }
+
+        if(isAttackedByQeenOfColor(table, kingSquare, otherColor)){
+            return true;
+        }
+
+        if(isAttackedByKingOfColor(table, kingSquare, otherColor)){
+            return true;
+        }
+
+        return false;
+    }
+
+    private static Boolean isAttackedByKnightOfColor(Table table, Square square, Color color){
+        final Boolean[] response = new Boolean[1];
+        Piece piece = null;
+        if(color == Color.White){
+            piece = Piece.blackKnight;
+        }
+        else if(color == Color.Black){
+            piece = Piece.whiteKnight;
+        }
+
+        Piece aux = table.squareToPieceMap.get(square);
+
+        table.squareToPieceMap.put(square, piece);
+
+        response[0] = false;
+        Piece finalPiece = piece;
+        SemanticMoveValidator.getLegalKnightMoves(table, square).forEach(
+                square1 -> {
+                    if(table.squareToPieceMap.get(square1) == finalPiece){
+                        response[0] = true;
+                    }
+                }
+        );
+
+        table.squareToPieceMap.put(square, aux);
+
+        return response[0];
+    }
+
+    private static Boolean isAttackedByBishopOfColor(Table table, Square square, Color color){
+        return false;
+    }
+    private static Boolean isAttackedByRookOfColor(Table table, Square square, Color color){
+        return false;
+    }
+
+    private static Boolean isAttackedByQeenOfColor(Table table, Square square, Color color){
+        return false;
+
+    }
+
+    private static Boolean isAttackedByKingOfColor(Table table, Square square, Color color){
+        return false;
+    }
+
+
+    private static Square getKingSquare(Table table, Color toMove){
+        AtomicReference<Square> kingSquare = new AtomicReference<>();
+        if(toMove == Color.White) {
+            table.squareToPieceMap.forEach(
+                    (Square sq, Piece p) -> {
+                        if(p == Piece.whiteKing){
+                            kingSquare.set(sq);
+                        }
+                    }
+            );
+        }
+        if(toMove == Color.Black) {
+            table.squareToPieceMap.forEach(
+                    (Square sq, Piece p) -> {
+                        if(p == Piece.blackKing){
+                            kingSquare.set(sq);
+                        }
+                    }
+            );
+        }
+
+        return kingSquare.get();
+    }
+
 }

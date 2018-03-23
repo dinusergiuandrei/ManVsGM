@@ -22,8 +22,6 @@ public class GameDetails{
 
     public void computeMoves(){
         Game game = new Game();
-        //this.whiteMoves.add(null);
-        //this.blackMoves.add(null);
         for(int moveCount = 0; moveCount < this.blackMovesString.size(); ++moveCount){
             Move whiteMove = game.getMove(this.whiteMovesString.get(moveCount));
             if(whiteMove == null){
@@ -37,7 +35,7 @@ public class GameDetails{
 
             Move blackMove = game.getMove(this.blackMovesString.get(moveCount));
             if(blackMove == null){
-                System.out.println("Could not recognize black move: "+this.whiteMovesString.get(moveCount));
+                System.out.println("Could not recognize black move: "+this.blackMovesString.get(moveCount));
                 return;
             }
             this.blackMoves.add(blackMove);
