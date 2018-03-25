@@ -155,10 +155,17 @@ public class SyntacticMoveValidator {
         return moves;
     }
 
-    public static Boolean isValidMoveSintacticly(Table table, Move move){
+    public static Boolean isValidMoveSyntactically(Table table, Move move){
         Piece piece = table.squareToPieceMap.get(move.getStartSquare());
         List<Square> moves = getAllMoves(piece, move.getEndSquare());
-        return moves.contains(move.getStartSquare());
+
+        try{
+            return moves.contains(move.getStartSquare());
+        }
+        catch (NullPointerException e){
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public static Boolean hasKingAttacked(Table table, Color toMove){
@@ -183,11 +190,15 @@ public class SyntacticMoveValidator {
             return true;
         }
 
-        if(isAttackedByQeenOfColor(table, kingSquare, otherColor)){
+        if(isAttackedByQueenOfColor(table, kingSquare, otherColor)){
             return true;
         }
 
         if(isAttackedByKingOfColor(table, kingSquare, otherColor)){
+            return true;
+        }
+
+        if(isAttackedByPawnOfColor(table, kingSquare, otherColor)){
             return true;
         }
 
@@ -230,7 +241,7 @@ public class SyntacticMoveValidator {
         return false;
     }
 
-    private static Boolean isAttackedByQeenOfColor(Table table, Square square, Color color){
+    private static Boolean isAttackedByQueenOfColor(Table table, Square square, Color color){
         return false;
 
     }
@@ -239,8 +250,12 @@ public class SyntacticMoveValidator {
         return false;
     }
 
+    private static Boolean isAttackedByPawnOfColor(Table table, Square square, Color color){
+        return false;
+    }
 
-    private static Square getKingSquare(Table table, Color toMove){
+
+    public static Square getKingSquare(Table table, Color toMove){
         AtomicReference<Square> kingSquare = new AtomicReference<>();
         if(toMove == Color.White) {
             table.squareToPieceMap.forEach(

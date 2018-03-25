@@ -5,8 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Table {
-
-    public Map<Square, Piece> squareToPieceMap = new LinkedHashMap<>(64);
+    public Map<Square, Piece> squareToPieceMap = new LinkedHashMap<>(65);
 
     public Boolean possibleWhiteShortCastle = true;
     public Boolean possibleWhiteLongCastle = true;
@@ -130,5 +129,58 @@ public class Table {
         DISTANCE
     }
 
+
+    public Table getCopy(){
+        Table newTable = new Table();
+
+        newTable.setPossibleBlackLongCastle(this.possibleBlackLongCastle);
+        newTable.setPossibleBlackShortCastle(this.possibleBlackShortCastle);
+        newTable.setPossibleWhiteLongCastle(this.possibleWhiteLongCastle);
+        newTable.setPossibleWhiteShortCastle(this.possibleWhiteShortCastle);
+
+        newTable.getSquareToPieceMap().putAll(this.squareToPieceMap);
+
+        return newTable;
+    }
+
+    public Map<Square, Piece> getSquareToPieceMap() {
+        return squareToPieceMap;
+    }
+
+    public void setSquareToPieceMap(Map<Square, Piece> squareToPieceMap) {
+        this.squareToPieceMap = squareToPieceMap;
+    }
+
+    public Boolean getPossibleWhiteShortCastle() {
+        return possibleWhiteShortCastle;
+    }
+
+    public void setPossibleWhiteShortCastle(Boolean possibleWhiteShortCastle) {
+        this.possibleWhiteShortCastle = possibleWhiteShortCastle;
+    }
+
+    public Boolean getPossibleWhiteLongCastle() {
+        return possibleWhiteLongCastle;
+    }
+
+    public void setPossibleWhiteLongCastle(Boolean possibleWhiteLongCastle) {
+        this.possibleWhiteLongCastle = possibleWhiteLongCastle;
+    }
+
+    public Boolean getPossibleBlackShortCastle() {
+        return possibleBlackShortCastle;
+    }
+
+    public void setPossibleBlackShortCastle(Boolean possibleBlackShortCastle) {
+        this.possibleBlackShortCastle = possibleBlackShortCastle;
+    }
+
+    public Boolean getPossibleBlackLongCastle() {
+        return possibleBlackLongCastle;
+    }
+
+    public void setPossibleBlackLongCastle(Boolean possibleBlackLongCastle) {
+        this.possibleBlackLongCastle = possibleBlackLongCastle;
+    }
 
 }

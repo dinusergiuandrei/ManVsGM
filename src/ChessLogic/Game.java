@@ -2,6 +2,7 @@ package ChessLogic;
 
 import GameArchitecture.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -12,9 +13,7 @@ import static GameArchitecture.Table.getSquare;
 
 public class Game {
 
-    public Table getTable() {
-        return table;
-    }
+    static List<Game> positions = new ArrayList<>();
 
     private Table table = new Table();
 
@@ -26,10 +25,15 @@ public class Game {
 
     private Color toMove;
 
+    private Integer currentNotDoubleMove;
+
     public Game() {
         this.isOver = false;
         toMove = Color.White;
         table.setUpPieces();
+        currentNotDoubleMove = 0;
+
+        positions.add(this);
     }
 
     public void setWhitePlayer(Player whitePlayer) {
@@ -70,6 +74,10 @@ public class Game {
         return isValidMoveSemantically(this, new Move(startSquare, endSquare));
     }
 
+    public void doMove(Move move){
+        this.doMove(move.getStartSquare(), move.getEndSquare());
+    }
+
     public void doMove(Square startSquare, Square endSquare) {
         Piece piece1 = this.table.squareToPieceMap.get(startSquare);
 
@@ -108,6 +116,21 @@ public class Game {
         }
 
         this.table.updatePossibleMoves(startSquare, endSquare);
+
+        currentNotDoubleMove++;
+        positions.add(this);
+    }
+
+    public void undo(){
+        if(currentNotDoubleMove == 0){
+            System.out.println("Can not undo! No previous move.");
+            return;
+        }
+
+        this.table = positions.get(currentNotDoubleMove-1).getTable().getCopy();
+        this.toMove = positions.get(currentNotDoubleMove-1).getToMove();
+        this.currentNotDoubleMove--;
+
     }
 
     public Move getMove(String moveString) {
@@ -151,15 +174,13 @@ public class Game {
             if (legalStartingSquares.size() == 1) {
                 return new Move(legalStartingSquares.get(0), endSquare);
             }
-            if  (legalStartingSquares.size() == 2){
-                if(!isValidMoveSemantically(this, new Move(legalStartingSquares.get(0), endSquare)))
+            if (legalStartingSquares.size() == 2) {
+                if (!isValidMoveSemantically(this, new Move(legalStartingSquares.get(0), endSquare)))
                     return new Move(legalStartingSquares.get(1), endSquare);
-                if(!isValidMoveSemantically(this, new Move(legalStartingSquares.get(1), endSquare)))
+                if (!isValidMoveSemantically(this, new Move(legalStartingSquares.get(1), endSquare)))
                     return new Move(legalStartingSquares.get(0), endSquare);
 
-            }
-
-            else {
+            } else {
                 System.out.println("Could not determine move of length 2: " + moveString);
                 this.table.displayTable();
             }
@@ -229,18 +250,18 @@ public class Game {
                 Square square1 = legalStartingSquares.get(0);
                 Square square2 = legalStartingSquares.get(1);
 
-                if(!isValidMoveSemantically(this, new Move(square1, endSquare)))
+                if (!isValidMoveSemantically(this, new Move(square1, endSquare)))
                     return new Move(square2, endSquare);
-                if(!isValidMoveSemantically(this, new Move(square2, endSquare)))
+                if (!isValidMoveSemantically(this, new Move(square2, endSquare)))
                     return new Move(square1, endSquare);
 
-                if(square1.getLine() == square2.getLine()){
-                    return Math.abs(square1.getColumn()-endSquare.getColumn())<Math.abs(square2.getColumn()-endSquare.getColumn())?
-                            new Move(square1, endSquare): new Move(square2, endSquare);
+                if (square1.getLine() == square2.getLine()) {
+                    return Math.abs(square1.getColumn() - endSquare.getColumn()) < Math.abs(square2.getColumn() - endSquare.getColumn()) ?
+                            new Move(square1, endSquare) : new Move(square2, endSquare);
                 }
-                if(square1.getColumn() == square2.getColumn()){
-                    return Math.abs(square1.getLine()-endSquare.getLine())<Math.abs(square2.getLine()-endSquare.getLine())?
-                            new Move(square1, endSquare): new Move(square2, endSquare);
+                if (square1.getColumn() == square2.getColumn()) {
+                    return Math.abs(square1.getLine() - endSquare.getLine()) < Math.abs(square2.getLine() - endSquare.getLine()) ?
+                            new Move(square1, endSquare) : new Move(square2, endSquare);
                 }
             }
 
@@ -389,5 +410,67 @@ public class Game {
         if (this.toMove == Color.White)
             this.toMove = Color.Black;
         else this.toMove = Color.White;
+    }
+
+
+    public Color getToMove() {
+        return toMove;
+    }
+
+    public List<Game> getPositions() {
+        return positions;
+    }
+
+    public void setPositions(List<Game> positions) {
+        this.positions = positions;
+    }
+
+    public void setTable(Table table) {
+        this.table = table;
+    }
+
+    public Player getWhitePlayer() {
+        return whitePlayer;
+    }
+
+    public Player getBlackPlayer() {
+        return blackPlayer;
+    }
+
+    public Boolean getOver() {
+        return isOver;
+    }
+
+    public void setOver(Boolean over) {
+        isOver = over;
+    }
+
+    public void setToMove(Color toMove) {
+        this.toMove = toMove;
+    }
+
+    public Table getTable() {
+        return table;
+    }
+
+    public Integer getCurrentNotDoubleMove() {
+        return currentNotDoubleMove;
+    }
+
+    public void setCurrentNotDoubleMove(Integer currentNotDoubleMove) {
+        this.currentNotDoubleMove = currentNotDoubleMove;
+    }
+
+    public Game getCopy(){
+        Game newGame = new Game();
+
+        newGame.setWhitePlayer(this.getWhitePlayer());
+        newGame.setBlackPlayer(this.getBlackPlayer());
+        newGame.setOver(this.getOver());
+        newGame.setToMove(this.getToMove());
+
+        newGame.setTable(table.getCopy());
+
+        return newGame;
     }
 }
