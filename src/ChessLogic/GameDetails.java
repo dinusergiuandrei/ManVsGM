@@ -31,7 +31,6 @@ public class GameDetails{
             }
             this.whiteMoves.add(whiteMove);
             game.doMove(whiteMove.getStartSquare(), whiteMove.getEndSquare());
-            game.updateToMove();
 
             Move blackMove = game.getMove(this.blackMovesString.get(moveCount));
             if(blackMove == null){
@@ -40,8 +39,6 @@ public class GameDetails{
             }
             this.blackMoves.add(blackMove);
             game.doMove(blackMove.getStartSquare(), blackMove.getEndSquare());
-            game.updateToMove();
-
 
         }
     }

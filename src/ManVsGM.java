@@ -27,14 +27,13 @@ public class ManVsGM {
         parser.parseDatabase();
         parser.getDatabase().computeAllGamesList();
 
-        //parser.getDatabase().getAllGames().get(0).computeMoves();
 
 //        parser.getDatabase().getAllGames().forEach(
 //                GameDetails::computeMoves
 //        );
 
         for (int i = 0; i < parser.getDatabase().getAllGames().size(); i++) {
-            //System.out.println(i);
+            System.out.println(i);
             parser.getDatabase().getAllGames().get(i).computeMoves();
 
         }

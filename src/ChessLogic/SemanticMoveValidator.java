@@ -189,32 +189,18 @@ public class SemanticMoveValidator {
         if(!SyntacticMoveValidator.isValidMoveSyntactically(game.getTable(), move))
             return false;
 
-        List<Square> legalEndSquares = getLegalMoves(game.getTable(), move.getStartSquare());
+        if(!getLegalMoves(game.getTable(), move.getStartSquare()).contains(move.getEndSquare()))
+            return false;
 
-        List<Square> checkedEndSquares = new LinkedList<>();
+        game.doMove(move);
+        if(move.getStartSquare() == getSquare('g', 7)){
+            System.out.println("stop");
+        }
 
-        Piece king;
+        Boolean ok = !SyntacticMoveValidator.hasKingAttacked(game.getTable(), game.getToMove());
+        game.undo();
 
-        if(game.getToMove() == Color.White)
-            king = Piece.whiteKing;
-        else king = Piece.blackKing;
+        return ok;
 
-        legalEndSquares.forEach(
-                square -> {
-
-                    game.doMove(move);
-
-                    Boolean ok = !SyntacticMoveValidator.hasKingAttacked(game.getTable(), game.getToMove());
-
-                    game.undo();
-
-                    if(ok){
-                        checkedEndSquares.add(square);
-                    }
-
-                }
-        );
-
-        return checkedEndSquares.contains(move.getEndSquare());
     }
 }

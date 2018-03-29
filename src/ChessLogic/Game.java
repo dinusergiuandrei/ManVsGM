@@ -9,11 +9,11 @@ import java.util.Objects;
 
 import static ChessLogic.SemanticMoveValidator.isValidMoveSemantically;
 import static ChessLogic.SyntacticMoveValidator.*;
+import static GameArchitecture.Table.computeFENFromTable;
 import static GameArchitecture.Table.getSquare;
 
 public class Game {
-
-    static List<Game> positions = new ArrayList<>();
+    private List<String> positions = new ArrayList<>();
 
     private Table table = new Table();
 
@@ -23,17 +23,14 @@ public class Game {
 
     private Boolean isOver;
 
-    private Color toMove;
-
-    private Integer currentNotDoubleMove;
+    private Integer currentPosition;
 
     public Game() {
         this.isOver = false;
-        toMove = Color.White;
         table.setUpPieces();
-        currentNotDoubleMove = 0;
 
-        positions.add(this);
+        positions.add(computeFENFromTable(this.table));
+        currentPosition = positions.size()-1;
     }
 
     public void setWhitePlayer(Player whitePlayer) {
@@ -46,12 +43,12 @@ public class Game {
 
     public void start() {
         while (!this.isOver) {
-            if (toMove == Color.White) {
+            if (this.table.getToMove() == Color.White) {
                 whitePlayer.move(this);
-                toMove = Color.Black;
+                this.table.setToMove(Color.Black);
             } else {
                 blackPlayer.move(this);
-                toMove = Color.White;
+                this.table.setToMove(Color.White);
             }
         }
     }
@@ -66,7 +63,7 @@ public class Game {
             System.out.println("Cannot move from a empty square!");
             return false;
         }
-        if (piece.getColor() != this.toMove) {
+        if (piece.getColor() != this.table.getToMove()) {
             System.out.println("Wrong color to move!");
             return false;
         }
@@ -117,42 +114,46 @@ public class Game {
 
         this.table.updatePossibleMoves(startSquare, endSquare);
 
-        currentNotDoubleMove++;
-        positions.add(this);
+        this.table.setFullMoveNumber(this.table.getFullMoveNumber()+1);
+
+        positions.add(computeFENFromTable(this.table));
+        currentPosition = positions.size()-1;
+        updateToMove();
     }
 
     public void undo(){
-        if(currentNotDoubleMove == 0){
+        if(this.currentPosition == 0){
             System.out.println("Can not undo! No previous move.");
             return;
         }
-
-        this.table = positions.get(currentNotDoubleMove-1).getTable().getCopy();
-        this.toMove = positions.get(currentNotDoubleMove-1).getToMove();
-        this.currentNotDoubleMove--;
-
+        currentPosition--;
+        this.table = Table.computeTableFromFEN(this.positions.get(currentPosition));
     }
 
     public Move getMove(String moveString) {
         moveString = cleanMoveString(moveString);
 
-        Piece piece = getPieceFromMoveString(moveString, this.toMove);
+        if(Objects.equals(moveString, "Rg7")){
+            System.out.println();
+        }
+
+        Piece piece = getPieceFromMoveString(moveString, this.table.getToMove());
         Square endSquare;
 
         if (Objects.equals(moveString, "O-O")) {
-            if (toMove == Color.White) {
+            if (this.table.getToMove() == Color.White) {
                 return new Move(getSquare('e', 1), getSquare('g', 1));
             }
-            if (toMove == Color.Black) {
+            if (this.table.getToMove() == Color.Black) {
                 return new Move(getSquare('e', 8), getSquare('g', 8));
             }
         }
 
         if (Objects.equals(moveString, "O-O-O")) {
-            if (toMove == Color.White) {
+            if (this.table.getToMove() == Color.White) {
                 return new Move(getSquare('e', 1), getSquare('c', 1));
             }
-            if (toMove == Color.Black) {
+            if (this.table.getToMove() == Color.Black) {
                 return new Move(getSquare('e', 8), getSquare('c', 8));
             }
         }
@@ -160,7 +161,7 @@ public class Game {
         if (moveString.length() == 2) {
             endSquare = getSquare(moveString);
 
-            List<Square> startingSquares = getAllPawnPushMoves(endSquare, toMove);
+            List<Square> startingSquares = getAllPawnPushMoves(endSquare, this.table.getToMove());
 
             List<Square> legalStartingSquares = new LinkedList<>();
 
@@ -195,7 +196,7 @@ public class Game {
                 switch (piece) {
                     case whiteKing:
                     case blackKing:
-                        startingSquares = getAllKingMoves(endSquare, this.toMove);
+                        startingSquares = getAllKingMoves(endSquare, this.table.getToMove());
                         break;
                     case whiteQueen:
                     case blackQueen:
@@ -215,7 +216,7 @@ public class Game {
                         break;
                     case whitePawn:
                     case blackPawn:
-                        startingSquares = getAllPawnCaptureMoves(endSquare, this.toMove);
+                        startingSquares = getAllPawnCaptureMoves(endSquare, this.table.getToMove());
                         break;
                 }
             }
@@ -275,7 +276,7 @@ public class Game {
                 switch (piece) {
                     case whiteKing:
                     case blackKing:
-                        startingSquares = getAllKingMoves(endSquare, this.toMove);
+                        startingSquares = getAllKingMoves(endSquare, this.table.getToMove());
                         break;
                     case whiteQueen:
                     case blackQueen:
@@ -295,7 +296,7 @@ public class Game {
                         break;
                     case whitePawn:
                     case blackPawn:
-                        startingSquares = getAllPawnCaptureMoves(endSquare, this.toMove);
+                        startingSquares = getAllPawnCaptureMoves(endSquare, this.table.getToMove());
                         break;
                 }
             }
@@ -407,21 +408,20 @@ public class Game {
     }
 
     public void updateToMove() {
-        if (this.toMove == Color.White)
-            this.toMove = Color.Black;
-        else this.toMove = Color.White;
+        if (this.table.getToMove() == Color.White)
+            this.table.setToMove(Color.Black);
+        else  this.table.setToMove(Color.White);
     }
-
 
     public Color getToMove() {
-        return toMove;
+        return this.table.getToMove();
     }
 
-    public List<Game> getPositions() {
+    public List<String> getPositions() {
         return positions;
     }
 
-    public void setPositions(List<Game> positions) {
+    public void setPositions(List<String> positions) {
         this.positions = positions;
     }
 
@@ -446,19 +446,11 @@ public class Game {
     }
 
     public void setToMove(Color toMove) {
-        this.toMove = toMove;
+        this.table.setToMove(toMove);
     }
 
     public Table getTable() {
         return table;
-    }
-
-    public Integer getCurrentNotDoubleMove() {
-        return currentNotDoubleMove;
-    }
-
-    public void setCurrentNotDoubleMove(Integer currentNotDoubleMove) {
-        this.currentNotDoubleMove = currentNotDoubleMove;
     }
 
     public Game getCopy(){
