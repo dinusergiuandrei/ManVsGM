@@ -8,9 +8,9 @@ import java.util.List;
 import static GameArchitecture.Table.getSquare;
 
 public class SemanticMoveValidator {
-    public static List<Square> getLegalMoves(Table table, Square startSquare){
+    public static List<Move> getLegalMoves(Table table, Square startSquare){
         Piece piece = table.squareToPieceMap.get(startSquare);
-        List<Square> moves = null;
+        List<Move> moves = null;
         switch (piece){
             case whiteKing:   case blackKing:   moves = getLegalKingMoves(table, startSquare);   break;
             case whiteQueen:  case blackQueen:  moves = getLegalQueenMoves(table, startSquare);   break;
@@ -22,33 +22,31 @@ public class SemanticMoveValidator {
         return moves;
     }
 
-    public static List<Square> getLegalMoves(Table table, Square startSquare, int columnDifference[], int lineDifference[], Table.Range range){
+    public static List<Move> getLegalMoves(Table table, Square startSquare, int columnDifference[], int lineDifference[], Table.Range range){
         Color color = table.squareToPieceMap.get(startSquare).getColor();
-        List<Square> candidateMoves = new LinkedList<>();
+        List<Move> candidateMoves = new LinkedList<>();
         if(range == Table.Range.CLOSE){
-            for(int i=0; i<columnDifference.length; ++i)
-                for(int j=0; j<lineDifference.length; ++j){
+            for(int i=0; i<columnDifference.length; ++i){
                     int column = startSquare.getColumn() + columnDifference[i];
-                    int line = startSquare.getLine() + lineDifference[j];
+                    int line = startSquare.getLine() + lineDifference[i];
                     Square square = getSquare(column, line);
                     if(square == null)
                         continue;
-                    candidateMoves.add(square);
+                    candidateMoves.add(new Move(startSquare, square));
                 }
         }
         if(range == Table.Range.DISTANCE){
-            for(int i=0; i<columnDifference.length; ++i)
-                for(int j=0; j<lineDifference.length; ++j){
+            for(int i=0; i<columnDifference.length; ++i){
                     for(int distance=1; ; ++distance) {
                         int column = startSquare.getColumn() + distance*columnDifference[i];
-                        int line = startSquare.getLine() + distance*lineDifference[j];
+                        int line = startSquare.getLine() + distance*lineDifference[i];
                         Square square = getSquare(column, line);
                         if (square == null)
                             break;
                         Piece piece = table.squareToPieceMap.get(square);
                         if(piece.getColor() == color)
                             break;
-                        candidateMoves.add(square);
+                        candidateMoves.add(new Move(startSquare, square));
                         if(piece != Piece.noPiece)
                             break;
                     }
@@ -57,9 +55,9 @@ public class SemanticMoveValidator {
         return candidateMoves;
     }
 
-    public static List<Square> getLegalPawnMoves(Table table, Square startSquare) {
+    public static List<Move> getLegalPawnMoves(Table table, Square startSquare) {
         Color color = table.squareToPieceMap.get(startSquare).getColor();
-        List<Square> possibleSquares = new LinkedList<>();
+        List<Move> possibleSquares = new LinkedList<>();
 
         int direction = 0;
         if (color == Color.White)
@@ -70,7 +68,7 @@ public class SemanticMoveValidator {
         //1 square push
         Square endSquare = getSquare(startSquare.getColumn(), startSquare.getLine() + direction);
         if (endSquare != null && table.squareToPieceMap.get(endSquare) == Piece.noPiece)
-            possibleSquares.add(endSquare);
+            possibleSquares.add(new Move(startSquare, endSquare));
 
         //2 square push
         Square endSquare2 = getSquare(startSquare.getColumn(), startSquare.getLine() + 2 * direction);
@@ -79,7 +77,7 @@ public class SemanticMoveValidator {
                 && table.squareToPieceMap.get(endSquare2) == Piece.noPiece
                 && ( ( startSquare.getLine() == 2 && direction == 1 ) || (startSquare.getLine() == 7 && direction == -1) )
                 )
-            possibleSquares.add(endSquare2);
+            possibleSquares.add(new Move(startSquare, endSquare2));
 
         //simple right capture
         Square endSquare3 = getSquare(startSquare.getColumn() + 1, startSquare.getLine() + direction);
@@ -87,7 +85,7 @@ public class SemanticMoveValidator {
                 && table.squareToPieceMap.get(endSquare3) != Piece.noPiece
                 && table.squareToPieceMap.get(endSquare3).getColor() != color
                 )
-            possibleSquares.add(endSquare3);
+            possibleSquares.add(new Move(startSquare, endSquare3));
 
         //simple left capture
         Square endSquare4 = getSquare(startSquare.getColumn() - 1, startSquare.getLine() + direction);
@@ -95,7 +93,7 @@ public class SemanticMoveValidator {
                 && table.squareToPieceMap.get(endSquare4) != Piece.noPiece
                 && table.squareToPieceMap.get(endSquare4).getColor() != color
                 )
-            possibleSquares.add(endSquare4);
+            possibleSquares.add(new Move(startSquare, endSquare4));
 
         //right en-passant
 
@@ -113,7 +111,7 @@ public class SemanticMoveValidator {
                 && ((targetLine == 4 && table.squareToPieceMap.get(targetSquare).getColor() == Color.White) || (targetLine == 5 && table.squareToPieceMap.get(targetSquare).getColor() == Color.Black) )
                 && table.squareToPieceMap.get(targetSquare).getColor() != color
                 )
-            possibleSquares.add(endSquare5);
+            possibleSquares.add(new Move(startSquare, endSquare5));
 
 
         //left en-passant
@@ -127,14 +125,14 @@ public class SemanticMoveValidator {
                 && ((targetLine == 4 && table.squareToPieceMap.get(targetSquare).getColor() == Color.White) || (targetLine == 5 && table.squareToPieceMap.get(targetSquare).getColor() == Color.Black) )
                 && table.squareToPieceMap.get(targetSquare).getColor() != color
                 )
-            possibleSquares.add(endSquare6);
+            possibleSquares.add(new Move(startSquare, endSquare6));
 
         return possibleSquares;
     }
 
-    public static List<Square> getLegalKingMoves(Table table, Square startSquare){
+    public static List<Move> getLegalKingMoves(Table table, Square startSquare){
         Color color = table.squareToPieceMap.get(startSquare).getColor();
-        List<Square> possibleMoves = new LinkedList<>();
+        List<Move> possibleMoves = new LinkedList<>();
         int[] lineDifference   = {-1, -1, -1, 0, 1, 1, 1, 0};
         int[] columnDifference = {-1, 0, 1, 1, 1, 0, -1, -1};
 
@@ -142,42 +140,42 @@ public class SemanticMoveValidator {
 
         if(color == Color.White){
             if(table.possibleWhiteShortCastle)
-                possibleMoves.add(getSquare('g', 1));
+                possibleMoves.add(new Move(startSquare, getSquare('g', 1)));
             if(table.possibleWhiteLongCastle)
-                possibleMoves.add(getSquare('c', 1));
+                possibleMoves.add(new Move(startSquare, getSquare('c', 1)));
         }
         if(color == Color.Black){
             if(table.possibleBlackShortCastle)
-                possibleMoves.add(getSquare('g', 8));
+                possibleMoves.add(new Move(startSquare, getSquare('g', 8)));
             if(table.possibleBlackLongCastle)
-                possibleMoves.add(getSquare('c', 8));
+                possibleMoves.add(new Move(startSquare, getSquare('c', 8)));
         }
 
         return possibleMoves;
     }
 
-    public static List<Square> getLegalQueenMoves(Table table, Square startSquare){
+    public static List<Move> getLegalQueenMoves(Table table, Square startSquare){
         int[] lineDifference   = {-1, -1, -1, 0, 1, 1, 1, 0};
         int[] columnDifference = {-1, 0, 1, 1, 1, 0, -1, -1};
 
         return getLegalMoves(table, startSquare, columnDifference, lineDifference, Table.Range.DISTANCE);
     }
 
-    public static List<Square> getLegalRookMoves(Table table, Square startSquare){
+    public static List<Move> getLegalRookMoves(Table table, Square startSquare){
         int[] lineDifference   = {1, -1, 0, 0};
         int[] columnDifference = {0, 0, 1, -1};
 
         return getLegalMoves(table, startSquare, columnDifference, lineDifference, Table.Range.DISTANCE);
     }
 
-    public static List<Square> getLegalBishopMoves(Table table, Square startSquare){
+    public static List<Move> getLegalBishopMoves(Table table, Square startSquare){
         int[] lineDifference   = {1, -1, 1, -1};
         int[] columnDifference = {1, 1, -1, -1};
 
         return getLegalMoves(table, startSquare, columnDifference, lineDifference, Table.Range.DISTANCE);
     }
 
-    public static List<Square> getLegalKnightMoves(Table table, Square startSquare){
+    public static List<Move> getLegalKnightMoves(Table table, Square startSquare){
         int[] lineDifference   = {2, 1, -1, -2, -2, -1, 1, 2};
         int[] columnDifference = {1, 2, 2, 1, -1, -2, -2, -1};
 
@@ -189,15 +187,20 @@ public class SemanticMoveValidator {
         if(!SyntacticMoveValidator.isValidMoveSyntactically(game.getTable(), move))
             return false;
 
-        if(!getLegalMoves(game.getTable(), move.getStartSquare()).contains(move.getEndSquare()))
+        if(!getLegalMoves(game.getTable(), move.getStartSquare()).contains(move))
             return false;
 
         game.doMove(move);
-//        if(move.getStartSquare() == getSquare('g', 7)){
+//        if(move.getStartSquare() == getSquareByName('g', 7)){
 //            System.out.println("stop");
 //        }
 
-        Boolean ok = !SyntacticMoveValidator.hasKingAttacked(game.getTable(), game.getToMove());
+        Color otherColor;
+        if(game.getToMove() == Color.White)
+            otherColor = Color.Black;
+        else otherColor = Color.White;
+
+        Boolean ok = !SyntacticMoveValidator.hasKingAttacked(game.getTable(), otherColor);
         game.undo();
 
         return ok;

@@ -53,7 +53,10 @@ public class Game {
         }
     }
 
-    public Boolean canMove(Square startSquare, Square endSquare) {
+    public Boolean canMove(Move move) {
+        Square startSquare = move.getStartSquare();
+        Square endSquare = move.getEndSquare();
+
         if (startSquare == null || endSquare == null) {
             System.out.println("Using a non valid square.");
             return false;
@@ -72,10 +75,9 @@ public class Game {
     }
 
     public void doMove(Move move){
-        this.doMove(move.getStartSquare(), move.getEndSquare());
-    }
+        Square startSquare = move.getStartSquare();
+        Square endSquare = move.getEndSquare();
 
-    public void doMove(Square startSquare, Square endSquare) {
         Piece piece1 = this.table.squareToPieceMap.get(startSquare);
 
         this.table.squareToPieceMap.put(startSquare, Piece.noPiece);
@@ -99,10 +101,10 @@ public class Game {
         }
 
         if (piece1 == Piece.whitePawn && endSquare.getLine() == 8)
-            this.table.squareToPieceMap.put(endSquare, Piece.whiteQueen);
+            this.table.squareToPieceMap.put(endSquare, move.getPieceAfterPromotion());  // todo: piece
 
         if (piece1 == Piece.blackPawn && endSquare.getLine() == 1)
-            this.table.squareToPieceMap.put(endSquare, Piece.blackQueen);
+            this.table.squareToPieceMap.put(endSquare, move.getPieceAfterPromotion());
 
         if (piece1 == Piece.whitePawn && this.table.squareToPieceMap.get(endSquare) == Piece.noPiece) {
             this.table.squareToPieceMap.put(Table.getSquare(endSquare.getColumn(), 5), Piece.noPiece);
@@ -116,9 +118,9 @@ public class Game {
 
         this.table.setFullMoveNumber(this.table.getFullMoveNumber()+1);
 
+        updateToMove();
         positions.add(computeFENFromTable(this.table));
         currentPosition = positions.size()-1;
-        updateToMove();
     }
 
     public void undo(){
@@ -130,10 +132,30 @@ public class Game {
         this.table = Table.computeTableFromFEN(this.positions.get(currentPosition));
     }
 
-    public Move getMove(String moveString) {
+    public Move getMove(String moveString){
         moveString = cleanMoveString(moveString);
 
+        Move move = getMove1(moveString);
+        Piece piece = getPieceFromMoveString(moveString, this.table.getToMove());
+        try {
+            if (move.getEndSquare().getLine() == 8 && piece.getColor() == Color.White) {
+                char l = moveString.charAt(moveString.length() - 1);
+                move.setPieceAfterPromotion(Piece.getPieceFromFenNotation(l));
 
+            } else if (move.getEndSquare().getLine() == 1 && piece.getColor() == Color.Black) {
+                char l = moveString.charAt(moveString.length() - 1);
+
+                move.setPieceAfterPromotion(Piece.getPieceFromFenNotation((char) (l - 'A' + 'a')));
+            }
+        }
+        catch (NullPointerException e){
+            System.out.println(e.getMessage());
+        }
+
+        return move;
+    }
+
+    public Move getMove1(String moveString) {
 
         Piece piece = getPieceFromMoveString(moveString, this.table.getToMove());
         Square endSquare;
@@ -157,29 +179,29 @@ public class Game {
         }
 
         if (moveString.length() == 2) {
-            endSquare = getSquare(moveString);
+            // this can only be a pawn move
 
-            List<Square> startingSquares = getAllPawnPushMoves(endSquare, this.table.getToMove());
+            endSquare = Table.getSquareFromMoveString(moveString);
 
-            List<Square> legalStartingSquares = new LinkedList<>();
+            List<Move> pawnPushMoves = getAllPawnPushMoves(endSquare, this.table.getToMove());
 
-            for (Square startingSquare : startingSquares) {
-                if (this.table.squareToPieceMap.get(startingSquare) == Piece.whitePawn
-                        || this.table.squareToPieceMap.get(startingSquare) == Piece.blackPawn)
-                    legalStartingSquares.add(startingSquare);
+            List<Move> legalMoves = new LinkedList<>();
+
+            for (Move move : pawnPushMoves) {
+                if (this.table.squareToPieceMap.get(move.getStartSquare()) == Piece.whitePawn
+                        || this.table.squareToPieceMap.get(move.getStartSquare()) == Piece.blackPawn)
+                    legalMoves.add(move);
             }
 
-
-            if (legalStartingSquares.size() == 1) {
-                return new Move(legalStartingSquares.get(0), endSquare);
+            if (legalMoves.size() == 1) {
+                return legalMoves.get(0);
             }
 
-
-            if (legalStartingSquares.size() == 2) {
-                if (!isValidMoveSemantically(this, new Move(legalStartingSquares.get(0), endSquare)))
-                    return new Move(legalStartingSquares.get(1), endSquare);
-                if (!isValidMoveSemantically(this, new Move(legalStartingSquares.get(1), endSquare)))
-                    return new Move(legalStartingSquares.get(0), endSquare);
+            if (legalMoves.size() == 2) {
+                if (isValidMoveSemantically(this, legalMoves.get(0)))
+                    return legalMoves.get(0);
+                if (isValidMoveSemantically(this, legalMoves.get(1)))
+                    return legalMoves.get(1);
 
             } else {
                 System.out.println("Could not determine move of length 2: " + moveString);
@@ -190,85 +212,108 @@ public class Game {
         }
 
         if (moveString.length() == 3) {
-            endSquare = getSquare(moveString.substring(1));
-            List<Square> startingSquares = null;
+            endSquare = Table.getSquareFromMoveString(moveString);
+            List<Move> baseMoves = null;
             if (piece != null) {
                 switch (piece) {
                     case whiteKing:
                     case blackKing:
-                        startingSquares = getAllKingMoves(endSquare, this.table.getToMove());
+                        baseMoves = getAllKingMoves(endSquare, this.table.getToMove());
                         break;
                     case whiteQueen:
                     case blackQueen:
-                        startingSquares = getAllQueenMoves(endSquare);
+                        baseMoves = getAllQueenMoves(endSquare);
                         break;
                     case whiteRook:
                     case blackRook:
-                        startingSquares = getAllRookMoves(endSquare);
+                        baseMoves = getAllRookMoves(endSquare);
                         break;
                     case whiteBishop:
                     case blackBishop:
-                        startingSquares = getAllBishopMoves(endSquare);
+                        baseMoves = getAllBishopMoves(endSquare);
                         break;
                     case whiteKnight:
                     case blackKnight:
-                        startingSquares = getAllKnightMoves(endSquare);
+                        baseMoves = getAllKnightMoves(endSquare);
                         break;
                     case whitePawn:
+                        baseMoves = getAllPawnCaptureMoves(endSquare, this.table.getToMove());
+                        List<Move> pawnMoves = getAllPawnPushMoves(endSquare, this.table.getToMove());
+                        List<Move> validPawnSquares = new LinkedList<>();
+                        pawnMoves.forEach(
+                                move -> {
+                                    if(move.getStartSquare().getLine() == 7)
+                                        validPawnSquares.add(move);
+                                }
+                        );
+                        baseMoves.addAll(validPawnSquares);
+
+
+                        break;
                     case blackPawn:
-                        startingSquares = getAllPawnCaptureMoves(endSquare, this.table.getToMove());
+                        baseMoves = getAllPawnCaptureMoves(endSquare, this.table.getToMove());
+                        List<Move> pawnSquares1 = getAllPawnPushMoves(endSquare, this.table.getToMove());
+                        List<Move> validPawnSquares1 = new LinkedList<>();
+                        pawnSquares1.forEach(
+                                square -> {
+                                    if(square.getStartSquare().getLine() == 2)
+                                        validPawnSquares1.add(square);
+                                }
+                        );
+                        baseMoves.addAll(validPawnSquares1);
+
                         break;
                 }
             }
 
-            List<Square> legalStartingSquares = new LinkedList<>();
+            List<Move> legalMoves = new LinkedList<>();
 
-            if (startingSquares != null) {
-                for (Square startingSquare : startingSquares) {
-                    if (this.table.squareToPieceMap.get(startingSquare) == piece) {
-                        legalStartingSquares.add(startingSquare);
+//            if(Objects.equals(moveString, "Nd2") ){
+//                System.out.println("Nd2 found");
+//            }
+
+            if (baseMoves != null) {
+                for (Move baseMove : baseMoves) {
+                    if (this.table.squareToPieceMap.get(baseMove.getStartSquare()) == piece) {
+                        legalMoves.add(baseMove);
                     }
                 }
             }
 
-            if (legalStartingSquares.size() > 1 && (piece == Piece.whitePawn || piece == Piece.blackPawn)) {
+            if (legalMoves.size() > 1 && (piece == Piece.whitePawn || piece == Piece.blackPawn)) {
                 char detail = moveString.charAt(0);
-                if (startingSquares != null) {
-                    for (Square startingSquare : legalStartingSquares) {
-                        if (this.table.squareToPieceMap.get(startingSquare) == piece
-                                && startingSquare.getColumn() == detail) {
-                            return new Move(startingSquare, endSquare);
+                if (baseMoves != null) {
+                    for (Move legalMove : legalMoves) {
+                        if (this.table.squareToPieceMap.get(legalMove.getStartSquare()) == piece
+                                && legalMove.getStartSquare().getColumn() == detail) {
+                            return legalMove;
                         }
                     }
                 }
 
             }
 
-            if (legalStartingSquares.size() == 1) {
-                return new Move(legalStartingSquares.get(0), endSquare);
+
+            if (legalMoves.size() == 1) {
+                return legalMoves.get(0);
             }
 
+            if (legalMoves.size() == 2) {
+                Move move1 = legalMoves.get(0);
+                Move move2 = legalMoves.get(1);
 
-            if(Objects.equals(moveString, "Rg7")){
-                System.out.println("This move changes colors");
-            }
+                if (isValidMoveSemantically(this, move1))
+                    return move1;
+                if (isValidMoveSemantically(this, move2))
+                    return move2;
 
-            if (legalStartingSquares.size() == 2) {
-                Square square1 = legalStartingSquares.get(0);
-                Square square2 = legalStartingSquares.get(1);
-
-                if (!isValidMoveSemantically(this, new Move(square1, endSquare)))
-                    return new Move(square2, endSquare);
-                if (!isValidMoveSemantically(this, new Move(square2, endSquare)))
-                    return new Move(square1, endSquare);
-
-                if (square1.getLine() == square2.getLine()) {
-                    return Math.abs(square1.getColumn() - endSquare.getColumn()) < Math.abs(square2.getColumn() - endSquare.getColumn()) ?
-                            new Move(square1, endSquare) : new Move(square2, endSquare);
+                if (move1.getStartSquare().getLine() == move2.getStartSquare().getLine()) {
+                    return Math.abs(move1.getStartSquare().getColumn() - endSquare.getColumn()) < Math.abs(move2.getStartSquare().getColumn() - endSquare.getColumn()) ?
+                            move1 : move2;
                 }
-                if (square1.getColumn() == square2.getColumn()) {
-                    return Math.abs(square1.getLine() - endSquare.getLine()) < Math.abs(square2.getLine() - endSquare.getLine()) ?
-                            new Move(square1, endSquare) : new Move(square2, endSquare);
+                if (move1.getStartSquare().getColumn() == move2.getStartSquare().getColumn()) {
+                    return Math.abs(move1.getStartSquare().getLine() - endSquare.getLine()) < Math.abs(move2.getStartSquare().getLine() - endSquare.getLine()) ?
+                            move1 : move2;
                 }
             }
 
@@ -276,73 +321,73 @@ public class Game {
         }
 
         if (moveString.length() == 4) {
-            endSquare = getSquare(moveString.substring(2));
-            List<Square> startingSquares = null;
+            endSquare = Table.getSquareFromMoveString(moveString);
+            List<Move> baseMoves = null;
             if (piece != null) {
                 switch (piece) {
                     case whiteKing:
                     case blackKing:
-                        startingSquares = getAllKingMoves(endSquare, this.table.getToMove());
+                        baseMoves = getAllKingMoves(endSquare, this.table.getToMove());
                         break;
                     case whiteQueen:
                     case blackQueen:
-                        startingSquares = getAllQueenMoves(endSquare);
+                        baseMoves = getAllQueenMoves(endSquare);
                         break;
                     case whiteRook:
                     case blackRook:
-                        startingSquares = getAllRookMoves(endSquare);
+                        baseMoves = getAllRookMoves(endSquare);
                         break;
                     case whiteBishop:
                     case blackBishop:
-                        startingSquares = getAllBishopMoves(endSquare);
+                        baseMoves = getAllBishopMoves(endSquare);
                         break;
                     case whiteKnight:
                     case blackKnight:
-                        startingSquares = getAllKnightMoves(endSquare);
+                        baseMoves = getAllKnightMoves(endSquare);
                         break;
                     case whitePawn:
                     case blackPawn:
-                        startingSquares = getAllPawnCaptureMoves(endSquare, this.table.getToMove());
+                        baseMoves = getAllPawnCaptureMoves(endSquare, this.table.getToMove());
                         break;
                 }
             }
 
-            List<Square> legalStartingSquares = new LinkedList<>();
+            List<Move> legalMoves = new LinkedList<>();
 
-            if (startingSquares != null) {
-                for (Square startingSquare : startingSquares) {
-                    if (this.table.squareToPieceMap.get(startingSquare) == piece) {
-                        legalStartingSquares.add(startingSquare);
+            if (baseMoves != null) {
+                for (Move baseMove : baseMoves) {
+                    if (this.table.squareToPieceMap.get(baseMove.getStartSquare()) == piece) {
+                        legalMoves.add(baseMove);
                     }
                 }
             }
 
             char detail = moveString.charAt(1);
             if (detail >= '1' && detail <= '8') {
-                if (startingSquares != null) {
-                    for (Square startingSquare : legalStartingSquares) {
-                        if (this.table.squareToPieceMap.get(startingSquare) == piece
-                                && startingSquare.getLine() == detail - '0') {
-                            return new Move(startingSquare, endSquare);
+                if (baseMoves != null) {
+                    for (Move legalMove : legalMoves) {
+                        if (this.table.squareToPieceMap.get(legalMove.getStartSquare()) == piece
+                                && legalMove.getStartSquare().getLine() == detail - '0') {
+                            return legalMove;
                         }
                     }
                 }
             }
 
             if (detail >= 'a' && detail <= 'h') {
-                if (startingSquares != null) {
-                    for (Square startingSquare : legalStartingSquares) {
-                        if (this.table.squareToPieceMap.get(startingSquare) == piece
-                                && startingSquare.getColumn() == detail) {
-                            return new Move(startingSquare, endSquare);
+                if (baseMoves != null) {
+                    for (Move legalMove : legalMoves) {
+                        if (this.table.squareToPieceMap.get(legalMove.getStartSquare()) == piece
+                                && legalMove.getStartSquare().getColumn() == detail) {
+                            return legalMove;
                         }
                     }
                 }
             }
 
 
-            if (legalStartingSquares.size() == 1) {
-                return new Move(legalStartingSquares.get(0), endSquare);
+            if (legalMoves.size() == 1) {
+                return legalMoves.get(0);
             } else {
                 System.err.println("Could not determine starting square for move " + moveString);
             }
@@ -404,7 +449,7 @@ public class Game {
 
     private String cleanMoveString(String moveString) {
         StringBuilder result = new StringBuilder();
-        String extraCharacters = "+:x";
+        String extraCharacters = "+:x=";
         for (char c : moveString.toCharArray()) {
             if (extraCharacters.indexOf(c) == -1) {
                 result.append(c);

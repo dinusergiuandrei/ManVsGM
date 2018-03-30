@@ -3,6 +3,8 @@ import GameArchitecture.Player;
 import MoveGenerator.TerminalMoveGenerator;
 import Parser.PgnDatabaseReader;
 
+//todo: fix parser error (2020 detected games out of 3018) ( Adams.pgn )
+
 public class ManVsGM {
     public static String dataBasePath = "database/players";
     public static String dataBasePathAdams = "database/players/Adams.pgn";
@@ -11,7 +13,7 @@ public class ManVsGM {
         parse();
     }
 
-    public static void startGame(){
+    public static void startGame() {
         int playerId = 0;
         Game game = new Game();
 
@@ -24,7 +26,7 @@ public class ManVsGM {
         game.start();
     }
 
-    public static void parse(){
+    public static void parse() {
         PgnDatabaseReader parser = new PgnDatabaseReader(dataBasePathAdams);
         parser.computePgnFilePaths();
         parser.parseDatabase();
@@ -34,15 +36,14 @@ public class ManVsGM {
 //                GameDetails::computeMoves
 //        );
 
-        System.out.println("Parsing "+parser.getDatabase().getAllGames().size()+ " games..." );
+        System.out.println("Parsing " + parser.getDatabase().getAllGames().size() + " games...");
         for (int i = 0; i < parser.getDatabase().getAllGames().size(); i++) {
-            System.out.println(i);
+            //System.out.println(i);
             parser.getDatabase().getAllGames().get(i).computeMoves();
-
         }
 
         int x;
-        x=3333;
+        x = 3333;
         System.out.println(x);
     }
 }

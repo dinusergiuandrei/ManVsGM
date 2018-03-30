@@ -1,6 +1,8 @@
 package GameArchitecture;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class Table {
     public Map<Square, Piece> squareToPieceMap = new LinkedHashMap<>(65);
@@ -168,7 +170,7 @@ public class Table {
         table.setPossibleBlackLongCastle(castlingAvailabilityString.contains("k"));
         table.setPossibleBlackLongCastle(castlingAvailabilityString.contains("q"));
 
-        table.setEnPassantTargetSquare(getSquare(enPassantTargetSquareString));
+        table.setEnPassantTargetSquare(getSquareByName(enPassantTargetSquareString));
 
         table.setHalfMovesSinceProgress(Integer.parseInt(halfMoveClockString));
 
@@ -245,9 +247,6 @@ public class Table {
     }
 
 
-
-
-
     public enum Range {
         CLOSE,
         DISTANCE
@@ -280,11 +279,37 @@ public class Table {
         return null;
     }
 
-    public static Square getSquare(String squareName) {
+    public static Square getSquareFromMoveString(String moveString){
+        Square square = null;
+
+        switch (moveString.length()){
+            case 2: square = getSquareByName(moveString); break;
+            case 3: square = getSquareByName(moveString.substring(1)); break;
+            case 4: square = getSquareByName(moveString.substring(2)); break;
+        }
+
+        if(square!=null)
+            return square;
+
+        String last = moveString.substring(moveString.length()-1);
+        String types = "QRBN";
+        if(types.contains(last)){
+            String squareString = moveString.substring(0, moveString.length()-1);
+            return getSquareFromMoveString(squareString);
+        }
+
+        System.out.println("Did not find move");
+
+        return null;
+    }
+
+    public static Square getSquareByName(String squareName) {
         for (Square square : Square.values()) {
             if (Objects.equals(squareName, square.getName()))
                 return square;
         }
+
+
         return null;
     }
 

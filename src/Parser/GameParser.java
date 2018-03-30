@@ -123,7 +123,7 @@ public class GameParser {
             if (movesString.contains(endToken)) {
                 if (!movesString.contains(startToken) ||
                         !movesString.contains(endToken)) {
-                    System.out.println("Hol up");
+                    System.err.println("Token error. Moves string must contain at least one of start token and end token");
                 }
                 movePairString = movesString.substring(
                         movesString.indexOf(startToken),

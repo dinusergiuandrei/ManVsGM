@@ -1,7 +1,6 @@
 package ChessLogic;
 
 import GameArchitecture.Move;
-import GameArchitecture.Square;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -25,24 +24,43 @@ public class GameDetails{
         Game game = new Game();
         //todo: fix :in fen, white has first two moves
         for(int moveCount = 0; moveCount < this.blackMovesString.size(); ++moveCount){
-            Move whiteMove = game.getMove(this.whiteMovesString.get(moveCount));
+
+            String whiteMoveString = this.whiteMovesString.get(moveCount);
+
+            Move whiteMove = game.getMove(whiteMoveString);
 
 
             if(whiteMove == null){
                 System.out.println("Could not recognize white move: "+this.whiteMovesString.get(moveCount));
-                game.getTable().displayTable();
+                //game.getTable().displayTable();
                 return;
             }
             this.whiteMoves.add(whiteMove);
-            game.doMove(whiteMove.getStartSquare(), whiteMove.getEndSquare());
+            game.doMove(whiteMove);
 
-            Move blackMove = game.getMove(this.blackMovesString.get(moveCount));
+            //System.out.print((moveCount+1) + "."+whiteMove);
+
+
+            String blackMoveString = this.blackMovesString.get(moveCount);
+
+
+
+
+            Move blackMove = game.getMove(blackMoveString);
+
+
+
             if(blackMove == null){
-                System.out.println("Could not recognize black move: "+this.blackMovesString.get(moveCount));
+                System.out.println("Could not recognize black move: " + blackMoveString);
+                //System.out.println(game.getPositions().get(game.getPositions().size()-1));
                 return;
             }
+
+
             this.blackMoves.add(blackMove);
-            game.doMove(blackMove.getStartSquare(), blackMove.getEndSquare());
+            game.doMove(blackMove);
+
+            //System.out.println(" "+blackMove);
 
         }
     }

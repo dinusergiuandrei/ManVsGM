@@ -46,8 +46,8 @@ public class Player {
         while (!madeMove) {
             Move move = moveGenerator.getMove();
             if (move != null) {
-                if (game.canMove(move.getStartSquare(), move.getEndSquare())) {
-                    game.doMove(move.getStartSquare(), move.getEndSquare());
+                if (game.canMove(move)) {
+                    game.doMove(move);
                     game.getTable().displayTable();
                     madeMove = true;
                 } else {
