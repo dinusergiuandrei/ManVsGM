@@ -1,6 +1,7 @@
 package ChessLogic;
 
 import GameArchitecture.Move;
+import GameArchitecture.Square;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,8 +23,11 @@ public class GameDetails{
 
     public void computeMoves(){
         Game game = new Game();
+        //todo: fix :in fen, white has first two moves
         for(int moveCount = 0; moveCount < this.blackMovesString.size(); ++moveCount){
             Move whiteMove = game.getMove(this.whiteMovesString.get(moveCount));
+
+
             if(whiteMove == null){
                 System.out.println("Could not recognize white move: "+this.whiteMovesString.get(moveCount));
                 game.getTable().displayTable();

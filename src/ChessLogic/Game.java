@@ -133,9 +133,7 @@ public class Game {
     public Move getMove(String moveString) {
         moveString = cleanMoveString(moveString);
 
-        if(Objects.equals(moveString, "Rg7")){
-            System.out.println();
-        }
+
 
         Piece piece = getPieceFromMoveString(moveString, this.table.getToMove());
         Square endSquare;
@@ -175,6 +173,8 @@ public class Game {
             if (legalStartingSquares.size() == 1) {
                 return new Move(legalStartingSquares.get(0), endSquare);
             }
+
+
             if (legalStartingSquares.size() == 2) {
                 if (!isValidMoveSemantically(this, new Move(legalStartingSquares.get(0), endSquare)))
                     return new Move(legalStartingSquares.get(1), endSquare);
@@ -247,6 +247,12 @@ public class Game {
             if (legalStartingSquares.size() == 1) {
                 return new Move(legalStartingSquares.get(0), endSquare);
             }
+
+
+            if(Objects.equals(moveString, "Rg7")){
+                System.out.println("This move changes colors");
+            }
+
             if (legalStartingSquares.size() == 2) {
                 Square square1 = legalStartingSquares.get(0);
                 Square square2 = legalStartingSquares.get(1);

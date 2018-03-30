@@ -193,9 +193,9 @@ public class SemanticMoveValidator {
             return false;
 
         game.doMove(move);
-        if(move.getStartSquare() == getSquare('g', 7)){
-            System.out.println("stop");
-        }
+//        if(move.getStartSquare() == getSquare('g', 7)){
+//            System.out.println("stop");
+//        }
 
         Boolean ok = !SyntacticMoveValidator.hasKingAttacked(game.getTable(), game.getToMove());
         game.undo();

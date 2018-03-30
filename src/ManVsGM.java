@@ -4,6 +4,9 @@ import MoveGenerator.TerminalMoveGenerator;
 import Parser.PgnDatabaseReader;
 
 public class ManVsGM {
+    public static String dataBasePath = "database/players";
+    public static String dataBasePathAdams = "database/players/Adams.pgn";
+
     public static void main(String[] args) {
         parse();
     }
@@ -22,16 +25,16 @@ public class ManVsGM {
     }
 
     public static void parse(){
-        PgnDatabaseReader parser = new PgnDatabaseReader("database/players/Adams.pgn");
+        PgnDatabaseReader parser = new PgnDatabaseReader(dataBasePathAdams);
         parser.computePgnFilePaths();
         parser.parseDatabase();
         parser.getDatabase().computeAllGamesList();
-
 
 //        parser.getDatabase().getAllGames().forEach(
 //                GameDetails::computeMoves
 //        );
 
+        System.out.println("Parsing "+parser.getDatabase().getAllGames().size()+ " games..." );
         for (int i = 0; i < parser.getDatabase().getAllGames().size(); i++) {
             System.out.println(i);
             parser.getDatabase().getAllGames().get(i).computeMoves();
@@ -42,5 +45,4 @@ public class ManVsGM {
         x=3333;
         System.out.println(x);
     }
-
 }
