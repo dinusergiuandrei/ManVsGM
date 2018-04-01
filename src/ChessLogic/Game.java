@@ -75,10 +75,16 @@ public class Game {
     }
 
     public void doMove(Move move){
+        Boolean enPassant;
+
         Square startSquare = move.getStartSquare();
         Square endSquare = move.getEndSquare();
 
         Piece piece1 = this.table.squareToPieceMap.get(startSquare);
+
+        if((piece1 == Piece.whitePawn || piece1 == Piece.blackPawn )&& this.table.squareToPieceMap.get(endSquare) == Piece.noPiece)
+            enPassant = true;
+        else enPassant = false;
 
         this.table.squareToPieceMap.put(startSquare, Piece.noPiece);
         this.table.squareToPieceMap.put(endSquare, piece1);
@@ -106,12 +112,14 @@ public class Game {
         if (piece1 == Piece.blackPawn && endSquare.getLine() == 1)
             this.table.squareToPieceMap.put(endSquare, move.getPieceAfterPromotion());
 
-        if (piece1 == Piece.whitePawn && this.table.squareToPieceMap.get(endSquare) == Piece.noPiece) {
-            this.table.squareToPieceMap.put(Table.getSquare(endSquare.getColumn(), 5), Piece.noPiece);
+        //todo: modified next 2 ifs
+
+        if (piece1 == Piece.whitePawn && this.table.squareToPieceMap.get(getSquare(endSquare.getColumn(), endSquare.getLine()-1)) == Piece.blackPawn && endSquare.getLine() == 6 && enPassant) {
+            this.table.squareToPieceMap.put(getSquare(endSquare.getColumn(), endSquare.getLine()-1), Piece.noPiece);
         }
 
-        if (piece1 == Piece.blackPawn && this.table.squareToPieceMap.get(endSquare) == Piece.noPiece) {
-            this.table.squareToPieceMap.put(Table.getSquare(endSquare.getColumn(), 4), Piece.noPiece);
+        if (piece1 == Piece.blackPawn && this.table.squareToPieceMap.get(getSquare(endSquare.getColumn(), endSquare.getLine()+1)) == Piece.whitePawn  && endSquare.getLine() == 3 && enPassant) {
+            this.table.squareToPieceMap.put(getSquare(endSquare.getColumn(), endSquare.getLine()+1), Piece.noPiece);
         }
 
         this.table.updatePossibleMoves(startSquare, endSquare);
@@ -130,6 +138,7 @@ public class Game {
         }
         currentPosition--;
         this.table = Table.computeTableFromFEN(this.positions.get(currentPosition));
+        this.positions.remove(currentPosition+1);
     }
 
     public Move getMove(String moveString){
@@ -302,6 +311,10 @@ public class Game {
                 Move move1 = legalMoves.get(0);
                 Move move2 = legalMoves.get(1);
 
+//                if(move1.getStartSquare() == Square.h1 && move1.getEndSquare() == Square.d1 && move2.getStartSquare() == Square.a1){
+//                    System.out.println("chosing wrong rook");
+//                }
+
                 if (isValidMoveSemantically(this, move1))
                     return move1;
                 if (isValidMoveSemantically(this, move2))
@@ -449,7 +462,31 @@ public class Game {
 
     private String cleanMoveString(String moveString) {
         StringBuilder result = new StringBuilder();
-        String extraCharacters = "+:x=";
+        String extraCharacters = "+:x= *";
+
+        int quoteStartIndex = moveString.indexOf('{');
+        int quoteEndIndex = moveString.indexOf('}');
+
+        if(quoteStartIndex >= 0 && quoteEndIndex >=0){
+            // ... { ... } ...
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(moveString, 0, quoteStartIndex);
+            stringBuilder.append(moveString.substring(quoteEndIndex+1));
+            moveString = stringBuilder.toString();
+        }
+        if(quoteStartIndex >= 0 &&  quoteEndIndex < 0 ){
+            // ... { ...
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(moveString, 0, quoteStartIndex);
+            moveString = stringBuilder.toString();
+        }
+        if(quoteStartIndex < 0 && quoteEndIndex >= 0){
+            // ... } ...
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(moveString.substring(quoteEndIndex+1));
+            moveString = stringBuilder.toString();
+        }
+
         for (char c : moveString.toCharArray()) {
             if (extraCharacters.indexOf(c) == -1) {
                 result.append(c);

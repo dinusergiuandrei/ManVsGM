@@ -20,18 +20,28 @@ public class GameDetails{
     public GameDetails(){
     }
 
-    public void computeMoves(){
+    public void computeMoves(int index){
         Game game = new Game();
         //todo: fix :in fen, white has first two moves
         for(int moveCount = 0; moveCount < this.blackMovesString.size(); ++moveCount){
 
             String whiteMoveString = this.whiteMovesString.get(moveCount);
 
+//            if(Objects.equals("cxb6", whiteMoveString)){
+//                System.out.println("Wrong pawn");
+//            }
+
+            if(whiteMoveString.contains(" *") || whiteMoveString.length()<2){
+                //System.out.println("Contains *");
+                continue;
+            }
+
             Move whiteMove = game.getMove(whiteMoveString);
 
 
             if(whiteMove == null){
-                System.out.println("Could not recognize white move: "+this.whiteMovesString.get(moveCount));
+                System.out.println("Could not recognize white move: " + this.whiteMovesString.get(moveCount));
+                System.out.println("Game of player at index " + index);
                 //game.getTable().displayTable();
                 return;
             }
@@ -43,16 +53,23 @@ public class GameDetails{
 
             String blackMoveString = this.blackMovesString.get(moveCount);
 
+//            if(Objects.equals(blackMoveString, "Nxb4")){
+//                System.out.println("wrong knight at b4");
+//            }
 
 
+            if(blackMoveString.contains(" *") || blackMoveString.length()<2){
+                //System.out.println("Contains *");
+                continue;
+            }
 
             Move blackMove = game.getMove(blackMoveString);
 
 
-
             if(blackMove == null){
                 System.out.println("Could not recognize black move: " + blackMoveString);
-                //System.out.println(game.getPositions().get(game.getPositions().size()-1));
+                System.out.println("Game of player at index " + index);
+                System.out.println(game.getPositions().get(game.getPositions().size()-1));
                 return;
             }
 

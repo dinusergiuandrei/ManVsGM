@@ -235,10 +235,13 @@ public class SyntacticMoveValidator {
     private static Boolean isAttackedByKnightOfColor(Table table, Square square, Color color) {
         final Boolean[] response = new Boolean[1];
         Piece piece = null;
+        Piece pieceOp = null;
         if (color == Color.White) {
-            piece = Piece.whiteKnight;
-        } else if (color == Color.Black) {
             piece = Piece.blackKnight;
+            pieceOp = Piece.whiteKnight;
+        } else if (color == Color.Black) {
+            piece = Piece.whiteKnight;
+            pieceOp = Piece.blackKnight;
         }
 
         Piece aux = table.squareToPieceMap.get(square);
@@ -247,9 +250,10 @@ public class SyntacticMoveValidator {
 
         response[0] = false;
         Piece finalPiece = piece;
+        Piece finalPieceOp = pieceOp;
         SemanticMoveValidator.getLegalKnightMoves(table, square).forEach(
                 square1 -> {
-                    if (table.squareToPieceMap.get(square1) == finalPiece) {
+                    if (table.squareToPieceMap.get(square1.getEndSquare()) == finalPieceOp) {
                         response[0] = true;
                     }
                 }
@@ -263,21 +267,30 @@ public class SyntacticMoveValidator {
     private static Boolean isAttackedByBishopOfColor(Table table, Square square, Color color) {
         final Boolean[] response = new Boolean[1];
         Piece piece = null;
+        Piece pieceOp = null;
         if (color == Color.White) {
-            piece = Piece.whiteBishop;
-        } else if (color == Color.Black) {
             piece = Piece.blackBishop;
+            pieceOp = Piece.whiteBishop;
+        } else if (color == Color.Black) {
+            piece = Piece.whiteBishop;
+            pieceOp = Piece.blackBishop;
         }
+
+        Color otherColor = null;
+        if(color == Color.White)
+            otherColor = Color.Black;
+        else otherColor = Color.White;
 
         Piece aux = table.squareToPieceMap.get(square);
 
         table.squareToPieceMap.put(square, piece);
 
         response[0] = false;
-        Piece finalPiece = piece;
+        final Piece finalPiece = pieceOp;
+        Color finalOtherColor = otherColor;
         SemanticMoveValidator.getLegalBishopMoves(table, square).forEach(
-                square1 -> {
-                    if (table.squareToPieceMap.get(square1) == finalPiece) {
+                move -> {
+                    if (table.squareToPieceMap.get(move.getEndSquare()) == finalPiece) {
                         response[0] = true;
                     }
                 }
@@ -291,10 +304,13 @@ public class SyntacticMoveValidator {
     private static Boolean isAttackedByRookOfColor(Table table, Square square, Color color) {
         final Boolean[] response = new Boolean[1];
         Piece piece = null;
+        Piece pieceOp = null;
         if (color == Color.White) {
-            piece = Piece.whiteRook;
-        } else if (color == Color.Black) {
             piece = Piece.blackRook;
+            pieceOp = Piece.whiteRook;
+        } else if (color == Color.Black) {
+            piece = Piece.whiteRook;
+            pieceOp = Piece.blackRook;
         }
 
         Piece aux = table.squareToPieceMap.get(square);
@@ -303,9 +319,10 @@ public class SyntacticMoveValidator {
 
         response[0] = false;
         Piece finalPiece = piece;
+        Piece finalPieceOp = pieceOp;
         SemanticMoveValidator.getLegalRookMoves(table, square).forEach(
                 square1 -> {
-                    if (table.squareToPieceMap.get(square1) == finalPiece) {
+                    if (table.squareToPieceMap.get(square1.getEndSquare()) == finalPieceOp) {
                         response[0] = true;
                     }
                 }
@@ -319,10 +336,13 @@ public class SyntacticMoveValidator {
     private static Boolean isAttackedByQueenOfColor(Table table, Square square, Color color) {
         final Boolean[] response = new Boolean[1];
         Piece piece = null;
+        Piece pieceOp = null;
         if (color == Color.White) {
-            piece = Piece.whiteQueen;
-        } else if (color == Color.Black) {
             piece = Piece.blackQueen;
+            pieceOp = Piece.whiteQueen;
+        } else if (color == Color.Black) {
+            piece = Piece.whiteQueen;
+            pieceOp = Piece.blackQueen;
         }
 
         Piece aux = table.squareToPieceMap.get(square);
@@ -331,9 +351,10 @@ public class SyntacticMoveValidator {
 
         response[0] = false;
         Piece finalPiece = piece;
+        Piece finalPieceOp = pieceOp;
         SemanticMoveValidator.getLegalQueenMoves(table, square).forEach(
                 square1 -> {
-                    if (table.squareToPieceMap.get(square1) == finalPiece) {
+                    if (table.squareToPieceMap.get(square1.getEndSquare()) == finalPieceOp) {
                         response[0] = true;
                     }
                 }
@@ -348,10 +369,13 @@ public class SyntacticMoveValidator {
     private static Boolean isAttackedByKingOfColor(Table table, Square square, Color color) {
         final Boolean[] response = new Boolean[1];
         Piece piece = null;
+        Piece pieceOp = null;
         if (color == Color.White) {
-            piece = Piece.whiteKing;
-        } else if (color == Color.Black) {
             piece = Piece.blackKing;
+            pieceOp = Piece.whiteKing;
+        } else if (color == Color.Black) {
+            piece = Piece.whiteKing;
+            pieceOp = Piece.blackKing;
         }
 
         Piece aux = table.squareToPieceMap.get(square);
@@ -360,9 +384,10 @@ public class SyntacticMoveValidator {
 
         response[0] = false;
         Piece finalPiece = piece;
+        Piece finalPieceOp = pieceOp;
         SemanticMoveValidator.getLegalKingMoves(table, square).forEach(
                 square1 -> {
-                    if (table.squareToPieceMap.get(square1) == finalPiece) {
+                    if (table.squareToPieceMap.get(square1.getEndSquare()) == finalPieceOp) {
                         response[0] = true;
                     }
                 }
@@ -374,31 +399,29 @@ public class SyntacticMoveValidator {
     }
 
     private static Boolean isAttackedByPawnOfColor(Table table, Square square, Color color) {
-        final Boolean[] response = new Boolean[1];
-        Piece piece = null;
-        if (color == Color.White) {
-            piece = Piece.whitePawn;
-        } else if (color == Color.Black) {
-            piece = Piece.blackPawn;
+        int direction = 0;
+        if(color == Color.White)
+            direction = -1;
+        if(color == Color.Black)
+            direction = 1;
+        Square startSquare;
+
+        Piece pieceOp;
+        if(color == Color.White)
+            pieceOp = Piece.whitePawn;
+        else pieceOp = Piece.blackPawn;
+
+        startSquare = getSquare(square.getColumn() + 1, square.getLine()+direction);
+        if(startSquare != null && table.getSquareToPieceMap().get(startSquare) == pieceOp){
+            return true;
         }
 
-        Piece aux = table.squareToPieceMap.get(square);
+        startSquare = getSquare(square.getColumn() - 1, square.getLine()+direction);
+        if(startSquare != null && table.getSquareToPieceMap().get(startSquare) == pieceOp){
+            return true;
+        }
 
-        table.squareToPieceMap.put(square, piece);
-
-        response[0] = false;
-        Piece finalPiece = piece;
-        SemanticMoveValidator.getLegalPawnMoves(table, square).forEach(
-                square1 -> {
-                    if (table.squareToPieceMap.get(square1) == finalPiece) {
-                        response[0] = true;
-                    }
-                }
-        );
-
-        table.squareToPieceMap.put(square, aux);
-
-        return response[0];
+        return false;
     }
 
 

@@ -55,6 +55,10 @@ public class SemanticMoveValidator {
         return candidateMoves;
     }
 
+//    public static List<Move> getLegalPawnCaptureMoves(Table table, Square startSquare){
+//
+//    }
+
     public static List<Move> getLegalPawnMoves(Table table, Square startSquare) {
         Color color = table.squareToPieceMap.get(startSquare).getColor();
         List<Move> possibleSquares = new LinkedList<>();
@@ -199,6 +203,10 @@ public class SemanticMoveValidator {
         if(game.getToMove() == Color.White)
             otherColor = Color.Black;
         else otherColor = Color.White;
+
+//        if(move.getStartSquare() == Square.a3 && move.getEndSquare() == Square.a4){
+//            System.out.println("not right");
+//        }
 
         Boolean ok = !SyntacticMoveValidator.hasKingAttacked(game.getTable(), otherColor);
         game.undo();
