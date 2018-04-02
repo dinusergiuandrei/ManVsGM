@@ -12,9 +12,10 @@ import Parser.PgnDatabaseReader;
 public class ManVsGM {
     public static String dataBasePath = "database/players";
     public static String dataBasePathAdams = "database/players/Adams.pgn";
+    public static String dataBasePathIvanchuk = "database/players/Ivanchuk.pgn";
 
     public static void main(String[] args) {
-        startGame();
+        parse();
     }
 
     public static void startGame() {
@@ -31,7 +32,7 @@ public class ManVsGM {
     }
 
     public static void parse() {
-        PgnDatabaseReader parser = new PgnDatabaseReader(dataBasePath);
+        PgnDatabaseReader parser = new PgnDatabaseReader(dataBasePathIvanchuk);
         parser.computePgnFilePaths();
         parser.parseDatabase();
         parser.getDatabase().computeAllGamesList();

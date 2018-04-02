@@ -462,7 +462,7 @@ public class Game {
 
     private String cleanMoveString(String moveString) {
         StringBuilder result = new StringBuilder();
-        String extraCharacters = "+:x= *";
+        String extraCharacters = "+:x= *#";
 
         int quoteStartIndex = moveString.indexOf('{');
         int quoteEndIndex = moveString.indexOf('}');

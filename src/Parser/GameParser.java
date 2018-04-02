@@ -115,6 +115,10 @@ public class GameParser {
 
     private List<String> getMovePairsString(String movesString) {
         List<String> movePairsStringList = new LinkedList<>();
+        //remove comments
+        //remove sidelines
+        movesString = removeComments(movesString);
+        movesString = removeSideLines(movesString);
         int currentMove = 1;
         String startToken = currentMove + ".";
         String endToken = (currentMove + 1) + ".";
@@ -139,6 +143,28 @@ public class GameParser {
         return movePairsStringList;
     }
 
+    public String removeComments(String movesString){
+        while(movesString.contains("{")){
+            int startIndex = movesString.indexOf('{');
+            int endIndex = movesString.indexOf('}');
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(movesString.substring(0, startIndex));
+            stringBuilder.append(movesString.substring(endIndex+1));
+            movesString = stringBuilder.toString();
+        }
+        return movesString;
+    }
 
+    public String removeSideLines(String movesString){
+        while(movesString.contains("[")){
+            int startIndex = movesString.indexOf('[');
+            int endIndex = movesString.indexOf(']');
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(movesString.substring(0, startIndex));
+            stringBuilder.append(movesString.substring(endIndex+1));
+            movesString = stringBuilder.toString();
+        }
+        return movesString;
+    }
 
 }

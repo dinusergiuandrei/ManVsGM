@@ -5,6 +5,7 @@ import GameArchitecture.Move;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class GameDetails{
     public Map<String, String> tags;
@@ -36,15 +37,21 @@ public class GameDetails{
                 continue;
             }
 
+            if(moveCount == 63 && Objects.equals(whiteMoveString, "b4")
+                    && Objects.equals(this.tags.get("Date"), "2007.06.26") ){
+                System.out.println("stop here");
+            }
+
             Move whiteMove = game.getMove(whiteMoveString);
 
 
-            if(whiteMove == null){
-                System.out.println("Could not recognize white move: " + this.whiteMovesString.get(moveCount));
-                System.out.println("Game of player at index " + index);
-                //game.getTable().displayTable();
-                return;
-            }
+                if(whiteMove == null){
+                    System.out.println("Could not recognize white move: " + this.whiteMovesString.get(moveCount));
+                    System.out.println("Game of player at index " + index);
+                    //game.getTable().displayTable();
+                    return;
+                }
+
             this.whiteMoves.add(whiteMove);
             game.doMove(whiteMove);
 

@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class GameParserTest {
+
     GameParser gameParser;
 
     String[] gamesStrings;

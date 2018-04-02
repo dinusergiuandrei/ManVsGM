@@ -12,27 +12,32 @@ public class SyntacticMoveValidator {
 
     public static List<Move> getAllMoves(Square endSquare, int columnDifference[], int lineDifference[], Table.Range range) {
         List<Move> candidateMoves = new LinkedList<>();
-        if (range == Table.Range.CLOSE) {
-            for (int i = 0; i < columnDifference.length; ++i) {
-                int column = endSquare.getColumn() + columnDifference[i];
-                int line = endSquare.getLine() + lineDifference[i];
-                Square square = getSquare(column, line);
-                if (square == null)
-                    continue;
-                candidateMoves.add(new Move(square, endSquare));
-            }
-        }
-        if (range == Table.Range.DISTANCE) {
-            for (int i = 0; i < columnDifference.length; ++i) {
-                for (int distance = 1; ; ++distance) {
-                    int column = endSquare.getColumn() + distance * columnDifference[i];
-                    int line = endSquare.getLine() + distance * lineDifference[i];
+        try {
+            if (range == Table.Range.CLOSE) {
+                for (int i = 0; i < columnDifference.length; ++i) {
+                    int column = endSquare.getColumn() + columnDifference[i];
+                    int line = endSquare.getLine() + lineDifference[i];
                     Square square = getSquare(column, line);
                     if (square == null)
-                        break;
+                        continue;
                     candidateMoves.add(new Move(square, endSquare));
                 }
             }
+            if (range == Table.Range.DISTANCE) {
+                for (int i = 0; i < columnDifference.length; ++i) {
+                    for (int distance = 1; ; ++distance) {
+                        int column = endSquare.getColumn() + distance * columnDifference[i];
+                        int line = endSquare.getLine() + distance * lineDifference[i];
+                        Square square = getSquare(column, line);
+                        if (square == null)
+                            break;
+                        candidateMoves.add(new Move(square, endSquare));
+                    }
+                }
+            }
+        }
+        catch (NullPointerException e){
+            System.err.println(e.getMessage());
         }
         return candidateMoves;
     }
@@ -277,7 +282,7 @@ public class SyntacticMoveValidator {
         }
 
         Color otherColor = null;
-        if(color == Color.White)
+        if (color == Color.White)
             otherColor = Color.Black;
         else otherColor = Color.White;
 
@@ -400,24 +405,24 @@ public class SyntacticMoveValidator {
 
     private static Boolean isAttackedByPawnOfColor(Table table, Square square, Color color) {
         int direction = 0;
-        if(color == Color.White)
+        if (color == Color.White)
             direction = -1;
-        if(color == Color.Black)
+        if (color == Color.Black)
             direction = 1;
         Square startSquare;
 
         Piece pieceOp;
-        if(color == Color.White)
+        if (color == Color.White)
             pieceOp = Piece.whitePawn;
         else pieceOp = Piece.blackPawn;
 
-        startSquare = getSquare(square.getColumn() + 1, square.getLine()+direction);
-        if(startSquare != null && table.getSquareToPieceMap().get(startSquare) == pieceOp){
+        startSquare = getSquare(square.getColumn() + 1, square.getLine() + direction);
+        if (startSquare != null && table.getSquareToPieceMap().get(startSquare) == pieceOp) {
             return true;
         }
 
-        startSquare = getSquare(square.getColumn() - 1, square.getLine()+direction);
-        if(startSquare != null && table.getSquareToPieceMap().get(startSquare) == pieceOp){
+        startSquare = getSquare(square.getColumn() - 1, square.getLine() + direction);
+        if (startSquare != null && table.getSquareToPieceMap().get(startSquare) == pieceOp) {
             return true;
         }
 

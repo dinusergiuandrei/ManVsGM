@@ -13,7 +13,8 @@ public class PgnDatabaseReader {
         this.separators = separators;
     }
 
-    String[] separators = {" 1-0\n", " 1/2-1/2\n", " 0-1\n", "\n\n"};
+    String[] separators = {" 1-0\n", " 1/2-1/2\n", " 0-1\n", "\n\n", " *\n",
+    " 1-0\n\n", " 1/2-1/2\n", " 0-1\n\n", "\n\n\n", " *\n\n"};
 
     public GameDatabase getDatabase() {
         return database;
@@ -53,10 +54,12 @@ public class PgnDatabaseReader {
     public void parseDatabase() {
         pgnFilePaths.forEach(
                 path -> {
-                    PgnFileParser parser = new PgnFileParser();
-                    List<GameDetails> gamesDetails = parser.parseGames(path, separators);
-                    System.out.println(path);
-                    this.database.addPlayerToGamesPair(path, gamesDetails);
+                    if(Math.random() < 0.5) {
+                        PgnFileParser parser = new PgnFileParser();
+                        List<GameDetails> gamesDetails = parser.parseGames(path, separators);
+                        System.out.println(path);
+                        this.database.addPlayerToGamesPair(path, gamesDetails);
+                    }
                 }
         );
     }

@@ -16,9 +16,6 @@ public class GameDatabase {
 
     private List<Player> players = new LinkedList<>();
 
-    public List<GameDetails> getAllGames() {
-        return allGames;
-    }
 
     GameDatabase() {
     }
@@ -53,4 +50,9 @@ public class GameDatabase {
         this.players.add(newPlayer);
         return newPlayer;
     }
+
+    public List<GameDetails> getAllGames() {
+        return allGames;
+    }
+
 }
