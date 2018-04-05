@@ -13,4 +13,10 @@ public enum Color {
     public String getName() {
         return name;
     }
+
+    public Color getOtherColor() {
+        if(this == White)
+            return Black;
+        else return White;
+    }
 }

@@ -21,7 +21,7 @@ public class PgnFileParserTest {
     @Test
     public void parseGamesTest() {
 
-        String[] separators = {" 1-0\n", " 1/2-1/2\n", " 0-1\n", "\n\n"};
+        String[] separators = PgnDatabaseReader.getSeparators();
         List<GameDetails> games = pgnFileParser.parseGames(filePath, separators);
 
         Assert.assertNotEquals(games, null);

@@ -18,7 +18,7 @@ public class Table {
 
     private Integer halfMovesSinceProgress = 0;
 
-    private Integer fullMoveNumber = 1;
+    private Integer fullMoveNumber = 0;
 
     public void setUpPieces() {
         squareToPieceMap.put(Square.a1, Piece.whiteRook);
@@ -76,32 +76,7 @@ public class Table {
         }
     }
 
-    public void updatePossibleMoves(Square startSquare, Square endSquare) {
-        Piece piece = this.squareToPieceMap.get(startSquare);
-
-        if (piece == Piece.whiteKing) {
-            possibleWhiteShortCastle = false;
-            possibleWhiteLongCastle = false;
-        }
-        if (piece == Piece.blackKing) {
-            possibleBlackShortCastle = false;
-            possibleBlackLongCastle = false;
-        }
-        if (piece == Piece.whiteRook && startSquare.getLine() == 1 && startSquare.getColumn() == 'h') {
-            possibleWhiteShortCastle = false;
-        }
-        if (piece == Piece.whiteRook && startSquare.getLine() == 1 && startSquare.getColumn() == 'a') {
-            possibleWhiteLongCastle = false;
-        }
-        if (piece == Piece.blackRook && startSquare.getLine() == 8 && startSquare.getColumn() == 'h') {
-            possibleBlackShortCastle = false;
-        }
-        if (piece == Piece.blackRook && startSquare.getLine() == 8 && startSquare.getColumn() == 'a') {
-            possibleBlackLongCastle = false;
-        }
-    }
-
-    public static Table computeTableFromFEN(String fen){
+    public static Table computeTableFromFen(String fen){
         Table table = new Table();
 
         String[] splitResult = fen.split(" ");
@@ -180,7 +155,7 @@ public class Table {
         return table;
     }
 
-    public static String computeFENFromTable(Table table){
+    public static String computeFenFromTable(Table table){
         StringBuilder fen = new StringBuilder();
         for(int line = 8; line>=1; --line){
             int length = 0;

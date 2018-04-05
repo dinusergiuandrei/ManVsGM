@@ -18,7 +18,7 @@ public class TableTest {
 
 
         fens.forEach(
-                fen -> Assert.assertEquals(fen, Table.computeFENFromTable(Table.computeTableFromFEN(fen)))
+                fen -> Assert.assertEquals(fen, Table.computeFenFromTable(Table.computeTableFromFen(fen)))
         );
 
     }

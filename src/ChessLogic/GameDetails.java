@@ -23,7 +23,7 @@ public class GameDetails{
 
     public void computeMoves(int index){
         Game game = new Game();
-        //todo: fix :in fen, white has first two moves
+
         for(int moveCount = 0; moveCount < this.blackMovesString.size(); ++moveCount){
 
             String whiteMoveString = this.whiteMovesString.get(moveCount);
@@ -46,7 +46,10 @@ public class GameDetails{
 
 
                 if(whiteMove == null){
-                    System.out.println("Could not recognize white move: " + this.whiteMovesString.get(moveCount));
+                    System.out.println("Could not recognize white move: " + whiteMoveString);
+                    if(Objects.equals(whiteMoveString, "exf6")){
+                        System.out.println("Stop at exf6");
+                    }
                     System.out.println("Game of player at index " + index);
                     //game.getTable().displayTable();
                     return;

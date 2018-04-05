@@ -1,7 +1,11 @@
 import ChessLogic.Game;
+import GameArchitecture.Move;
 import GameArchitecture.Player;
 import MoveGenerator.TerminalMoveGenerator;
 import Parser.PgnDatabaseReader;
+
+import java.util.LinkedList;
+import java.util.List;
 
 //todo: fix parser error (2020 detected games out of 3018) ( Adams.pgn )
 //todo: fix parser (moves with comments are bad) example : " he can still obtain equality.
@@ -15,7 +19,7 @@ public class ManVsGM {
     public static String dataBasePathIvanchuk = "database/players/Ivanchuk.pgn";
 
     public static void main(String[] args) {
-        parse();
+        startGame();
     }
 
     public static void startGame() {
@@ -32,11 +36,12 @@ public class ManVsGM {
     }
 
     public static void parse() {
-        PgnDatabaseReader parser = new PgnDatabaseReader(dataBasePathIvanchuk);
+        PgnDatabaseReader parser = new PgnDatabaseReader(dataBasePathAdams);
         parser.computePgnFilePaths();
         parser.parseDatabase();
         parser.getDatabase().computeAllGamesList();
 
+// this is replaced by the follow for. (useful for debug)
 //        parser.getDatabase().getAllGames().forEach(
 //                GameDetails::computeMoves
 //        );
@@ -48,7 +53,6 @@ public class ManVsGM {
         total = parser.getDatabase().getAllGames().size();
         for (int i = 0; i < parser.getDatabase().getAllGames().size(); i++) {
             //System.out.println(i);
-            //if(i==1672) 77410 157346 176009 180705 219440
             parser.getDatabase().getAllGames().get(i).computeMoves(i);
 
             if(i%10000 == 0) {

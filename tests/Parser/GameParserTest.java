@@ -17,9 +17,12 @@ public class GameParserTest {
     @Before
     public void setUp(){
         PgnFileParser fileParser = new PgnFileParser();
+        String path = "database/players/Adams.pgn";
+
         gameParser = new GameParser();
-        String[] separators = {" 1-0\n", " 1/2-1/2\n", " 0-1\n", "\n\n"};
-        gamesStrings = fileParser.getGamesString(fileParser.getFileString("database/players/Adams.pgn"), separators);
+        String[] separators = PgnDatabaseReader.getSeparators();
+        gamesStrings = fileParser.getGamesString(fileParser.getFileString(path), separators);
+
     }
 
     @Test
@@ -29,5 +32,30 @@ public class GameParserTest {
             games.add(gameParser.parseGame(game));
         }
         Assert.assertNotEquals(0, games.size());
+
+        games.forEach(
+                game -> {
+                    Assert.assertNotEquals(0, game.tags.size());
+                    Assert.assertEquals(true, game.whiteMovesString.size()>=game.blackMovesString.size());
+                    game.whiteMovesString.forEach(
+                            move -> {
+                                Assert.assertEquals(true, isValidMove(move));
+                            }
+                    );
+                    game.blackMovesString.forEach(
+                            move -> {
+                                Assert.assertEquals(true, isValidMove(move));
+                            }
+                    );
+                }
+        );
+    }
+
+    private Boolean isValidMove(String moveString){
+        if(moveString.length()<2)
+            return false;
+        if(moveString.contains(" "))
+            return false;
+        return true;
     }
 }
