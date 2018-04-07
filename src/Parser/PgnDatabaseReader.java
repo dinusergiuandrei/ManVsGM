@@ -13,8 +13,10 @@ public class PgnDatabaseReader {
         this.separators = separators;
     }
 
-    static String[] separators = {" 1-0\n", " 1/2-1/2\n", " 0-1\n", "\n\n", " *\n"};
+    static String[] separators = {" 1-0\\n", " 1/2-1/2\\n", " 0-1\\n", "\\n\\n", " \\*\\n"};
           //  " 1-0\n\n", " 1/2-1/2\n", " 0-1\n\n", "\n\n\n", " *\n\n"};
+
+    public Integer totalMoveCount = 0;
 
     public static String[] getSeparators() {
         return separators;
@@ -55,14 +57,21 @@ public class PgnDatabaseReader {
         }
     }
 
-    public void parseDatabase() {
+    public void parseDatabase(double percent) {
         pgnFilePaths.forEach(
                 path -> {
-                    PgnFileParser parser = new PgnFileParser();
-                    List<GameDetails> gamesDetails = parser.parseGames(path, separators);
-                    System.out.println(path);
-                    this.database.addPlayerToGamesPair(path, gamesDetails);
-
+                    if(Math.random() < percent) {
+                        PgnFileParser parser = new PgnFileParser();
+                        List<GameDetails> gamesDetails = parser.parseGames(path, separators);
+                        gamesDetails.forEach(
+                                gameDetails -> {
+                                    totalMoveCount += gameDetails.whiteMovesString.size();
+                                    totalMoveCount += gameDetails.blackMovesString.size();
+                                }
+                        );
+                        System.out.println(path);
+                        this.database.addPlayerToGamesPair(path, gamesDetails);
+                    }
                 }
         );
     }

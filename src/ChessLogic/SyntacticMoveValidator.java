@@ -391,8 +391,8 @@ public class SyntacticMoveValidator {
         Piece finalPiece = piece;
         Piece finalPieceOp = pieceOp;
         SemanticMoveValidator.getLegalKingMoves(table, square).forEach(
-                square1 -> {
-                    if (table.squareToPieceMap.get(square1.getEndSquare()) == finalPieceOp) {
+                move1 -> {
+                    if (table.squareToPieceMap.get(move1.getEndSquare()) == finalPieceOp) {
                         response[0] = true;
                     }
                 }

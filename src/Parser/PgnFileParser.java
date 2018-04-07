@@ -88,15 +88,21 @@ public class PgnFileParser {
     }
 
     public String[] getGamesString(String fileString, String[] separators){
-        StringBuilder regExp = new StringBuilder();
-        regExp.append("\"");
+        StringBuilder regExpBuilder = new StringBuilder();
+        regExpBuilder.append("\"");
         for (int i = 0; i < separators.length; i++) {
-            regExp.append("(").append(separators[i]).append(")");
+            regExpBuilder.append("(").append(separators[i]).append(")");
             if(i<separators.length-1)
-                regExp.append("|");
+                regExpBuilder.append("|");
         }
-        regExp.append("\"");
-        return fileString.split(regExp.toString());
+        regExpBuilder.append("\"");
+        String regExp = regExpBuilder.toString();
+
+        //System.out.println(regExp);
+
+        regExp = "( 1-0\\n)|( 1/2-1/2\\n)|( 0-1\\n)|( \\*\\n)|(\\n\\n)";
+
+        return fileString.split(regExp);
     }
 
 }

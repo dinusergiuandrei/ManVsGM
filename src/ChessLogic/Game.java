@@ -70,7 +70,6 @@ public class Game {
     public void doMove(Move move) {
         updateMetadata(move);
 
-
         Boolean enPassant = handleEnPassant(move);
 
         Boolean castles = handleCastles(move);
@@ -104,8 +103,12 @@ public class Game {
 
         Move move = getMoveWithoutPawnPromotion(moveString);
 
-        move.setPieceAfterPromotion(getPieceAfterPawnPromotion(moveString, move));
-
+        try {
+            move.setPieceAfterPromotion(getPieceAfterPawnPromotion(moveString, move));
+        }
+        catch (NullPointerException e){
+            System.out.println(e.getMessage());
+        }
         return move;
     }
 
@@ -652,6 +655,40 @@ public class Game {
         if (this.table.squareToPieceMap.get(move.getStartSquare()).getColor() == Color.Black) {
             this.table.setFullMoveNumber(this.table.getFullMoveNumber() + 1);
         }
+
+        if(this.table.squareToPieceMap.get(move.getStartSquare()) == whiteKing){
+            this.table.setPossibleWhiteShortCastle(false);
+            this.table.setPossibleWhiteLongCastle(false);
+        }
+
+        if(this.table.squareToPieceMap.get(move.getStartSquare()) == blackKing){
+            this.table.setPossibleBlackShortCastle(false);
+            this.table.setPossibleBlackLongCastle(false);
+        }
+
+        Piece movedPiece = this.table.squareToPieceMap.get(move.getStartSquare());
+
+        if(move.getStartSquare() == Square.h1 && movedPiece == whiteRook){
+            this.table.setPossibleWhiteShortCastle(false);
+        }
+        if(move.getStartSquare() == Square.a1 && movedPiece == whiteRook){
+            this.table.setPossibleWhiteLongCastle(false);
+        }
+        if(move.getStartSquare() == Square.e1 && movedPiece == whiteKing){
+            this.table.setPossibleWhiteShortCastle(false);
+            this.table.setPossibleWhiteLongCastle(false);
+        }
+        if(move.getStartSquare() == Square.h8 && movedPiece == blackRook){
+            this.table.setPossibleBlackShortCastle(false);
+        }
+        if(move.getStartSquare() == Square.a8 && movedPiece == blackRook){
+            this.table.setPossibleBlackLongCastle(false);
+        }
+        if(move.getStartSquare() == Square.e8 && movedPiece == blackKing){
+            this.table.setPossibleBlackShortCastle(false);
+        }
+
+
 
         Square enPassantTargetSquare = getEnPassantTargetSquare(move);
         this.table.setEnPassantTargetSquare(enPassantTargetSquare);

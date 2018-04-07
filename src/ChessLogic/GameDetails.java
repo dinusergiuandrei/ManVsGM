@@ -21,7 +21,7 @@ public class GameDetails{
     public GameDetails(){
     }
 
-    public void computeMoves(int index){
+    public void computeMoves(){
         Game game = new Game();
 
         for(int moveCount = 0; moveCount < this.blackMovesString.size(); ++moveCount){
@@ -37,11 +37,6 @@ public class GameDetails{
                 continue;
             }
 
-            if(moveCount == 63 && Objects.equals(whiteMoveString, "b4")
-                    && Objects.equals(this.tags.get("Date"), "2007.06.26") ){
-                System.out.println("stop here");
-            }
-
             Move whiteMove = game.getMove(whiteMoveString);
 
 
@@ -50,7 +45,6 @@ public class GameDetails{
                     if(Objects.equals(whiteMoveString, "exf6")){
                         System.out.println("Stop at exf6");
                     }
-                    System.out.println("Game of player at index " + index);
                     //game.getTable().displayTable();
                     return;
                 }
@@ -73,12 +67,12 @@ public class GameDetails{
                 continue;
             }
 
+
             Move blackMove = game.getMove(blackMoveString);
 
 
             if(blackMove == null){
                 System.out.println("Could not recognize black move: " + blackMoveString);
-                System.out.println("Game of player at index " + index);
                 System.out.println(game.getPositions().get(game.getPositions().size()-1));
                 return;
             }

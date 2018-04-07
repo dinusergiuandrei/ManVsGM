@@ -14,7 +14,7 @@ public class PgnFileParserTest {
 
     @Before
     public void setUp(){
-        filePath = "database/players/Adams.pgn";
+        filePath = "database/test/test.pgn";
         pgnFileParser = new PgnFileParser();
     }
 
@@ -45,5 +45,14 @@ public class PgnFileParserTest {
 
         Assert.assertNotEquals(null, fileString);
 
+    }
+
+    @Test
+    public void getGamesStringTest(){
+        String fileString = pgnFileParser.getFileString(filePath);
+
+        String[] gamesStrings = pgnFileParser.getGamesString(fileString, PgnDatabaseReader.getSeparators());
+
+        Assert.assertEquals(10, gamesStrings.length);
     }
 }
