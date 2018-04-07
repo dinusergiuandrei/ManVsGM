@@ -46,7 +46,7 @@ public class Player {
         while (!madeMove) {
             Move move = moveGenerator.getMove();
             if (move != null) {
-                if (game.canMove(move)) {
+                if (game.getTable().canMove(move)) {
                     game.doMove(move);
                     game.getTable().displayTable();
                     madeMove = true;

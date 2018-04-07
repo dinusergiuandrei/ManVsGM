@@ -44,7 +44,7 @@ public class TerminalMoveGenerator implements MoveGenerator {
 
     private Move getSimpleMoveFromTerminal(Game game) throws Exception {
         System.out.print("Simple move : ");
-        return game.getMove(scanner.nextLine());
+        return game.getTable().getMove(scanner.nextLine());
     }
 
 }

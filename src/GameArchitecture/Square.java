@@ -1,5 +1,7 @@
 package GameArchitecture;
 
+import java.util.Objects;
+
 public enum Square {
 
     a8("a8", 'a', 8), b8("b8", 'b', 8), c8("c8", 'c', 8), d8("d8", 'd', 8), e8("e8", 'e', 8), f8("f8", 'f', 8), g8("g8", 'g', 8), h8("h8", 'h', 8),
@@ -33,6 +35,14 @@ public enum Square {
         this.name=name;
         this.column=column;
         this.line=line;
+    }
+
+    public static Square getSquareByName(String squareName) {
+        for (Square square : Square.values()) {
+            if (Objects.equals(squareName, square.getName()))
+                return square;
+        }
+        return null;
     }
 
     @Override

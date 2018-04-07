@@ -213,23 +213,25 @@ public class SemanticMoveValidator {
         return getLegalMoves(table, startSquare, columnDifference, lineDifference, Table.Range.CLOSE);
     }
 
-    public static Boolean isValidMoveSemantically(Game game, Move move) {
+    public static Boolean isValidMoveSemantically(Table table, Move move) {
 
-        if (!SyntacticMoveValidator.isValidMoveSyntactically(game.getTable(), move))
+
+        if (!SyntacticMoveValidator.isValidMoveSyntactically(table, move))
             return false;
 
-        List<Move> legalMoves = getLegalMoves(game.getTable(), move.getStartSquare());
+        List<Move> legalMoves = getLegalMoves(table, move.getStartSquare());
         if (!legalMoves.contains(move)) {
             return false;
         }
 
-        game.doMove(move);
+        Table analysisTable = table.getCopy();
+        analysisTable.doMove(move);
 //        if(move.getStartSquare() == getSquareByName('g', 7)){
 //            System.out.println("stop");
 //        }
 
         Color otherColor;
-        if (game.getToMove() == Color.White)
+        if (analysisTable.getToMove() == Color.White)
             otherColor = Color.Black;
         else otherColor = Color.White;
 
@@ -237,8 +239,8 @@ public class SemanticMoveValidator {
 //            System.out.println("not right");
 //        }
 
-        Boolean ok = !SyntacticMoveValidator.hasKingAttacked(game.getTable(), otherColor);
-        game.undo();
+        Boolean ok = !SyntacticMoveValidator.hasKingAttacked(analysisTable, otherColor);
+        //table.undo();
 
         return ok;
 

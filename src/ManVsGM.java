@@ -1,25 +1,27 @@
 import ChessLogic.Game;
 import GameArchitecture.Player;
+import MoveGenerator.GeneticAlgorithm.GeneticAlgorithm;
+import MoveGenerator.GeneticAlgorithm.GeneticAlgorithmParameters;
 import MoveGenerator.TerminalMoveGenerator;
 import Parser.PgnDatabaseReader;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-
-//todo: fix parser error (2020 detected games out of 3018) ( Adams.pgn )
 
 public class ManVsGM {
-    public static String dataBasePath = "database/players";
-    public static String dataBasePathOpenings = "database/openings";
-    public static String dataBasePathAdams = "database/players/Adams.pgn";
-    public static String dataBasePathIvanchuk = "database/players/Ivanchuk.pgn";
-    public static String dataBasePathSeirawan = "database/players/Seirawan.pgn";
-
-    public static Double dataBaseLoadPercent = 0.3;
-
+    private static ApplicationParameters params = new ApplicationParameters();
 
     public static void main(String[] args) {
-        parse(dataBasePath, dataBaseLoadPercent, true);
+        parse(params.dataBasePathAdams, params.dataBaseLoadPercent, true);
+        GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(
+                new GeneticAlgorithmParameters(
+                        params.populationSize,
+                        params.mutationRate,
+                        params.crossOverRate,
+                        params.iterations,
+                        params.runs
+                        )
+        );
+        geneticAlgorithm.learnFrom(params.dataSet, params.minMoveMatchPercent);
     }
 
     public static void startGame() {
@@ -36,38 +38,40 @@ public class ManVsGM {
     }
 
     public static void parse(String dataBasePath, double databaseLoadPercent, Boolean verbose) {
-        int total;
 
-        PgnDatabaseReader parser = new PgnDatabaseReader(dataBasePath);
-        parser.computePgnFilePaths();
-        parser.parseDatabase(databaseLoadPercent);
-        parser.getDatabase().computeAllGamesList();
+        PgnDatabaseReader databaseReader = new PgnDatabaseReader(dataBasePath);
+        databaseReader.computePgnFilePaths();
+        databaseReader.parseDatabase(databaseLoadPercent);
+        databaseReader.getDatabase().computeAllGamesList();
 
-        if(verbose) {
-            System.out.println("Parsing " + parser.getDatabase().getAllGames().size() + " games, with " +
-                    parser.totalMoveCount + " moves. ( " +
-                    parser.totalMoveCount * 1.0 / parser.getDatabase().getAllGames().size() * 1.0
+        if (verbose) {
+            System.out.println("Parsing " + databaseReader.getDatabase().getAllGames().size() + " games, with " +
+                    databaseReader.getTotalMoveCount() + " moves. ( " +
+                    databaseReader.getTotalMoveCount() * 1.0 / databaseReader.getDatabase().getAllGames().size() * 1.0 / 2.0
                     + " avarage moves per game. )");
         }
 
         AtomicInteger index = new AtomicInteger();
-        total = parser.getDatabase().getAllGames().size();
 
-        parser.getDatabase().getAllGames().forEach(
+        Integer gamesCount = databaseReader.getDatabase().getGamesCount();
+
+        databaseReader.getDatabase().getAllGames().forEach(
                 game -> {
                     game.computeMoves();
-                    if(verbose) {
-                        displayDetails(index.get(), total);
+                    if (verbose) {
+                        displayDetails(index.get(), gamesCount);
                         index.getAndIncrement();
                     }
                 }
 
         );
 
+        params.dataSet = databaseReader.getDatabase().computePositionToMoveMap();
+
         System.out.println("Parsing successful");
     }
 
-    private static void displayDetails(int index, int total){
+    private static void displayDetails(int index, int total) {
         double over;
         if (index % (total / 20) == 0) {
             over = 20.0 * (index * 1.0 / total * 1.0);

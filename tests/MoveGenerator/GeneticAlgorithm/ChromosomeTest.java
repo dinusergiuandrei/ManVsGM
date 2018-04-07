@@ -20,8 +20,8 @@ public class ChromosomeTest {
 
     @Test
     public void chromosomeTest(){
-        chromosome.getValues().add(-5.0);
-        chromosome.getValues().add(-11.58);
+        chromosome.getWeights().add(-5.0);
+        chromosome.getWeights().add(-11.58);
 
         Chromosome otherChromosome = Chromosome.computeChromosomeFromBits(
                 Chromosome.computeBitsFromChromosome(chromosome),
@@ -29,13 +29,13 @@ public class ChromosomeTest {
                 bitCount
         );
 
-        Assert.assertEquals(otherChromosome.getValues(), chromosome.getValues());
+        Assert.assertEquals(otherChromosome.getWeights(), chromosome.getWeights());
     }
 
     @Test
     public void valueTest(){
         Double expected = 5.0;
-        List<Integer> bits = Chromosome.computeBitsFromDouble(
+        List<Boolean> bits = Chromosome.computeBitsFromDouble(
                 5.0,
                 0.1,
                 8

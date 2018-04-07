@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * A chromosome can hold no more than Features.values().length values.
+ * A chromosome can hold no more than Features.weights().length weights.
  * (It can, but it makes no sense in the context of a genetic algorithm).
  * valueBitCount is the the number of bits each value is written on.
  * valueBitCount should be larger than ( (maxValue-minValue)/precision+1 ), or data loss occurs.
  */
 public class Chromosome {
-    private List<Double> values = new ArrayList<>(Features.values().length);
+    private List<Double> weights = new ArrayList<>(Features.values().length);
 
     private Double precision;
 
@@ -24,33 +24,76 @@ public class Chromosome {
         this.valueBitCount = valueBitCount;
     }
 
-    public static Chromosome computeChromosomeFromBits(List<Integer> bits, Double precision, Integer bitCount){
+    public void mutate(Double mutationRate){
+        Chromosome newChromosome;
+        List<Boolean> bits = computeBitsFromChromosome(this);
+        for(int i=0; i<bits.size(); ++i){
+            if(Math.random() < mutationRate){
+                bits.set(i, !bits.get(i));
+            }
+        }
+        newChromosome = computeChromosomeFromBits(bits, this.getPrecision(), this.getValueBitCount());
+        this.weights = newChromosome.getWeights();
+    }
+//
+//    public static Chromosome mutate(Chromosome chromosome, Integer position){
+//        List<Boolean> bits = computeBitsFromChromosome(chromosome);
+//        bits.set(position, !bits.get(position));
+//        return computeChromosomeFromBits(bits, chromosome.getPrecision(), chromosome.getValueBitCount());
+//    }
+
+    public static List<Chromosome> getChromosomesAfterCrossOver(
+            Chromosome parent1,
+            Chromosome parent2,
+            Integer cuttingPoint){
+        Double precision = parent1.getPrecision();
+        Integer bitCount = parent1.getValueBitCount();
+        List<Chromosome> chromosomes = new ArrayList<>();
+        List<Boolean> bitsFromParent1 = computeBitsFromChromosome(parent1);
+        List<Boolean> bitsFromParent2 = computeBitsFromChromosome(parent2);
+
+        List<Boolean> bitsForChild1 = bitsFromParent1.subList(0, cuttingPoint);
+        List<Boolean> bitsForChild2 = bitsFromParent2.subList(0, cuttingPoint);
+
+        bitsForChild1.addAll(bitsFromParent2.subList(cuttingPoint, bitsFromParent2.size()-1));
+        bitsForChild2.addAll(bitsFromParent1.subList(cuttingPoint, bitsFromParent1.size()-1));
+
+        Chromosome child1 = computeChromosomeFromBits(bitsForChild1, precision, bitCount);
+        Chromosome child2 = computeChromosomeFromBits(bitsForChild2, precision, bitCount);
+
+        chromosomes.add(child1);
+        chromosomes.add(child2);
+
+        return chromosomes;
+    }
+
+    public static Chromosome computeChromosomeFromBits(List<Boolean> bits, Double precision, Integer bitCount){
         Chromosome chromosome = new Chromosome(precision, bitCount);
         for(int i=0; i<Features.values().length; ++i){
-            List<Integer> bitValue = bits.subList(i*bitCount, (i+1)*bitCount);
-            chromosome.getValues().add(computeValueFromBits(bitValue, precision, bitCount));
+            List<Boolean> bitValue = bits.subList(i*bitCount, (i+1)*bitCount);
+            chromosome.getWeights().add(computeValueFromBits(bitValue, precision, bitCount));
         }
         return chromosome;
     }
 
-    public static Double computeValueFromBits(List<Integer> bits, Double precision, Integer bitCount){
+    public static Double computeValueFromBits(List<Boolean> bits, Double precision, Integer bitCount){
         Integer intValue = 0;
         Integer b = 1;
-        Integer sign = bits.get(0);
+        Boolean sign = bits.get(0);
         for(int i=1; i<bitCount; ++i){
-            intValue += b * bits.get(i);
+            intValue += b * getIntegerFromBoolean(bits.get(i));
             b *= 2;
         }
         Double value = intValue * precision;
-        if(sign == 0)
+        if(!sign)
             value *= -1;
         return value;
     }
 
-    public static List<Integer> computeBitsFromChromosome(Chromosome chromosome){
-        List<Integer> bits
+    public static List<Boolean> computeBitsFromChromosome(Chromosome chromosome){
+        List<Boolean> bits
                 = new ArrayList<>(Features.values().length * chromosome.getValueBitCount());
-        chromosome.getValues().forEach(
+        chromosome.getWeights().forEach(
                 value -> bits.addAll(
                         computeBitsFromDouble(
                                 value,
@@ -62,39 +105,42 @@ public class Chromosome {
         return bits;
     }
 
-    public static List<Integer> computeBitsFromDouble(Double x, Double precision, Integer bitCount){
-        List<Integer> bits = new ArrayList<>(bitCount);
-        Integer sign;
+    public static List<Boolean> computeBitsFromDouble(Double x, Double precision, Integer bitCount){
+        List<Boolean> bits = new ArrayList<>(bitCount);
+        Boolean sign;
         if(x<0) {
-            sign = 0;
+            sign = false;
             x = Math.abs(x);
         }
-        else sign = 1;
+        else sign = true;
 
         Integer value = (int) (x / precision);
 
         bits.add(sign);
         while(value>0){
-            bits.add(value%2);
+            bits.add(getBooleanFromInteger( value%2 ));
             value /= 2;
         }
-//        Integer aux;
-//        for(int i=0; i<bits.size()/2; ++i){
-//            aux = bits.get(i);
-//            bits.set(i, bits.get(bits.size()-i-1));
-//            bits.set(bits.size()-i-1, aux);
-//        }
 
         while(bits.size()<bitCount){
-            bits.add(0);
+            bits.add(false);
         }
         return bits;
     }
 
-    public List<Double> getValues() {
-        return values;
+    public static int getIntegerFromBoolean(boolean b){
+        if(b)
+            return 1;
+        return 0;
     }
 
+    public static boolean getBooleanFromInteger(int i){
+        return i != 0;
+    }
+
+    public List<Double> getWeights() {
+        return weights;
+    }
 
     public Double getPrecision() {
         return precision;
@@ -109,7 +155,7 @@ public class Chromosome {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Chromosome that = (Chromosome) o;
-        return Objects.equals(getValues(), that.getValues());
+        return Objects.equals(getWeights(), that.getWeights());
     }
 
 }

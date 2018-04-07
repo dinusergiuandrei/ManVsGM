@@ -1,34 +1,39 @@
 package MoveGenerator.GeneticAlgorithm;
-import ChessLogic.Game;
-import ChessLogic.GameDetails;
+import ChessLogic.DataSet;
 import GameArchitecture.Move;
 import MoveGenerator.MoveGenerator;
 
-import java.util.LinkedList;
-import java.util.List;
-
 public class GeneticAlgorithm implements MoveGenerator {
 
-    List<Individual> population = new LinkedList<>();
+    private Generation currentGeneration;
 
-    Integer populationSize;
+    private Evaluator evaluator;
 
-    Double mutationRate;
+    private GeneticAlgorithmParameters parameters;
 
-    Double crossOverRate;
-
-    public GeneticAlgorithm(Integer populationSize, Double mutationRate, Double crossOverRate) {
-        this.populationSize = populationSize;
-        this.mutationRate = mutationRate;
-        this.crossOverRate = crossOverRate;
+    public GeneticAlgorithm(GeneticAlgorithmParameters parameters) {
+        this.parameters = parameters;
+        this.currentGeneration = new Generation(
+                parameters.populationSize,
+                parameters.mutationRate,
+                parameters.crossOverRate
+        );
     }
 
-    public void learnFrom(List<Game> games, Double minMoveMatchPercent){
-
+    public void learnFrom(DataSet dataSet, Double minMoveMatchPercent){
+        for(int run = 0; run<this.parameters.runsCount; ++run) {
+            this.evaluator = new Evaluator(dataSet, minMoveMatchPercent);
+            currentGeneration.initialize();
+            for (int i = 0; i < this.parameters.iterationsCount; ++i) {
+                currentGeneration.applyMutations();
+                currentGeneration.selectNextGeneration();
+            }
+        }
     }
 
     @Override
     public Move getMove() {
         return null;
     }
+
 }
