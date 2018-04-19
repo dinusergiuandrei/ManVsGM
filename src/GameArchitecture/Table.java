@@ -6,11 +6,7 @@ import java.util.*;
 
 import static ChessLogic.SemanticMoveValidator.isValidMoveSemantically;
 import static ChessLogic.SyntacticMoveValidator.*;
-import static ChessLogic.SyntacticMoveValidator.getAllKnightMoves;
-import static ChessLogic.SyntacticMoveValidator.getAllPawnCaptureMoves;
 import static GameArchitecture.Piece.*;
-import static GameArchitecture.Piece.blackKing;
-import static GameArchitecture.Piece.whiteKing;
 
 public class Table {
 
@@ -99,6 +95,10 @@ public class Table {
                 squareToPieceMap.put(square, Piece.noPiece);
             }
         }
+    }
+
+    public static List<Table> computeAllPossibleFollowingPositions(Table table){
+        return null;
     }
 
     public void displayTable() {

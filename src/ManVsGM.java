@@ -1,30 +1,28 @@
+import ChessLogic.DataSet;
 import ChessLogic.Game;
 import GameArchitecture.Player;
 import MoveGenerator.GeneticAlgorithm.GeneticAlgorithm;
-import MoveGenerator.GeneticAlgorithm.GeneticAlgorithmParameters;
 import MoveGenerator.TerminalMoveGenerator;
 import Parser.PgnDatabaseReader;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ManVsGM {
+
+    private static DataSet dataSet = new DataSet();
     private static ApplicationParameters params = new ApplicationParameters();
 
     public static void main(String[] args) {
-        parse(params.dataBasePathAdams, params.dataBaseLoadPercent, true);
-        GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(
-                new GeneticAlgorithmParameters(
-                        params.populationSize,
-                        params.mutationRate,
-                        params.crossOverRate,
-                        params.iterations,
-                        params.runs
-                        )
-        );
-        geneticAlgorithm.learnFrom(params.dataSet, params.minMoveMatchPercent);
+        parse(params.getDataBasePathAdams(), params.getDataBaseLoadPercent(), params.getVerbose());
+        runGeneticAlgorithm(params);
     }
 
-    public static void startGame() {
+    private static void runGeneticAlgorithm(ApplicationParameters params){
+        GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm( params.computeGeneticAlgorithmParameters() );
+        geneticAlgorithm.learnFrom(dataSet, params.getMinMoveMatchPercent());
+    }
+
+    static void startGame() {
         int playerId = 0;
         Game game = new Game();
 
@@ -37,7 +35,7 @@ public class ManVsGM {
         game.start();
     }
 
-    public static void parse(String dataBasePath, double databaseLoadPercent, Boolean verbose) {
+    private static void parse(String dataBasePath, double databaseLoadPercent, Boolean verbose) {
 
         PgnDatabaseReader databaseReader = new PgnDatabaseReader(dataBasePath);
         databaseReader.computePgnFilePaths();
@@ -48,7 +46,7 @@ public class ManVsGM {
             System.out.println("Parsing " + databaseReader.getDatabase().getAllGames().size() + " games, with " +
                     databaseReader.getTotalMoveCount() + " moves. ( " +
                     databaseReader.getTotalMoveCount() * 1.0 / databaseReader.getDatabase().getAllGames().size() * 1.0 / 2.0
-                    + " avarage moves per game. )");
+                    + " average moves per game. )");
         }
 
         AtomicInteger index = new AtomicInteger();
@@ -66,7 +64,11 @@ public class ManVsGM {
 
         );
 
-        params.dataSet = databaseReader.getDatabase().computePositionToMoveMap();
+        dataSet = databaseReader.getDatabase().computePositionToMoveMap();
+        if(verbose) {
+            System.out.println("Updated data set with " + dataSet.getData().size() + " positions from "
+                    + databaseLoadPercent * 100.0 + " % of the games found at " + dataBasePath);
+        }
 
         System.out.println("Parsing successful");
     }

@@ -2,17 +2,27 @@ package MoveGenerator.GeneticAlgorithm;
 
 import GameArchitecture.Move;
 import GameArchitecture.Table;
-
-import java.util.List;
+import MoveGenerator.Functions;
 
 public class Individual {
     Chromosome chromosome;
 
-    public Double evaluate(Table table){
-        return 0.0;
+    public Individual(Double precision, Integer valueBitCount){
+        this.chromosome = new Chromosome(precision, valueBitCount);
+    }
+
+    public void setChromosome(Chromosome chromosome) {
+        this.chromosome = chromosome;
+    }
+
+    public static Individual computeRandomIndividual(Double precision, Integer valueBitCount, Functions function){
+        Individual individual = new Individual(precision, valueBitCount);
+        individual.getChromosome().setWeights(Weight.computeRandomWeights(function, precision, valueBitCount));
+        return individual;
     }
 
     public Move getMove(Table table){
+        //of all the possible next moves, choose the move that leads to best position
         return null;
     }
 

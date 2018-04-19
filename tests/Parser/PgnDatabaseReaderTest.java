@@ -15,6 +15,6 @@ public class PgnDatabaseReaderTest {
         parser.parseDatabase(databaseLoadPercent);
         parser.getDatabase().computeAllGamesList();
 
-        Assert.assertEquals(parser.getDatabase().getAllGames().size(), 10);
+        Assert.assertEquals(10, parser.getDatabase().getAllGames().size());
     }
 }

@@ -14,21 +14,29 @@ public class GeneticAlgorithm implements MoveGenerator {
     public GeneticAlgorithm(GeneticAlgorithmParameters parameters) {
         this.parameters = parameters;
         this.currentGeneration = new Generation(
-                parameters.populationSize,
-                parameters.mutationRate,
-                parameters.crossOverRate
+                parameters.getPopulationSize(),
+                parameters.getMutationRate(),
+                parameters.getCrossOverRate(),
+                parameters.getChromosomePrecision(),
+                parameters.getChromosomeValueBitCount(),
+                parameters.getFunction()
         );
     }
 
     public void learnFrom(DataSet dataSet, Double minMoveMatchPercent){
-        for(int run = 0; run<this.parameters.runsCount; ++run) {
-            this.evaluator = new Evaluator(dataSet, minMoveMatchPercent);
+        this.evaluator = new Evaluator(dataSet, minMoveMatchPercent, parameters.getFunction());
+        this.evaluator.computePositionFeaturesForAllPositions();
+        for(int run = 0; run<this.parameters.getRunsCount(); ++run) {
             currentGeneration.initialize();
-            for (int i = 0; i < this.parameters.iterationsCount; ++i) {
-                currentGeneration.applyMutations();
-                currentGeneration.selectNextGeneration();
+            for (int i = 0; i < this.parameters.getIterationsCount(); ++i) {
+                currentGeneration.applyGeneticOperators(this.evaluator);
+                currentGeneration.selectNextGeneration(this.evaluator);
             }
         }
+    }
+
+    public void displayResults(){
+
     }
 
     @Override

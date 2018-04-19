@@ -3,16 +3,13 @@ package Parser;
 import ChessLogic.DataSet;
 import ChessLogic.DataSetEntry;
 import ChessLogic.GameDetails;
-import GameArchitecture.Move;
 import GameArchitecture.Player;
 
-import javax.xml.crypto.Data;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class GameDatabase {
 
@@ -64,10 +61,10 @@ public class GameDatabase {
         this.allGames.forEach(
                 gameDetails -> {
                    for(int i=0; i<gameDetails.whiteMoves.size(); ++i){
-                       dataSet.data.add(new DataSetEntry(gameDetails.game.getPositions().get(2*i), gameDetails.whiteMoves.get(i)));
+                       dataSet.getData().add(new DataSetEntry(gameDetails.game.getPositions().get(2*i), gameDetails.whiteMoves.get(i)));
                    }
                    for(int j=0; j<gameDetails.blackMoves.size(); ++j){
-                       dataSet.data.add(new DataSetEntry(gameDetails.game.getPositions().get(2*j+1), gameDetails.blackMoves.get(j)));
+                       dataSet.getData().add(new DataSetEntry(gameDetails.game.getPositions().get(2*j+1), gameDetails.blackMoves.get(j)));
                    }
                 }
         );

@@ -1,6 +1,8 @@
 package MoveGenerator.GeneticAlgorithm;
 
-import MoveGenerator.Features;
+import ChessLogic.Features;
+import GameArchitecture.Table;
+import MoveGenerator.Functions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +15,7 @@ import java.util.Objects;
  * valueBitCount should be larger than ( (maxValue-minValue)/precision+1 ), or data loss occurs.
  */
 public class Chromosome {
-    private List<Double> weights = new ArrayList<>(Features.values().length);
+    private List<Weight> weights = new ArrayList<>(Features.values().length);
 
     private Double precision;
 
@@ -24,7 +26,15 @@ public class Chromosome {
         this.valueBitCount = valueBitCount;
     }
 
-    public void mutate(Double mutationRate){
+    public Double evaluate(Table table, Functions function){
+        List<Double> values = new ArrayList<>(0);
+        for (Features feature : Features.values()) {
+            values.add(feature.evaluate(table));
+        }
+        return function.evaluate(this.weights, values);
+    }
+
+    public void mutate(Double mutationRate, Double minValue, Double maxValue){
         Chromosome newChromosome;
         List<Boolean> bits = computeBitsFromChromosome(this);
         for(int i=0; i<bits.size(); ++i){
@@ -32,20 +42,17 @@ public class Chromosome {
                 bits.set(i, !bits.get(i));
             }
         }
-        newChromosome = computeChromosomeFromBits(bits, this.getPrecision(), this.getValueBitCount());
+        newChromosome = computeChromosomeFromBits(bits, this.getPrecision(), this.getValueBitCount(), minValue, maxValue);
+
         this.weights = newChromosome.getWeights();
     }
-//
-//    public static Chromosome mutate(Chromosome chromosome, Integer position){
-//        List<Boolean> bits = computeBitsFromChromosome(chromosome);
-//        bits.set(position, !bits.get(position));
-//        return computeChromosomeFromBits(bits, chromosome.getPrecision(), chromosome.getValueBitCount());
-//    }
 
     public static List<Chromosome> getChromosomesAfterCrossOver(
-            Chromosome parent1,
-            Chromosome parent2,
-            Integer cuttingPoint){
+            Chromosome parent1, Chromosome parent2,
+            Integer cuttingPoint,
+            Double minValue,
+            Double maxValue
+    ){
         Double precision = parent1.getPrecision();
         Integer bitCount = parent1.getValueBitCount();
         List<Chromosome> chromosomes = new ArrayList<>();
@@ -58,8 +65,8 @@ public class Chromosome {
         bitsForChild1.addAll(bitsFromParent2.subList(cuttingPoint, bitsFromParent2.size()-1));
         bitsForChild2.addAll(bitsFromParent1.subList(cuttingPoint, bitsFromParent1.size()-1));
 
-        Chromosome child1 = computeChromosomeFromBits(bitsForChild1, precision, bitCount);
-        Chromosome child2 = computeChromosomeFromBits(bitsForChild2, precision, bitCount);
+        Chromosome child1 = computeChromosomeFromBits(bitsForChild1, precision, bitCount, minValue, maxValue);
+        Chromosome child2 = computeChromosomeFromBits(bitsForChild2, precision, bitCount, minValue, maxValue);
 
         chromosomes.add(child1);
         chromosomes.add(child2);
@@ -67,78 +74,32 @@ public class Chromosome {
         return chromosomes;
     }
 
-    public static Chromosome computeChromosomeFromBits(List<Boolean> bits, Double precision, Integer bitCount){
+    public static Chromosome computeChromosomeFromBits(List<Boolean> bits, Double precision, Integer bitCount, Double minValue, Double maxValue){
         Chromosome chromosome = new Chromosome(precision, bitCount);
         for(int i=0; i<Features.values().length; ++i){
             List<Boolean> bitValue = bits.subList(i*bitCount, (i+1)*bitCount);
-            chromosome.getWeights().add(computeValueFromBits(bitValue, precision, bitCount));
+            chromosome.getWeights().add(Weight.computeWeightFromBits(bitValue, precision, bitCount, minValue, maxValue));
         }
         return chromosome;
     }
 
-    public static Double computeValueFromBits(List<Boolean> bits, Double precision, Integer bitCount){
-        Integer intValue = 0;
-        Integer b = 1;
-        Boolean sign = bits.get(0);
-        for(int i=1; i<bitCount; ++i){
-            intValue += b * getIntegerFromBoolean(bits.get(i));
-            b *= 2;
-        }
-        Double value = intValue * precision;
-        if(!sign)
-            value *= -1;
-        return value;
-    }
+
 
     public static List<Boolean> computeBitsFromChromosome(Chromosome chromosome){
+
         List<Boolean> bits
                 = new ArrayList<>(Features.values().length * chromosome.getValueBitCount());
         chromosome.getWeights().forEach(
                 value -> bits.addAll(
-                        computeBitsFromDouble(
-                                value,
-                                chromosome.getPrecision(),
-                                chromosome.getValueBitCount()
-                        )
+                        Weight.computeBitsFromWeight(value)
                 )
         );
         return bits;
     }
 
-    public static List<Boolean> computeBitsFromDouble(Double x, Double precision, Integer bitCount){
-        List<Boolean> bits = new ArrayList<>(bitCount);
-        Boolean sign;
-        if(x<0) {
-            sign = false;
-            x = Math.abs(x);
-        }
-        else sign = true;
 
-        Integer value = (int) (x / precision);
 
-        bits.add(sign);
-        while(value>0){
-            bits.add(getBooleanFromInteger( value%2 ));
-            value /= 2;
-        }
-
-        while(bits.size()<bitCount){
-            bits.add(false);
-        }
-        return bits;
-    }
-
-    public static int getIntegerFromBoolean(boolean b){
-        if(b)
-            return 1;
-        return 0;
-    }
-
-    public static boolean getBooleanFromInteger(int i){
-        return i != 0;
-    }
-
-    public List<Double> getWeights() {
+    public List<Weight> getWeights() {
         return weights;
     }
 
@@ -148,6 +109,11 @@ public class Chromosome {
 
     public Integer getValueBitCount() {
         return valueBitCount;
+    }
+
+
+    public void setWeights(List<Weight> weights) {
+        this.weights = weights;
     }
 
     @Override
