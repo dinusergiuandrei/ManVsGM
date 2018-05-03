@@ -5,7 +5,7 @@ import MoveGenerator.GeneticAlgorithm.Weight;
 import java.util.List;
 
 public enum Functions {
-    LinearCombination (-10.0, 10.0);
+    LinearCombination (0.0, 1.0);
 
     Double minValue;
 

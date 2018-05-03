@@ -12,14 +12,14 @@ import java.util.Set;
 public class DataSet {
     private Set<DataSetEntry> data = new LinkedHashSet<>();
 
-    private Map<String, Map<Features, Double>> dataSetEntryToFeaturesValuesMap = new LinkedHashMap<>();
+    private Map<String, Map<Features, Double>> fenToFeaturesValuesMap = new LinkedHashMap<>();
 
     public Set<DataSetEntry> getData() {
         return data;
     }
 
-    public Map<String, Map<Features, Double>> getDataSetEntryToFeaturesValuesMap() {
-        return dataSetEntryToFeaturesValuesMap;
+    public Map<String, Map<Features, Double>> getFenToFeaturesValuesMap() {
+        return fenToFeaturesValuesMap;
     }
 
 }

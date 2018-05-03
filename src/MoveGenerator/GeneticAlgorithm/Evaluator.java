@@ -5,9 +5,11 @@ import ChessLogic.Features;
 import GameArchitecture.Move;
 import GameArchitecture.Table;
 import MoveGenerator.Functions;
+import com.sun.org.apache.xalan.internal.utils.FeatureManager;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -18,13 +20,13 @@ public class Evaluator {
 
     Functions function;
 
-    public Evaluator(DataSet dataSet, Double minMoveMatchPercent, Functions function){
+    public Evaluator(DataSet dataSet, Double minMoveMatchPercent, Functions function) {
         this.dataSet = dataSet;
         this.minMoveMatchPercent = minMoveMatchPercent;
         this.function = function;
     }
 
-    public Double evaluateIndividual(Individual individual){
+    public Double evaluateIndividual(Individual individual) {
         Double score;
         AtomicReference<Double> matchingMoves = new AtomicReference<>(0.0);
         AtomicReference<Double> totalMoves = new AtomicReference<>(0.0);
@@ -33,7 +35,7 @@ public class Evaluator {
                     String position = dataSetEntry.getPosition();
                     Move expectedMove = dataSetEntry.getMove();
                     Move realMove = individual.getMove(Table.computeTableFromFen(position));
-                    if(realMove == expectedMove){
+                    if (realMove == expectedMove) {
                         matchingMoves.getAndSet(matchingMoves.get() + 1);
                     }
                     totalMoves.getAndSet(totalMoves.get() + 1);
@@ -43,18 +45,32 @@ public class Evaluator {
         return score;
     }
 
-    public Double computeIndividualsEvaluationOfPosition(Individual individual, Table table){
+    public Double computeIndividualsEvaluationOfPosition(Individual individual, Table table) {
+        List<Weight> weights = individual.getChromosome().getWeights();
+        String fen = Table.computeFenFromTable(table);
+        List<Double> positionFeatures;
+        if(this.dataSet.getFenToFeaturesValuesMap().containsKey(fen)) {
+            Map<Features, Double> featureScores = this.dataSet.getFenToFeaturesValuesMap().get(fen);
+            positionFeatures = new ArrayList<>(featureScores.values());
+
+        }
+        else {
+            //System.out.println(fen + " was not found in the cache");
+            Map<Features, Double> featureScores = new LinkedHashMap<>();
+            Table position = Table.computeTableFromFen(fen);
+            for (Features feature : Features.values()) {
+                featureScores.put(feature, feature.evaluate(position));
+            }
+            positionFeatures = new ArrayList<>(featureScores.values());
+        }
+
         return this.function.evaluate(
-                individual.getChromosome().getWeights(),
-                new ArrayList<>(
-                        this.dataSet.getDataSetEntryToFeaturesValuesMap().get(
-                                Table.computeFenFromTable(table)
-                        ).values()
-                )
+                weights,
+                positionFeatures
         );
     }
 
-    public void computePositionFeaturesForAllPositions(){
+    public void computePositionFeaturesForAllPositions() {
         this.dataSet.getData().forEach(
                 dataSetEntry -> {
                     Map<Features, Double> map = new LinkedHashMap<>();
@@ -62,7 +78,7 @@ public class Evaluator {
                     for (Features feature : Features.values()) {
                         map.put(feature, feature.evaluate(position));
                     }
-                    this.dataSet.getDataSetEntryToFeaturesValuesMap().put(dataSetEntry.getPosition(), map);
+                    this.dataSet.getFenToFeaturesValuesMap().put(dataSetEntry.getPosition(), map);
                 }
         );
     }

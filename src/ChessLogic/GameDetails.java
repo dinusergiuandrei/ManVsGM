@@ -92,7 +92,7 @@ public class GameDetails {
 
     @Override
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder("");
+        StringBuilder stringBuilder = new StringBuilder();
         tags.forEach(
                 (name, value) -> stringBuilder.append("[").append(name).append(" \"").append(value).append("\"]\n")
         );

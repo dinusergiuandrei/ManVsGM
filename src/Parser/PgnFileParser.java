@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 public class PgnFileParser {
 
-    PgnFileParser() {
+    public PgnFileParser() {
     }
 
     public String getFileString(String filePath){

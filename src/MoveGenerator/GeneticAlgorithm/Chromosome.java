@@ -77,8 +77,13 @@ public class Chromosome {
     public static Chromosome computeChromosomeFromBits(List<Boolean> bits, Double precision, Integer bitCount, Double minValue, Double maxValue){
         Chromosome chromosome = new Chromosome(precision, bitCount);
         for(int i=0; i<Features.values().length; ++i){
-            List<Boolean> bitValue = bits.subList(i*bitCount, (i+1)*bitCount);
-            chromosome.getWeights().add(Weight.computeWeightFromBits(bitValue, precision, bitCount, minValue, maxValue));
+            try {
+                List<Boolean> bitValue = bits.subList(i * bitCount, (i + 1) * bitCount);
+                chromosome.getWeights().add(Weight.computeWeightFromBits(bitValue, precision, bitCount, minValue, maxValue));
+            }
+            catch (IndexOutOfBoundsException e){
+                System.out.println();
+            }
         }
         return chromosome;
     }

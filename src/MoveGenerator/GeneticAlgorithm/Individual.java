@@ -1,8 +1,11 @@
 package MoveGenerator.GeneticAlgorithm;
 
+import ChessLogic.DataSet;
 import GameArchitecture.Move;
 import GameArchitecture.Table;
 import MoveGenerator.Functions;
+
+import java.util.ArrayList;
 
 public class Individual {
     Chromosome chromosome;
@@ -20,6 +23,7 @@ public class Individual {
         individual.getChromosome().setWeights(Weight.computeRandomWeights(function, precision, valueBitCount));
         return individual;
     }
+
 
     public Move getMove(Table table){
         //of all the possible next moves, choose the move that leads to best position

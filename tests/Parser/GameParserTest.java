@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class GameParserTest {
+    String path;
 
     GameParser gameParser;
 
@@ -16,13 +17,11 @@ public class GameParserTest {
 
     @Before
     public void setUp(){
+        path = "test_data/games/player_one.pgn";
         PgnFileParser fileParser = new PgnFileParser();
-        String path = "database/players/Adams.pgn";
-
         gameParser = new GameParser();
         String[] separators = PgnDatabaseReader.getSeparators();
         gamesStrings = fileParser.getGamesString(fileParser.getFileString(path), separators);
-
     }
 
     @Test

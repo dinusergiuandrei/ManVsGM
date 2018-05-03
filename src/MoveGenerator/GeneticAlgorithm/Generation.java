@@ -72,4 +72,12 @@ public class Generation {
     public void selectNextGeneration(Evaluator evaluator){
 
     }
+
+    public List<Individual> getPopulation() {
+        return population;
+    }
+
+    public Integer getPopulationSize() {
+        return populationSize;
+    }
 }

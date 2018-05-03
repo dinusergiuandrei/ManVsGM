@@ -23,7 +23,7 @@ public class ApplicationParameters {
     private Integer iterationsCount = 10;
     private Integer runsCount = 1;
     private Double chromosomePrecision = 0.00001;
-    private Integer chromosomeValueBitCount = 22;
+    private Integer chromosomeValueBitCount = 24;
 
     private Double minMoveMatchPercent = 0.4;
 

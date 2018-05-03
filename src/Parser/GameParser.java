@@ -12,7 +12,7 @@ public class GameParser {
     public GameParser() {
     }
 
-    GameDetails parseGame(String gameString) {
+    public GameDetails parseGame(String gameString) {
 
         scanner = new Scanner(gameString);
 

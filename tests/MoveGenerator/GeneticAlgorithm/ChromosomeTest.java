@@ -16,8 +16,8 @@ public class ChromosomeTest {
 
     @Before
     public void setUp() {
-        precision = 0.1;
-        bitCount = 9;
+        precision = 0.000001;
+        bitCount = 24;
         chromosome = new Chromosome(precision, bitCount);
         function = Functions.LinearCombination;
     }
@@ -25,10 +25,40 @@ public class ChromosomeTest {
     @Test
     public void chromosomeManipulationTest() {
         chromosome.getWeights().add(
-                new Weight(5.0, precision, bitCount, function.getMinValue(), function.getMaxValue())
+                new Weight(
+                        0.342345,
+                        precision,
+                        bitCount,
+                        function.getMinValue(),
+                        function.getMaxValue()
+                )
         );
         chromosome.getWeights().add(
-                new Weight(-9.5, precision, bitCount, function.getMinValue(), function.getMaxValue())
+                new Weight(
+                        0.0042415,
+                        precision,
+                        bitCount,
+                        function.getMinValue(),
+                        function.getMaxValue()
+                )
+        );
+        chromosome.getWeights().add(
+                new Weight(
+                        0.000003,
+                        precision,
+                        bitCount,
+                        function.getMinValue(),
+                        function.getMaxValue()
+                )
+        );
+        chromosome.getWeights().add(
+                new Weight(
+                        0.999997,
+                        precision,
+                        bitCount,
+                        function.getMinValue(),
+                        function.getMaxValue()
+                )
         );
 
         Chromosome otherChromosome = Chromosome.computeChromosomeFromBits(
@@ -51,7 +81,7 @@ public class ChromosomeTest {
 
     @Test
     public void weightManipulationTest() {
-        Weight expected = new Weight(5.0, precision, bitCount, function.getMinValue(), function.getMaxValue());
+        Weight expected = new Weight(0.999995, precision, bitCount, function.getMinValue(), function.getMaxValue());
 
         List<Boolean> bits = Weight.computeBitsFromWeight(expected);
         Weight real = Weight.computeWeightFromBits(
@@ -79,7 +109,7 @@ public class ChromosomeTest {
 
     @Test
     public void mutateTest() {
-        Double initialWeightValue = 5.0;
+        Double initialWeightValue = 0.5;
         Double mutationRate = 0.5;
         Integer mutationsCount = 100;
 
