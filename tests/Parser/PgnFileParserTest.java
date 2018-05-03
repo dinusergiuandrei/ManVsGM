@@ -22,7 +22,7 @@ public class PgnFileParserTest {
     public void parseGamesTest() {
 
         String[] separators = PgnDatabaseReader.getSeparators();
-        List<GameDetails> games = pgnFileParser.parseGames(filePath, separators);
+        List<GameDetails> games = pgnFileParser.parseGames(filePath, separators, 1.0);
 
         Assert.assertNotEquals(games, null);
         Assert.assertNotEquals(games.size(), null);

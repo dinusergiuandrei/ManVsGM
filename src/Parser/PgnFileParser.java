@@ -34,7 +34,7 @@ public class PgnFileParser {
         return stringBuilder.toString();
     }
 
-    public List<GameDetails> parseGames(String filePath, String[] separatorsBetweenGames) {
+    public List<GameDetails> parseGames(String filePath, String[] separatorsBetweenGames, double percent) {
         List<GameDetails> gamesDetails = new LinkedList<>();
         String fileString = this.getFileString(filePath);
 
@@ -43,14 +43,16 @@ public class PgnFileParser {
         GameParser gameParser = new GameParser();
 
         for (String gameString : gamesStrings) {
-            gamesDetails.add(gameParser.parseGame(gameString));
+            if(Math.random() < percent) {
+                gamesDetails.add(gameParser.parseGame(gameString));
+            }
         }
         return gamesDetails;
     }
 
     /**
      * Use this only when adding new PGNs.
-     * "It will behave as a "clean-up code" command for the given PGN file.
+     * It will behave as a "clean-up code" command for the given PGN file.
      */
     public void cleanFile(String filePath){
         FileReader fileReader = null;

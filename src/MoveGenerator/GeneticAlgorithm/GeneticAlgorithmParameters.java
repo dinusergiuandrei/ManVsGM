@@ -12,6 +12,7 @@ public class GeneticAlgorithmParameters{
     private Double chromosomePrecision;
     private Integer chromosomeValueBitCount;
     private Functions function;
+    private Boolean verbose;
 
     public Functions getFunction() {
         return function;
@@ -25,7 +26,8 @@ public class GeneticAlgorithmParameters{
             Integer runsCount,
             Double chromosomePrecision,
             Integer chromosomeValueBitCount,
-            Functions function) {
+            Functions function,
+            Boolean verbose) {
         this.populationSize = populationSize;
         this.mutationRate = mutationRate;
         this.crossOverRate = crossOverRate;
@@ -34,7 +36,7 @@ public class GeneticAlgorithmParameters{
         this.chromosomePrecision = chromosomePrecision;
         this.chromosomeValueBitCount = chromosomeValueBitCount;
         this.function = function;
-
+        this.verbose = verbose;
     }
 
     public Double getChromosomePrecision() {
@@ -63,5 +65,9 @@ public class GeneticAlgorithmParameters{
 
     public Integer getRunsCount() {
         return runsCount;
+    }
+
+    public Boolean getVerbose() {
+        return verbose;
     }
 }

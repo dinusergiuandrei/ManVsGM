@@ -59,7 +59,7 @@ public class Generation {
                                 individual,
                                 evaluator.computeIndividualsEvaluationOfPosition(
                                         individual,
-                                        Table.computeTableFromFen(dataSetEntry.getPosition())
+                                        Table.computeTableFromFen(dataSetEntry.getPositionFenString())
                                 )
                         );
                     }

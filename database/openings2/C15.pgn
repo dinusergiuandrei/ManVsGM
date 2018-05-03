@@ -34463,7 +34463,7 @@ g3 Bd7! 12.Bg2 Bc6 13.O-O Nbd7 14.dxc5 Qxc5! 15.Qd4 Qf5 16.a4 e5 17.Qc4
 Bd5 18.Qb4 a5 19.Qb5 Qe6 20.Re1 b6 21.Be3!? Ng4 22.Rad1 Nxe3 23.fxe3 Bc6 
 24.Qb3 Rb8 25.Qxe6+ Rxe6 =+ {Banas,I-Knaak,R/Trnava/1981} ) 10.Ng3 Rg6?! {
 "After this loss of time Black's game becomes very difficult." (Alekhine) 
-"... the position of the Rook on g6 provides White with a motif for a 
+"... the positionFenString of the Rook on g6 provides White with a motif for a
 number of dangerous tactical blows." (Kotov 75)} ( 10...Qa5! 11.Bd2 b6 ( 
 11...Qa4 12.dxc5 += {(Alekhine)} ) 12.a4 cxd4! 13.cxd4 Qd5 += {(eco 74/81)
 } 14.Qe3! ( 14.Bb5 Qxd4 15.O-O Rg6 {(Purdy)} ) 14...Bb7 15.h3! += {(Levy 
@@ -34475,7 +34475,7 @@ Bd3 Rg7 17.Bd2 +/- {(Alekhine, Kotov 75)} ) 14.Be2 +/- {(Pachman 68)}
 (Schwarz 51/67, Levy 76)} 15...cxd4 16.cxd4 N7b6 ( 16...Nf4?! 17.Bxf4 Qxf4
 18.O-O +/- {@(Alekhine)} ) 17.Bh5! {"This Bishop-maneuver, consisting of 4
 consecutive moves, forces a practically decisive weakening of Black's Pawn
-position. The following play on both wings is very instructive and, I 
+positionFenString. The following play on both wings is very instructive and, I
 believe, typical of my style." (Alekhine)} 17...Rg7 18.Bf3 Qg6 19.Be4! f5 
 20.Bf3 Kf8 21.a4! {"Now the QB, which has long been inactive, joins the 
 attack. At the same time the further advance of this pawn looks dangerous 
@@ -34485,7 +34485,7 @@ dxe5 Rxc5 27.Rfc1 Rac8 28.Rxc5 Rxc5 29.Qd4! +- {(Alekhine)} 29...b6 30.
 axb6 axb6 31.Ra8+ $40 ) 25.Qb1! Na4 26.Bxd5 exd5 27.Qxb7 Qc6 28.a6! Nb6 ( 
 28...Qxb7 29.axb7 Rb8 30.Rfb1 Nb6 31.Bb4 Rc4 32.Rxa7 +- {(Alekhine)} ) 29.
 Bc5 f4 30.Nf5! ( 30.Ne2 $143 ) 30...Kh8 31.Ne7 Qe6 32.Bxb6 {"Now Black's 
-position is hopeless, but Euwe still tries to find a way out by tactical 
+positionFenString is hopeless, but Euwe still tries to find a way out by tactical
 tricks." (Kotov 75)} 32...Bc6 33.Nxc6 Rg8 {/\34... Tg4 35.Kg2 Dg4=} 34.Ne5
 ! Rg7 35.Qb8+? ( 35.Bxa7! +- {(Alekhine)} ) 35...Rc8 36.Ng6+ Rxg6 37.Qxf4 
 Qxb6 38.Qe5+ Rg7 39.Qxd5 Rd8 40.Qe5 Qxd4 41.Qxd4 1-0

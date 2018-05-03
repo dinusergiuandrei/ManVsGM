@@ -5,7 +5,6 @@ import ChessLogic.Features;
 import GameArchitecture.Move;
 import GameArchitecture.Table;
 import MoveGenerator.Functions;
-import com.sun.org.apache.xalan.internal.utils.FeatureManager;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -32,7 +31,7 @@ public class Evaluator {
         AtomicReference<Double> totalMoves = new AtomicReference<>(0.0);
         dataSet.getData().forEach(
                 dataSetEntry -> {
-                    String position = dataSetEntry.getPosition();
+                    String position = dataSetEntry.getPositionFenString();
                     Move expectedMove = dataSetEntry.getMove();
                     Move realMove = individual.getMove(Table.computeTableFromFen(position));
                     if (realMove == expectedMove) {
@@ -70,18 +69,7 @@ public class Evaluator {
         );
     }
 
-    public void computePositionFeaturesForAllPositions() {
-        this.dataSet.getData().forEach(
-                dataSetEntry -> {
-                    Map<Features, Double> map = new LinkedHashMap<>();
-                    Table position = Table.computeTableFromFen(dataSetEntry.getPosition());
-                    for (Features feature : Features.values()) {
-                        map.put(feature, feature.evaluate(position));
-                    }
-                    this.dataSet.getFenToFeaturesValuesMap().put(dataSetEntry.getPosition(), map);
-                }
-        );
-    }
+
 
 
 }

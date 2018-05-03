@@ -994,5 +994,19 @@ public class Table {
         this.game = game;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Table table = (Table) o;
+        String myFen = Table.computeFenFromTable(this);
+        String otherFen = Table.computeFenFromTable(table);
+        return Objects.equals(myFen, otherFen);
+    }
 
+    @Override
+    public int hashCode() {
+        String myFen = Table.computeFenFromTable(this);
+        return Objects.hash(myFen);
+    }
 }

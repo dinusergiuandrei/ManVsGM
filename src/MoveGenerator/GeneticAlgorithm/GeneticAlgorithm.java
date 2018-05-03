@@ -24,26 +24,56 @@ public class GeneticAlgorithm implements MoveGenerator {
     }
 
     public void learnFrom(DataSet dataSet, Double minMoveMatchPercent){
-        this.evaluator = new Evaluator(dataSet, minMoveMatchPercent, parameters.getFunction());
-        System.out.println("Computing cache...");
-        this.evaluator.computePositionFeaturesForAllPositions();
-        System.out.println("Cache computed.");
-        System.out.println("Running GA");
+        Long startTime = System.currentTimeMillis();
+
+        init(dataSet, minMoveMatchPercent);
+        computeCache(dataSet);
+
+        System.out.println("Running genetic algorithm...");
         for(int run = 0; run<this.parameters.getRunsCount(); ++run) {
-            System.out.println("Run count: " + run);
-            System.out.println("Initializing...");
-            currentGeneration.initialize();
+            Long runStartTime = System.currentTimeMillis();
+            System.out.println("Starting run : " + run);
+
+            initializeFirstGeneration();
             for (int i = 0; i < this.parameters.getIterationsCount(); ++i) {
-                System.out.println("Applying genetic operators");
-                currentGeneration.applyGeneticOperators(this.evaluator);
-                System.out.println("Selecting next generation");
-                currentGeneration.selectNextGeneration(this.evaluator);
+                //applyGeneticOperators();
+                //selectNextGeneration();
             }
+
+            System.out.println("Run " + run + " completed in " + (System.currentTimeMillis()/runStartTime) / 1000.0 + " seconds.");
         }
+
+        System.out.println("Total genetic algorithm running time: " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds.");
     }
 
-    public void displayResults(){
+    private void init(DataSet dataSet, Double minMoveMatchPercent){
+        this.evaluator = new Evaluator(dataSet, minMoveMatchPercent, parameters.getFunction());
+    }
 
+    private void computeCache(DataSet dataSet){
+        System.out.println("Computing cache...");
+        Long startTime = System.currentTimeMillis();
+        dataSet.computeCache();
+        System.out.println("Computed cache in: " + (System.currentTimeMillis()-startTime) / 1000.0 + " seconds ");
+    }
+
+    private void initializeFirstGeneration(){
+        System.out.println("Initializing first generation...");
+        currentGeneration.initialize();
+    }
+
+    private void applyGeneticOperators(){
+        System.out.println("Applying genetic operators...");
+        Long startTime = System.currentTimeMillis();
+        currentGeneration.applyGeneticOperators(this.evaluator);
+        System.out.println("Applied genetic operators in: " + (System.currentTimeMillis()-startTime) / 1000.0 + " seconds ");
+    }
+
+    private void selectNextGeneration(){
+        System.out.println("Selecting next generation...");
+        Long startTime = System.currentTimeMillis();
+        currentGeneration.selectNextGeneration(this.evaluator);
+        System.out.println("Selected next generation in: " + (System.currentTimeMillis()-startTime) / 1000.0 + " seconds ");
     }
 
     @Override

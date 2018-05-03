@@ -12,12 +12,12 @@ public class ApplicationParameters {
      * This is useful for using only samples of the database,
      * which is too large to be loaded entirely.
      */
-    private Double dataBaseLoadPercent = 1.0;
+    private Double dataBaseLoadPercent = 0.02;
 
     /**
      * Parameters for the GeneticAlgorithm
      */
-    private Integer populationSize = 5;
+    private Integer populationSize = 20;
     private Double mutationRate = 0.01;
     private Double crossOverRate = 0.7;
     private Integer iterationsCount = 10;
@@ -40,7 +40,8 @@ public class ApplicationParameters {
                 this.runsCount,
                 this.chromosomePrecision,
                 this.chromosomeValueBitCount,
-                this.function
+                this.function,
+                this.verbose
         );
     }
 
@@ -58,5 +59,9 @@ public class ApplicationParameters {
 
     public Double getMinMoveMatchPercent() {
         return minMoveMatchPercent;
+    }
+
+    public String getDataBasePath() {
+        return dataBasePath;
     }
 }

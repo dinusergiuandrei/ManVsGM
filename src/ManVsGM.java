@@ -9,15 +9,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ManVsGM {
 
-    private static DataSet dataSet = new DataSet();
     private static ApplicationParameters params = new ApplicationParameters();
 
     public static void main(String[] args) {
-        parse(params.getDataBasePathAdams(), params.getDataBaseLoadPercent(), params.getVerbose());
-        runGeneticAlgorithm(params);
+        DataSet dataSet = parse(params.getDataBasePath(), params.getDataBaseLoadPercent(), params.getVerbose());
+        runGeneticAlgorithm(params, dataSet);
     }
 
-    private static void runGeneticAlgorithm(ApplicationParameters params){
+    private static void runGeneticAlgorithm(ApplicationParameters params, DataSet dataSet){
         GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm( params.computeGeneticAlgorithmParameters() );
         geneticAlgorithm.learnFrom(dataSet, params.getMinMoveMatchPercent());
     }
@@ -35,7 +34,9 @@ public class ManVsGM {
         game.start();
     }
 
-    private static void parse(String dataBasePath, double databaseLoadPercent, Boolean verbose) {
+    private static DataSet parse(String dataBasePath, double databaseLoadPercent, Boolean verbose) {
+
+        Long startTime = System.currentTimeMillis();
 
         PgnDatabaseReader databaseReader = new PgnDatabaseReader(dataBasePath);
         databaseReader.computePgnFilePaths();
@@ -64,16 +65,18 @@ public class ManVsGM {
 
         );
 
-        dataSet = databaseReader.getDatabase().computePositionToMoveMap();
+        DataSet dataSet = databaseReader.getDatabase().computePositionToMoveMap();
         if(verbose) {
             System.out.println("Updated data set with " + dataSet.getData().size() + " positions from "
                     + databaseLoadPercent * 100.0 + " % of the games found at " + dataBasePath);
         }
 
-        System.out.println("Parsing successful");
+        System.out.println("Parsing successful in " + (System.currentTimeMillis()-startTime) / 1000.0 + " seconds.\n");
+
+        return dataSet;
     }
 
-    private static void displayDetails(int index, int total) {
+    public static void displayDetails(int index, int total) {
         double over;
         if (index % (total / 20) == 0) {
             over = 20.0 * (index * 1.0 / total * 1.0);
