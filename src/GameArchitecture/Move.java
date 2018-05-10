@@ -1,8 +1,9 @@
 package GameArchitecture;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Move{
+public class Move implements Serializable {
     private Square startSquare;
 
     private Square endSquare;

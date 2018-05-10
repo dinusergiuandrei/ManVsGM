@@ -3,14 +3,17 @@ package ChessLogic;
 import GameArchitecture.Move;
 import GameArchitecture.Table;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * DataSet creates a connection between the positions (memorized in FEN format)
+ * Database creates a connection between the positions (memorized in FEN format)
  * and the move which was played in the given position.
  */
-public class DataSet {
+public class Database implements Serializable {
     private Set<DataSetEntry> data = new LinkedHashSet<>();
 
     private Map<String, Table> fenToTableMap = new LinkedHashMap<>();
@@ -86,5 +89,37 @@ public class DataSet {
 
     public Map<Table, String> getTableToFenMap() {
         return tableToFenMap;
+    }
+
+    public static void saveStream(Database database, String filePath) {
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(filePath);
+            ObjectOutputStream out = new ObjectOutputStream(fos);
+            out.writeObject(database);
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static Database loadStream(String filePath) throws IOException, ClassNotFoundException {
+        FileInputStream fis;
+        if (!Files.exists(Paths.get(filePath))) {
+            throw new FileNotFoundException("Could not find file at " + filePath);
+        }
+        fis = new FileInputStream(filePath);
+        ObjectInputStream in = new ObjectInputStream(fis);
+        Database database = (Database) in.readObject();
+        fis.close();
+        return database;
     }
 }

@@ -28,6 +28,7 @@ public class Game {
 
     public Game() {
         this.isOver = false;
+        this.table.setGame(this);
         table.setUpPieces();
 
         positions.add(computeFenFromTable(this.table));

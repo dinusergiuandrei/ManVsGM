@@ -1,5 +1,5 @@
 package MoveGenerator.GeneticAlgorithm;
-import ChessLogic.DataSet;
+import ChessLogic.Database;
 import GameArchitecture.Move;
 import MoveGenerator.MoveGenerator;
 
@@ -23,11 +23,11 @@ public class GeneticAlgorithm implements MoveGenerator {
         );
     }
 
-    public void learnFrom(DataSet dataSet, Double minMoveMatchPercent){
+    public void learnFrom(Database database, Double minMoveMatchPercent){
         Long startTime = System.currentTimeMillis();
 
-        init(dataSet, minMoveMatchPercent);
-        computeCache(dataSet);
+        init(database, minMoveMatchPercent);
+        computeCache(database);
 
         System.out.println("Running genetic algorithm...");
         for(int run = 0; run<this.parameters.getRunsCount(); ++run) {
@@ -36,24 +36,26 @@ public class GeneticAlgorithm implements MoveGenerator {
 
             initializeFirstGeneration();
             for (int i = 0; i < this.parameters.getIterationsCount(); ++i) {
-                //applyGeneticOperators();
-                //selectNextGeneration();
+                selectNextGeneration();
+                applyGeneticOperators();
             }
 
             System.out.println("Run " + run + " completed in " + (System.currentTimeMillis()/runStartTime) / 1000.0 + " seconds.");
         }
 
         System.out.println("Total genetic algorithm running time: " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds.");
+
+
     }
 
-    private void init(DataSet dataSet, Double minMoveMatchPercent){
-        this.evaluator = new Evaluator(dataSet, minMoveMatchPercent, parameters.getFunction());
+    private void init(Database database, Double minMoveMatchPercent){
+        this.evaluator = new Evaluator(database, minMoveMatchPercent, parameters.getFunction());
     }
 
-    private void computeCache(DataSet dataSet){
+    private void computeCache(Database database){
         System.out.println("Computing cache...");
         Long startTime = System.currentTimeMillis();
-        dataSet.computeCache();
+        database.computeCache();
         System.out.println("Computed cache in: " + (System.currentTimeMillis()-startTime) / 1000.0 + " seconds ");
     }
 

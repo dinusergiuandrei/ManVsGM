@@ -7,17 +7,23 @@ public class ApplicationParameters {
     private String dataBasePathAdams = "database/players/Adams.pgn";
     private String dataBasePathTest = "database/test/test.pgn";
 
+    private String dataBaseStreamSavePath = "database/stream/database.dat";
+
+    public String getDataBaseStreamSavePath() {
+        return dataBaseStreamSavePath;
+    }
+
     /**
      * The percent of games found to be analyzed.
      * This is useful for using only samples of the database,
      * which is too large to be loaded entirely.
      */
-    private Double dataBaseLoadPercent = 0.02;
+    private Double dataBaseLoadPercent = 0.0001;
 
     /**
      * Parameters for the GeneticAlgorithm
      */
-    private Integer populationSize = 20;
+    private Integer populationSize = 30;
     private Double mutationRate = 0.01;
     private Double crossOverRate = 0.7;
     private Integer iterationsCount = 10;

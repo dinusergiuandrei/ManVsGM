@@ -74,7 +74,7 @@ public class ChromosomeTest {
             Double real = otherChromosome.getWeights().get(i).getWeightValue();
 
             //Assert.assertEquals(expected, real);
-            Assert.assertEquals(true, Math.abs(expected - real) < precision);
+            Assert.assertTrue(Math.abs(expected - real) < precision);
         }
 
     }
@@ -92,19 +92,19 @@ public class ChromosomeTest {
                 function.getMaxValue()
         );
         //Assert.assertEquals(expected.getWeightValue(), real.getWeightValue()); // remove this
-        Assert.assertEquals(true, Math.abs(real.getWeightValue() - expected.getWeightValue()) <= precision);
+        Assert.assertTrue(Math.abs(real.getWeightValue() - expected.getWeightValue()) <= precision);
     }
 
     @Test
     public void valueManipulationTest() {
-        Double expected = 6.31;
+        Double expected = 0.631;
         Double real = Weight.computeValueFromBits(
                 Weight.computeBitsFromValue(expected, precision, bitCount),
                 precision,
                 bitCount
         );
         //Assert.assertEquals(expected, real);
-        Assert.assertEquals(true, Math.abs(expected - real) <= precision);
+        Assert.assertTrue(Math.abs(expected - real) <= precision);
     }
 
     @Test

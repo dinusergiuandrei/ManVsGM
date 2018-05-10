@@ -1,11 +1,8 @@
 package MoveGenerator.GeneticAlgorithm;
 
-import ChessLogic.DataSet;
 import GameArchitecture.Move;
 import GameArchitecture.Table;
 import MoveGenerator.Functions;
-
-import java.util.ArrayList;
 
 public class Individual {
     Chromosome chromosome;

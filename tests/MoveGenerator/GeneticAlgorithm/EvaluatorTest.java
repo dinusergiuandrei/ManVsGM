@@ -1,6 +1,6 @@
 package MoveGenerator.GeneticAlgorithm;
 
-import ChessLogic.DataSet;
+import ChessLogic.Database;
 import ChessLogic.DataSetEntry;
 import GameArchitecture.Move;
 import GameArchitecture.Square;
@@ -19,16 +19,16 @@ public class EvaluatorTest {
         evaluator = new Evaluator(createRandomDataSet(), 0.3, Functions.LinearCombination);
     }
 
-    public DataSet createRandomDataSet(){
+    public Database createRandomDataSet(){
         List<String> fens = new LinkedList<>();
         fens.add("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         fens.add("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
         fens.add("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2");
         fens.add("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2");
 
-        DataSet dataSet = new DataSet();
+        Database database = new Database();
         for (String fen : fens) {
-            dataSet.getData().add(
+            database.getData().add(
                     new DataSetEntry(
                             fen,
                             new Move(Square.e2, Square.e4)
@@ -36,7 +36,7 @@ public class EvaluatorTest {
             );
         }
 
-        return dataSet;
+        return database;
     }
 
     @Test

@@ -1,24 +1,46 @@
-import ChessLogic.DataSet;
+import ChessLogic.Database;
 import ChessLogic.Game;
 import GameArchitecture.Player;
 import MoveGenerator.GeneticAlgorithm.GeneticAlgorithm;
 import MoveGenerator.TerminalMoveGenerator;
 import Parser.PgnDatabaseReader;
 
+import javax.xml.crypto.Data;
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ManVsGM {
 
     private static ApplicationParameters params = new ApplicationParameters();
 
-    public static void main(String[] args) {
-        DataSet dataSet = parse(params.getDataBasePath(), params.getDataBaseLoadPercent(), params.getVerbose());
-        runGeneticAlgorithm(params, dataSet);
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        Database database;
+        //database = computeDatabase();
+        database = readDatabase();
+
+        runGeneticAlgorithm(params, database);
+
+        //startGame();
     }
 
-    private static void runGeneticAlgorithm(ApplicationParameters params, DataSet dataSet){
+    private static Database computeDatabase(){
+        Long startTime = System.currentTimeMillis();
+        Database database = parse(params.getDataBasePath(), params.getDataBaseLoadPercent(), params.getVerbose());
+        System.out.println("Time to compute: " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds...");
+        //Database.saveStream(database, params.getDataBaseStreamSavePath());
+        return database;
+    }
+
+    private static Database readDatabase() throws IOException, ClassNotFoundException {
+        Long startTime = System.currentTimeMillis();
+        Database loadedDatabase = Database.loadStream(params.getDataBaseStreamSavePath());
+        System.out.println("Time to read: " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds...");
+        return loadedDatabase;
+    }
+
+    private static void runGeneticAlgorithm(ApplicationParameters params, Database database){
         GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm( params.computeGeneticAlgorithmParameters() );
-        geneticAlgorithm.learnFrom(dataSet, params.getMinMoveMatchPercent());
+        geneticAlgorithm.learnFrom(database, params.getMinMoveMatchPercent());
     }
 
     static void startGame() {
@@ -34,7 +56,7 @@ public class ManVsGM {
         game.start();
     }
 
-    private static DataSet parse(String dataBasePath, double databaseLoadPercent, Boolean verbose) {
+    private static Database parse(String dataBasePath, double databaseLoadPercent, Boolean verbose) {
 
         Long startTime = System.currentTimeMillis();
 
@@ -65,15 +87,15 @@ public class ManVsGM {
 
         );
 
-        DataSet dataSet = databaseReader.getDatabase().computePositionToMoveMap();
+        Database database = databaseReader.getDatabase().computePositionToMoveMap();
         if(verbose) {
-            System.out.println("Updated data set with " + dataSet.getData().size() + " positions from "
+            System.out.println("Updated data set with " + database.getData().size() + " positions from "
                     + databaseLoadPercent * 100.0 + " % of the games found at " + dataBasePath);
         }
 
         System.out.println("Parsing successful in " + (System.currentTimeMillis()-startTime) / 1000.0 + " seconds.\n");
 
-        return dataSet;
+        return database;
     }
 
     public static void displayDetails(int index, int total) {

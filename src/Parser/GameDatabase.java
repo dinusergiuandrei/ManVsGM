@@ -1,6 +1,6 @@
 package Parser;
 
-import ChessLogic.DataSet;
+import ChessLogic.Database;
 import ChessLogic.DataSetEntry;
 import ChessLogic.GameDetails;
 import GameArchitecture.Player;
@@ -55,20 +55,20 @@ public class GameDatabase {
         return gameCount.get();
     }
 
-    public DataSet computePositionToMoveMap(){
-        DataSet dataSet = new DataSet();
+    public Database computePositionToMoveMap(){
+        Database database = new Database();
 
         this.allGames.forEach(
                 gameDetails -> {
                    for(int i=0; i<gameDetails.whiteMoves.size(); ++i){
-                       dataSet.getData().add(new DataSetEntry(gameDetails.game.getPositions().get(2*i), gameDetails.whiteMoves.get(i)));
+                       database.getData().add(new DataSetEntry(gameDetails.game.getPositions().get(2*i), gameDetails.whiteMoves.get(i)));
                    }
                    for(int j=0; j<gameDetails.blackMoves.size(); ++j){
-                       dataSet.getData().add(new DataSetEntry(gameDetails.game.getPositions().get(2*j+1), gameDetails.blackMoves.get(j)));
+                       database.getData().add(new DataSetEntry(gameDetails.game.getPositions().get(2*j+1), gameDetails.blackMoves.get(j)));
                    }
                 }
         );
-        return dataSet;
+        return database;
     }
 
     public Integer getGamesCount(){

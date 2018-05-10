@@ -1,6 +1,6 @@
 package MoveGenerator.GeneticAlgorithm;
 
-import ChessLogic.DataSet;
+import ChessLogic.Database;
 import ChessLogic.Features;
 import GameArchitecture.Move;
 import GameArchitecture.Table;
@@ -13,14 +13,14 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Evaluator {
-    DataSet dataSet;
+    Database database;
 
     Double minMoveMatchPercent;
 
     Functions function;
 
-    public Evaluator(DataSet dataSet, Double minMoveMatchPercent, Functions function) {
-        this.dataSet = dataSet;
+    public Evaluator(Database database, Double minMoveMatchPercent, Functions function) {
+        this.database = database;
         this.minMoveMatchPercent = minMoveMatchPercent;
         this.function = function;
     }
@@ -29,7 +29,7 @@ public class Evaluator {
         Double score;
         AtomicReference<Double> matchingMoves = new AtomicReference<>(0.0);
         AtomicReference<Double> totalMoves = new AtomicReference<>(0.0);
-        dataSet.getData().forEach(
+        database.getData().forEach(
                 dataSetEntry -> {
                     String position = dataSetEntry.getPositionFenString();
                     Move expectedMove = dataSetEntry.getMove();
@@ -48,8 +48,8 @@ public class Evaluator {
         List<Weight> weights = individual.getChromosome().getWeights();
         String fen = Table.computeFenFromTable(table);
         List<Double> positionFeatures;
-        if(this.dataSet.getFenToFeaturesValuesMap().containsKey(fen)) {
-            Map<Features, Double> featureScores = this.dataSet.getFenToFeaturesValuesMap().get(fen);
+        if(this.database.getFenToFeaturesValuesMap().containsKey(fen)) {
+            Map<Features, Double> featureScores = this.database.getFenToFeaturesValuesMap().get(fen);
             positionFeatures = new ArrayList<>(featureScores.values());
 
         }

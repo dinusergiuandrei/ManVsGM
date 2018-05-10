@@ -2,7 +2,9 @@ package ChessLogic;
 
 import GameArchitecture.Move;
 
-public class DataSetEntry {
+import java.io.Serializable;
+
+public class DataSetEntry implements Serializable {
     private String positionFenString;
     private Move move;
 
