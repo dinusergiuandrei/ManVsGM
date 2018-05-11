@@ -5,7 +5,6 @@ import MoveGenerator.GeneticAlgorithm.GeneticAlgorithm;
 import MoveGenerator.TerminalMoveGenerator;
 import Parser.PgnDatabaseReader;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -14,8 +13,12 @@ public class ManVsGM {
     private static ApplicationParameters params = new ApplicationParameters();
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
+
         Database database;
+
         //database = computeDatabase();
+        //Database.saveStream(database, params.getDataBaseStreamSavePath());
+
         database = readDatabase();
 
         runGeneticAlgorithm(params, database);

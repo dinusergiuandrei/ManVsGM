@@ -20,6 +20,8 @@ public class Database implements Serializable {
 
     private Map<Table, String> tableToFenMap = new LinkedHashMap<>();
 
+    private Map<Table, List<Move>> tableToListOfPossibleMovesMap = new LinkedHashMap<>();
+
     private Map<String, Map<Features, Double>> fenToFeaturesValuesMap = new LinkedHashMap<>();
 
     private Map<String, List<Move>> fenToPlayedMovesMap = new LinkedHashMap<>();
@@ -121,5 +123,13 @@ public class Database implements Serializable {
         Database database = (Database) in.readObject();
         fis.close();
         return database;
+    }
+
+    public Map<Table, List<Move>> getTableToListOfPossibleMovesMap() {
+        return tableToListOfPossibleMovesMap;
+    }
+
+    public Map<String, List<Move>> getFenToPlayedMovesMap() {
+        return fenToPlayedMovesMap;
     }
 }

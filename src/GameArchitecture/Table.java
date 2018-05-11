@@ -1,6 +1,7 @@
 package GameArchitecture;
 
 import ChessLogic.Game;
+import ChessLogic.SemanticMoveValidator;
 
 import java.util.*;
 
@@ -189,7 +190,6 @@ public class Table {
 
         table.setFullMoveNumber(Integer.parseInt(fullMoveNumberString));
 
-
         return table;
     }
 
@@ -205,7 +205,12 @@ public class Table {
                         fen.append(String.valueOf(length));
                         length = 0;
                     }
-                    fen.append(table.getSquareToPieceMap().get(getSquare(column, line)).getFenNotation());
+                    try {
+                        fen.append(table.getSquareToPieceMap().get(getSquare(column, line)).getFenNotation());
+                    }
+                    catch (NullPointerException e){
+                        //System.out.println("Null exception 100");
+                    }
                 }
             }
             if (length > 0) {
@@ -278,9 +283,48 @@ public class Table {
         return piece.getColor() != this.getToMove();
     }
 
-    public List<Move> getAllPossibleMoves() {
-        // todo: implement this
-        return null;
+    public List<Move> computeAllPossibleMoves() {
+        List<Move> possibleMoves = new ArrayList<>();
+        for (Square square : Square.values()) {
+            Piece piece = this.squareToPieceMap.get(square);
+
+            if(this.toMove == Color.White){
+                switch (piece){
+                    case whitePawn: possibleMoves.addAll(SemanticMoveValidator.getLegalPawnMoves(this, square)); break;
+                    case whiteKnight: possibleMoves.addAll(SemanticMoveValidator.getLegalKnightMoves(this, square)); break;
+                    case whiteBishop: possibleMoves.addAll(SemanticMoveValidator.getLegalBishopMoves(this, square)); break;
+                    case whiteRook: possibleMoves.addAll(SemanticMoveValidator.getLegalRookMoves(this, square)); break;
+                    case whiteQueen: possibleMoves.addAll(SemanticMoveValidator.getLegalQueenMoves(this, square)); break;
+                    case whiteKing: possibleMoves.addAll(SemanticMoveValidator.getLegalKingMoves(this, square)); break;
+                }
+            }
+            if(this.toMove == Color.Black){
+                switch (piece){
+                    case blackPawn: possibleMoves.addAll(SemanticMoveValidator.getLegalPawnMoves(this, square)); break;
+                    case blackKnight: possibleMoves.addAll(SemanticMoveValidator.getLegalKnightMoves(this, square)); break;
+                    case blackBishop: possibleMoves.addAll(SemanticMoveValidator.getLegalBishopMoves(this, square)); break;
+                    case blackRook: possibleMoves.addAll(SemanticMoveValidator.getLegalRookMoves(this, square)); break;
+                    case blackQueen: possibleMoves.addAll(SemanticMoveValidator.getLegalQueenMoves(this, square)); break;
+                    case blackKing: possibleMoves.addAll(SemanticMoveValidator.getLegalKingMoves(this, square)); break;
+                }
+            }
+        }
+        return possibleMoves;
+    }
+
+    public static Table getNewTableAfterMove(Table table, Move move){
+        Table newTable = table.getCopy();
+        newTable.doMove(move);
+        return newTable;
+    }
+
+    public static List<Table> getAllPossibleNextTables(Table table){
+        List<Table> possibleNextTables = new ArrayList<>();
+        List<Move> possibleMoves = table.computeAllPossibleMoves();
+        for (Move move : possibleMoves) {
+            possibleNextTables.add(Table.getNewTableAfterMove(table, move));
+        }
+        return possibleNextTables;
     }
 
     public enum Range {
@@ -344,8 +388,6 @@ public class Table {
 
         return null;
     }
-
-
 
     public Move getMove(String moveString) {
 
@@ -860,7 +902,6 @@ public class Table {
         return null;
     }
 
-
     private void updatePositions() {
         game.getPositions().add(computeFenFromTable(this));
         game.setCurrentPosition(game.getPositions().size() - 1);
@@ -952,7 +993,6 @@ public class Table {
     public void setPossibleBlackLongCastle(Boolean possibleBlackLongCastle) {
         this.possibleBlackLongCastle = possibleBlackLongCastle;
     }
-
 
     public Square getEnPassantTargetSquare() {
         return enPassantTargetSquare;

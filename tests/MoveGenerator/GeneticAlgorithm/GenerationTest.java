@@ -35,7 +35,7 @@ public class GenerationTest {
     public void initializeTest(){
         generation.initialize();
         Integer expected = generation.getPopulationSize();
-        Integer real = generation.getPopulation().size();
+        Integer real = generation.getIndividuals().size();
         Assert.assertEquals(expected, real);
     }
 }

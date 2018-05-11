@@ -26,7 +26,7 @@ public class Chromosome {
         this.valueBitCount = valueBitCount;
     }
 
-    public Double evaluate(Table table, Functions function){
+    public Double evaluate(Table table, Functions function) {
         List<Double> values = new ArrayList<>(0);
         for (Features feature : Features.values()) {
             values.add(feature.evaluate(table));
@@ -34,17 +34,17 @@ public class Chromosome {
         return function.evaluate(this.weights, values);
     }
 
-    public void mutate(Double mutationRate, Double minValue, Double maxValue){
+    public Chromosome mutate(Double mutationRate, Double minValue, Double maxValue) {
         Chromosome newChromosome;
         List<Boolean> bits = computeBitsFromChromosome(this);
-        for(int i=0; i<bits.size(); ++i){
-            if(Math.random() < mutationRate){
+        for (int i = 0; i < bits.size(); ++i) {
+            if (Math.random() < mutationRate) {
                 bits.set(i, !bits.get(i));
             }
         }
         newChromosome = computeChromosomeFromBits(bits, this.getPrecision(), this.getValueBitCount(), minValue, maxValue);
 
-        this.weights = newChromosome.getWeights();
+        return newChromosome;
     }
 
     public static List<Chromosome> getChromosomesAfterCrossOver(
@@ -52,18 +52,23 @@ public class Chromosome {
             Integer cuttingPoint,
             Double minValue,
             Double maxValue
-    ){
+    ) {
         Double precision = parent1.getPrecision();
         Integer bitCount = parent1.getValueBitCount();
         List<Chromosome> chromosomes = new ArrayList<>();
         List<Boolean> bitsFromParent1 = computeBitsFromChromosome(parent1);
         List<Boolean> bitsFromParent2 = computeBitsFromChromosome(parent2);
 
-        List<Boolean> bitsForChild1 = bitsFromParent1.subList(0, cuttingPoint);
-        List<Boolean> bitsForChild2 = bitsFromParent2.subList(0, cuttingPoint);
+        Integer expectedBitCount = bitCount * parent1.getWeights().size();
+        if (bitsFromParent1.size() != expectedBitCount || expectedBitCount != bitsFromParent2.size()) {
+            System.err.println("The chromosomes are on different bit sizes.");
+        }
 
-        bitsForChild1.addAll(bitsFromParent2.subList(cuttingPoint, bitsFromParent2.size()-1));
-        bitsForChild2.addAll(bitsFromParent1.subList(cuttingPoint, bitsFromParent1.size()-1));
+        List<Boolean> bitsForChild1 = new ArrayList<>(bitsFromParent1.subList(0, cuttingPoint));
+        List<Boolean> bitsForChild2 = new ArrayList<>(bitsFromParent2.subList(0, cuttingPoint));
+
+        bitsForChild1.addAll(bitsFromParent2.subList(cuttingPoint, bitsFromParent2.size()));
+        bitsForChild2.addAll(bitsFromParent1.subList(cuttingPoint, bitsFromParent1.size()));
 
         Chromosome child1 = computeChromosomeFromBits(bitsForChild1, precision, bitCount, minValue, maxValue);
         Chromosome child2 = computeChromosomeFromBits(bitsForChild2, precision, bitCount, minValue, maxValue);
@@ -74,14 +79,13 @@ public class Chromosome {
         return chromosomes;
     }
 
-    public static Chromosome computeChromosomeFromBits(List<Boolean> bits, Double precision, Integer bitCount, Double minValue, Double maxValue){
+    public static Chromosome computeChromosomeFromBits(List<Boolean> bits, Double precision, Integer bitCount, Double minValue, Double maxValue) {
         Chromosome chromosome = new Chromosome(precision, bitCount);
-        for(int i=0; i<Features.values().length; ++i){
-            try { // todo : (i+1) * bitCount depeseste bits.size() cu 1.
-                List<Boolean> bitValue = bits.subList(i * bitCount, (i + 1) * bitCount );
+        for (int i = 0; i < Features.values().length; ++i) {
+            try {
+                List<Boolean> bitValue = bits.subList(i * bitCount, (i + 1) * bitCount);
                 chromosome.getWeights().add(Weight.computeWeightFromBits(bitValue, precision, bitCount, minValue, maxValue));
-            }
-            catch (IndexOutOfBoundsException e){
+            } catch (IndexOutOfBoundsException e) {
                 System.err.println(e);
             }
         }
@@ -89,8 +93,7 @@ public class Chromosome {
     }
 
 
-
-    public static List<Boolean> computeBitsFromChromosome(Chromosome chromosome){
+    public static List<Boolean> computeBitsFromChromosome(Chromosome chromosome) {
 
         List<Boolean> bits
                 = new ArrayList<>(Features.values().length * chromosome.getValueBitCount());
@@ -101,7 +104,6 @@ public class Chromosome {
         );
         return bits;
     }
-
 
 
     public List<Weight> getWeights() {

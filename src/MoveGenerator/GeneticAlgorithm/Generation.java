@@ -1,12 +1,17 @@
 package MoveGenerator.GeneticAlgorithm;
 
-import GameArchitecture.Table;
 import MoveGenerator.Functions;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Generation {
-    List<Individual> population = new LinkedList<>();
+    List<Individual> individuals = new ArrayList<>();
+
+    Map<Individual, Double> individualToValue = new LinkedHashMap<>();
 
     Integer populationSize;
 
@@ -30,9 +35,9 @@ public class Generation {
     }
 
     public void initialize() {
-        population.clear();
+        individuals.clear();
         for (int i = 0; i < this.populationSize; ++i) {
-            population.add(Individual.computeRandomIndividual(this.chromosomePrecision, this.chromosomeValueBitCount, this.function));
+            individuals.add(Individual.computeRandomIndividual(this.chromosomePrecision, this.chromosomeValueBitCount, this.function));
         }
     }
 
@@ -42,14 +47,19 @@ public class Generation {
     }
 
     public void applyMutations(Double minValue, Double maxValue) {
-        this.population.forEach(
-                individual -> individual.getChromosome().mutate(mutationRate, minValue, maxValue)
+        List<Individual> newGeneration = new ArrayList<>();
+        this.individuals.forEach(
+                individual -> {
+                    Individual newIndividual = Individual.computeIndividualFromChromosome(individual.getChromosome().mutate(mutationRate, minValue, maxValue));
+                    newGeneration.add(newIndividual);
+                }
         );
+        this.individuals = newGeneration;
     }
 
     public void applyCrossOver(Evaluator evaluator, Double minValue, Double maxValue) {
         List<Individual> markedForCrossOver = new ArrayList<>();
-        for (Individual individual : this.population) {
+        for (Individual individual : this.individuals) {
             if (Math.random() < crossOverRate) {
                 markedForCrossOver.add(individual);
             }
@@ -59,9 +69,9 @@ public class Generation {
             Individual parent1 = markedForCrossOver.get(i);
             Individual parent2 = markedForCrossOver.get(i + 1);
 
-            Double cuttingPointDouble = parent1.getChromosome().getWeights().size() * Math.random();
+            Double cuttingPointDouble = parent1.getChromosome().getWeights().size() * parent1.getChromosome().getValueBitCount() * Math.random();
             Integer cuttingPoint = cuttingPointDouble.intValue();
-            if(cuttingPoint == parent1.getChromosome().getWeights().size()){
+            if (cuttingPoint == parent1.getChromosome().getWeights().size()) {
                 --cuttingPoint;
             }
 
@@ -74,8 +84,8 @@ public class Generation {
                     maxValue
             );
 
-            this.population.remove(parent1);
-            this.population.remove(parent2);
+            this.individuals.remove(parent1);
+            this.individuals.remove(parent2);
 
             Chromosome chromosome1 = children.get(0);
             Chromosome chromosome2 = children.get(1);
@@ -86,32 +96,75 @@ public class Generation {
             Individual individual2 = new Individual(parent1.getChromosome().getPrecision(), parent1.getChromosome().getValueBitCount());
             individual2.setChromosome(chromosome2);
 
-            this.population.add(individual1);
-            this.population.add(individual2);
+            this.individuals.add(individual1);
+            this.individuals.add(individual2);
+        }
+    }
 
+    public void computeScore(Evaluator evaluator) {
+        final Double[] minScore = {1.0};
+        for (Individual individual : this.individuals) {
+            Double evaluation = evaluator.evaluateIndividual(individual);
+            individualToValue.put(individual, evaluation);
+            if (evaluation < minScore[0]) {
+                minScore[0] = evaluation;
+            }
         }
 
+        individualToValue.keySet().forEach(
+                individual -> {
+                    Double value = individualToValue.get(individual);
+                    individualToValue.put(individual, value - minScore[0]);
+                }
+        );
+    }
+
+    public Double computeBestScore(Evaluator evaluator){
+        computeScore(evaluator);
+        AtomicReference<Individual> bestIndividual = new AtomicReference<>();
+        AtomicReference<Double> bestScore = new AtomicReference<>(0.0);
+        this.individualToValue.forEach(
+                (individual, score) -> {
+                    if(score> bestScore.get()){
+                        bestScore.set(score);
+                        bestIndividual.set(individual);
+                    }
+                }
+        );
+        return bestScore.get();
     }
 
     public void selectNextGeneration(Evaluator evaluator) {
-        Map<Individual, Double> individualToValueMap = new LinkedHashMap<>();
-        for (Individual individual : this.population) {
-            evaluator.database.getData().forEach(
-                    dataSetEntry -> {
-                        individualToValueMap.put(
-                                individual,
-                                evaluator.computeIndividualsEvaluationOfPosition(
-                                        individual,
-                                        evaluator.database.getFenToTableMap().get(dataSetEntry.getPositionFenString())
-                                )
-                        );
-                    }
-            );
+        AtomicReference<Double> atomicSum = new AtomicReference<>(0.0);
+        this.individualToValue.forEach(
+                (individual, score) -> {
+                    atomicSum.updateAndGet(v -> v + score);
+                }
+        );
+
+        Map<Individual, Double> individualToProbabilityMap = new LinkedHashMap<>();
+        this.individualToValue.forEach(
+                (individual, score) -> {
+                    individualToProbabilityMap.put(individual, score / atomicSum.get());
+                }
+        );
+
+        List<Individual> nextGeneration = new ArrayList<>();
+        for (Integer i = 0; i < this.populationSize; i++) {
+            Double randomValue = Math.random();
+            Integer j;
+            for (j = 0; j < this.individuals.size() && randomValue > 0; ++j) {
+                randomValue -= individualToProbabilityMap.get(this.individuals.get(i));
+            }
+            --j;
+            nextGeneration.add(this.individuals.get(j));
         }
+
+        this.individuals = nextGeneration;
     }
 
-    public List<Individual> getPopulation() {
-        return population;
+    public List<Individual> getIndividuals() {
+        return individuals;
     }
 
     public Integer getPopulationSize() {

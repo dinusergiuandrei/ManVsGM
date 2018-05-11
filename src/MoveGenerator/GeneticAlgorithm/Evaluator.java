@@ -31,9 +31,10 @@ public class Evaluator {
         AtomicReference<Double> totalMoves = new AtomicReference<>(0.0);
         database.getData().forEach(
                 dataSetEntry -> {
-                    String position = dataSetEntry.getPositionFenString();
+                    String positionString = dataSetEntry.getPositionFenString();
                     Move expectedMove = dataSetEntry.getMove();
-                    Move realMove = individual.getMove(Table.computeTableFromFen(position));
+                    Table table = this.database.getFenToTableMap().get(positionString);
+                    Move realMove = individual.getMove(this, table);
                     if (realMove == expectedMove) {
                         matchingMoves.getAndSet(matchingMoves.get() + 1);
                     }
@@ -41,22 +42,24 @@ public class Evaluator {
                 }
         );
         score = matchingMoves.get() / totalMoves.get();
+
         return score;
     }
 
     public Double computeIndividualsEvaluationOfPosition(Individual individual, Table table) {
         List<Weight> weights = individual.getChromosome().getWeights();
+        //String fen = this.database.getTableToFenMap().get(table);
         String fen = Table.computeFenFromTable(table);
+
         List<Double> positionFeatures;
         if(this.database.getFenToFeaturesValuesMap().containsKey(fen)) {
             Map<Features, Double> featureScores = this.database.getFenToFeaturesValuesMap().get(fen);
             positionFeatures = new ArrayList<>(featureScores.values());
-
         }
         else {
             //System.out.println(fen + " was not found in the cache");
             Map<Features, Double> featureScores = new LinkedHashMap<>();
-            Table position = Table.computeTableFromFen(fen);
+            Table position = this.database.getFenToTableMap().get(fen);
             for (Features feature : Features.values()) {
                 featureScores.put(feature, feature.evaluate(position));
             }

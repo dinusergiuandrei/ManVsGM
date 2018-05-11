@@ -215,7 +215,6 @@ public class SemanticMoveValidator {
 
     public static Boolean isValidMoveSemantically(Table table, Move move) {
 
-
         if (!SyntacticMoveValidator.isValidMoveSyntactically(table, move))
             return false;
 
