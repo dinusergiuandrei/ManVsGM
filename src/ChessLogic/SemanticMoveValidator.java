@@ -9,7 +9,7 @@ import static GameArchitecture.Table.getSquare;
 
 public class SemanticMoveValidator {
     public static List<Move> getLegalMoves(Table table, Square startSquare) {
-        Piece piece = table.squareToPieceMap.get(startSquare);
+        Piece piece = table.getSquareToPieceMap().get(startSquare);
         List<Move> moves = null;
         switch (piece) {
             case whiteKing:
@@ -41,7 +41,7 @@ public class SemanticMoveValidator {
     }
 
     public static List<Move> getLegalMoves(Table table, Square startSquare, int columnDifference[], int lineDifference[], Table.Range range) {
-        Color color = table.squareToPieceMap.get(startSquare).getColor();
+        Color color = table.getSquareToPieceMap().get(startSquare).getColor();
         List<Move> candidateMoves = new LinkedList<>();
         if (range == Table.Range.CLOSE) {
             for (int i = 0; i < columnDifference.length; ++i) {
@@ -61,7 +61,7 @@ public class SemanticMoveValidator {
                     Square square = getSquare(column, line);
                     if (square == null)
                         break;
-                    Piece piece = table.squareToPieceMap.get(square);
+                    Piece piece = table.getSquareToPieceMap().get(square);
                     if (piece.getColor() == color)
                         break;
                     candidateMoves.add(new Move(startSquare, square));
@@ -78,7 +78,7 @@ public class SemanticMoveValidator {
 //    }
 
     public static List<Move> getLegalPawnMoves(Table table, Square startSquare) {
-        Color color = table.squareToPieceMap.get(startSquare).getColor();
+        Color color = table.getSquareToPieceMap().get(startSquare).getColor();
         List<Move> possibleSquares = new LinkedList<>();
 
         int direction = 0;
@@ -104,7 +104,7 @@ public class SemanticMoveValidator {
 
     private static Move getLegalPawnOneSquarePush(Table table, Square startSquare, Integer direction){
         Square endSquare = getSquare(startSquare.getColumn(), startSquare.getLine() + direction);
-        if (endSquare != null && table.squareToPieceMap.get(endSquare) == Piece.noPiece)
+        if (endSquare != null && table.getSquareToPieceMap().get(endSquare) == Piece.noPiece)
             return new Move(startSquare, endSquare);
         return null;
     }
@@ -113,8 +113,8 @@ public class SemanticMoveValidator {
         Square endSquare = getSquare(startSquare.getColumn(), startSquare.getLine() + direction);
         Square endSquare2 = getSquare(startSquare.getColumn(), startSquare.getLine() + 2 * direction);
         if (endSquare2 != null
-                && table.squareToPieceMap.get(endSquare) == Piece.noPiece
-                && table.squareToPieceMap.get(endSquare2) == Piece.noPiece
+                && table.getSquareToPieceMap().get(endSquare) == Piece.noPiece
+                && table.getSquareToPieceMap().get(endSquare2) == Piece.noPiece
                 && ((startSquare.getLine() == 2 && direction == 1) || (startSquare.getLine() == 7 && direction == -1))
                 )
             return new Move(startSquare, endSquare2);
@@ -122,11 +122,11 @@ public class SemanticMoveValidator {
     }
 
     private static Move getLegalPawnCapture(Table table, Square startSquare, Integer pawnDirection, Integer captureDirection){
-        Color color = table.squareToPieceMap.get(startSquare).getColor();
+        Color color = table.getSquareToPieceMap().get(startSquare).getColor();
         Square endSquare = getSquare(startSquare.getColumn() + captureDirection, startSquare.getLine() + pawnDirection);
         if (endSquare != null
-                && table.squareToPieceMap.get(endSquare) != Piece.noPiece
-                && table.squareToPieceMap.get(endSquare).getColor() != color
+                && table.getSquareToPieceMap().get(endSquare) != Piece.noPiece
+                && table.getSquareToPieceMap().get(endSquare).getColor() != color
                 )
             return new Move(startSquare, endSquare);
         return null;
@@ -137,7 +137,7 @@ public class SemanticMoveValidator {
         //target square = where the captured pawn is
         //end square = where the pawn lands
 
-        Color color = table.squareToPieceMap.get(startSquare).getColor();
+        Color color = table.getSquareToPieceMap().get(startSquare).getColor();
 
         int endLine, endColumn;
         int targetLine, targetColumn;
@@ -149,20 +149,20 @@ public class SemanticMoveValidator {
         Square endSquare5 = getSquare(endColumn, endLine);
         Square targetSquare = getSquare(targetColumn, targetLine);
         if (targetSquare != null
-                && table.squareToPieceMap.get(endSquare5) == Piece.noPiece
-                && (table.squareToPieceMap.get(targetSquare) == Piece.whitePawn || table.squareToPieceMap.get(targetSquare) == Piece.blackPawn)
+                && table.getSquareToPieceMap().get(endSquare5) == Piece.noPiece
+                && (table.getSquareToPieceMap().get(targetSquare) == Piece.whitePawn || table.getSquareToPieceMap().get(targetSquare) == Piece.blackPawn)
                 && (
-                (targetLine == 4 && table.squareToPieceMap.get(targetSquare).getColor() == Color.White)
-                        || (targetLine == 5 && table.squareToPieceMap.get(targetSquare).getColor() == Color.Black)
+                (targetLine == 4 && table.getSquareToPieceMap().get(targetSquare).getColor() == Color.White)
+                        || (targetLine == 5 && table.getSquareToPieceMap().get(targetSquare).getColor() == Color.Black)
         )
-                && table.squareToPieceMap.get(targetSquare).getColor() != color
+                && table.getSquareToPieceMap().get(targetSquare).getColor() != color
                 )
             return new Move(startSquare, endSquare5);
         return null;
     }
 
     public static List<Move> getLegalKingMoves(Table table, Square startSquare) {
-        Color color = table.squareToPieceMap.get(startSquare).getColor();
+        Color color = table.getSquareToPieceMap().get(startSquare).getColor();
         List<Move> possibleMoves = new LinkedList<>();
         int[] lineDifference = {-1, -1, -1, 0, 1, 1, 1, 0};
         int[] columnDifference = {-1, 0, 1, 1, 1, 0, -1, -1};
@@ -170,15 +170,15 @@ public class SemanticMoveValidator {
         possibleMoves.addAll(getLegalMoves(table, startSquare, columnDifference, lineDifference, Table.Range.CLOSE));
 
         if (color == Color.White) {
-            if (table.possibleWhiteShortCastle)
+            if (table.getPossibleWhiteShortCastle())
                 possibleMoves.add(new Move(startSquare, getSquare('g', 1)));
-            if (table.possibleWhiteLongCastle)
+            if (table.getPossibleWhiteLongCastle())
                 possibleMoves.add(new Move(startSquare, getSquare('c', 1)));
         }
         if (color == Color.Black) {
-            if (table.possibleBlackShortCastle)
+            if (table.getPossibleBlackShortCastle())
                 possibleMoves.add(new Move(startSquare, getSquare('g', 8)));
-            if (table.possibleBlackLongCastle)
+            if (table.getPossibleBlackLongCastle())
                 possibleMoves.add(new Move(startSquare, getSquare('c', 8)));
         }
 

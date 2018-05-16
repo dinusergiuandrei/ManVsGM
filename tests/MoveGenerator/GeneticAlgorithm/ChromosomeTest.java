@@ -16,53 +16,30 @@ public class ChromosomeTest {
 
     @Before
     public void setUp() {
-        precision = 0.000001;
-        bitCount = 24;
+        precision = 0.001;
+        bitCount = 11;
         chromosome = new Chromosome(precision, bitCount);
         function = Functions.LinearCombination;
     }
 
     @Test
     public void chromosomeManipulationTest() {
-        chromosome.getWeights().add(
-                new Weight(
-                        0.342345,
-                        precision,
-                        bitCount,
-                        function.getMinValue(),
-                        function.getMaxValue()
-                )
-        );
-        chromosome.getWeights().add(
-                new Weight(
-                        0.0042415,
-                        precision,
-                        bitCount,
-                        function.getMinValue(),
-                        function.getMaxValue()
-                )
-        );
-        chromosome.getWeights().add(
-                new Weight(
-                        0.000003,
-                        precision,
-                        bitCount,
-                        function.getMinValue(),
-                        function.getMaxValue()
-                )
-        );
-        chromosome.getWeights().add(
-                new Weight(
-                        0.999997,
-                        precision,
-                        bitCount,
-                        function.getMinValue(),
-                        function.getMaxValue()
-                )
-        );
+        for (Features features : Features.values()) {
+            chromosome.getWeights().add(
+                    new Weight(
+                            Math.random(),
+                            precision,
+                            bitCount,
+                            function.getMinValue(),
+                            function.getMaxValue()
+                    )
+            );
+        }
+
+        List<Boolean> bits = Chromosome.computeBitsFromChromosome(chromosome);
 
         Chromosome otherChromosome = Chromosome.computeChromosomeFromBits(
-                Chromosome.computeBitsFromChromosome(chromosome),
+                bits,
                 precision,
                 bitCount,
                 function.getMinValue(),
@@ -97,9 +74,12 @@ public class ChromosomeTest {
 
     @Test
     public void valueManipulationTest() {
-        Double expected = 0.631;
+        Double expected = 0.634;
+
+        List<Boolean> bits = Weight.computeBitsFromValue(expected, precision, bitCount);
+
         Double real = Weight.computeValueFromBits(
-                Weight.computeBitsFromValue(expected, precision, bitCount),
+                bits,
                 precision,
                 bitCount
         );

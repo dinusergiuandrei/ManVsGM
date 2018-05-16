@@ -190,7 +190,7 @@ public class SyntacticMoveValidator {
     }
 
     public static Boolean isValidMoveSyntactically(Table table, Move move) {
-        Piece piece = table.squareToPieceMap.get(move.getStartSquare());
+        Piece piece = table.getSquareToPieceMap().get(move.getStartSquare());
         List<Move> moves = getAllMoves(piece, move.getEndSquare());
 
         try {
@@ -249,22 +249,22 @@ public class SyntacticMoveValidator {
             pieceOp = Piece.blackKnight;
         }
 
-        Piece aux = table.squareToPieceMap.get(square);
+        Piece aux = table.getSquareToPieceMap().get(square);
 
-        table.squareToPieceMap.put(square, piece);
+        table.getSquareToPieceMap().put(square, piece);
 
         response[0] = false;
         Piece finalPiece = piece;
         Piece finalPieceOp = pieceOp;
         SemanticMoveValidator.getLegalKnightMoves(table, square).forEach(
                 square1 -> {
-                    if (table.squareToPieceMap.get(square1.getEndSquare()) == finalPieceOp) {
+                    if (table.getSquareToPieceMap().get(square1.getEndSquare()) == finalPieceOp) {
                         response[0] = true;
                     }
                 }
         );
 
-        table.squareToPieceMap.put(square, aux);
+        table.getSquareToPieceMap().put(square, aux);
 
         return response[0];
     }
@@ -286,22 +286,22 @@ public class SyntacticMoveValidator {
             otherColor = Color.Black;
         else otherColor = Color.White;
 
-        Piece aux = table.squareToPieceMap.get(square);
+        Piece aux = table.getSquareToPieceMap().get(square);
 
-        table.squareToPieceMap.put(square, piece);
+        table.getSquareToPieceMap().put(square, piece);
 
         response[0] = false;
         final Piece finalPiece = pieceOp;
         Color finalOtherColor = otherColor;
         SemanticMoveValidator.getLegalBishopMoves(table, square).forEach(
                 move -> {
-                    if (table.squareToPieceMap.get(move.getEndSquare()) == finalPiece) {
+                    if (table.getSquareToPieceMap().get(move.getEndSquare()) == finalPiece) {
                         response[0] = true;
                     }
                 }
         );
 
-        table.squareToPieceMap.put(square, aux);
+        table.getSquareToPieceMap().put(square, aux);
 
         return response[0];
     }
@@ -318,22 +318,22 @@ public class SyntacticMoveValidator {
             pieceOp = Piece.blackRook;
         }
 
-        Piece aux = table.squareToPieceMap.get(square);
+        Piece aux = table.getSquareToPieceMap().get(square);
 
-        table.squareToPieceMap.put(square, piece);
+        table.getSquareToPieceMap().put(square, piece);
 
         response[0] = false;
         Piece finalPiece = piece;
         Piece finalPieceOp = pieceOp;
         SemanticMoveValidator.getLegalRookMoves(table, square).forEach(
                 square1 -> {
-                    if (table.squareToPieceMap.get(square1.getEndSquare()) == finalPieceOp) {
+                    if (table.getSquareToPieceMap().get(square1.getEndSquare()) == finalPieceOp) {
                         response[0] = true;
                     }
                 }
         );
 
-        table.squareToPieceMap.put(square, aux);
+        table.getSquareToPieceMap().put(square, aux);
 
         return response[0];
     }
@@ -350,22 +350,22 @@ public class SyntacticMoveValidator {
             pieceOp = Piece.blackQueen;
         }
 
-        Piece aux = table.squareToPieceMap.get(square);
+        Piece aux = table.getSquareToPieceMap().get(square);
 
-        table.squareToPieceMap.put(square, piece);
+        table.getSquareToPieceMap().put(square, piece);
 
         response[0] = false;
         Piece finalPiece = piece;
         Piece finalPieceOp = pieceOp;
         SemanticMoveValidator.getLegalQueenMoves(table, square).forEach(
                 square1 -> {
-                    if (table.squareToPieceMap.get(square1.getEndSquare()) == finalPieceOp) {
+                    if (table.getSquareToPieceMap().get(square1.getEndSquare()) == finalPieceOp) {
                         response[0] = true;
                     }
                 }
         );
 
-        table.squareToPieceMap.put(square, aux);
+        table.getSquareToPieceMap().put(square, aux);
 
         return response[0];
 
@@ -383,22 +383,22 @@ public class SyntacticMoveValidator {
             pieceOp = Piece.blackKing;
         }
 
-        Piece aux = table.squareToPieceMap.get(square);
+        Piece aux = table.getSquareToPieceMap().get(square);
 
-        table.squareToPieceMap.put(square, piece);
+        table.getSquareToPieceMap().put(square, piece);
 
         response[0] = false;
         Piece finalPiece = piece;
         Piece finalPieceOp = pieceOp;
         SemanticMoveValidator.getLegalKingMoves(table, square).forEach(
                 move1 -> {
-                    if (table.squareToPieceMap.get(move1.getEndSquare()) == finalPieceOp) {
+                    if (table.getSquareToPieceMap().get(move1.getEndSquare()) == finalPieceOp) {
                         response[0] = true;
                     }
                 }
         );
 
-        table.squareToPieceMap.put(square, aux);
+        table.getSquareToPieceMap().put(square, aux);
 
         return response[0];
     }
@@ -433,7 +433,7 @@ public class SyntacticMoveValidator {
     public static Square getKingSquare(Table table, Color toMove) {
         AtomicReference<Square> kingSquare = new AtomicReference<>();
         if (toMove == Color.White) {
-            table.squareToPieceMap.forEach(
+            table.getSquareToPieceMap().forEach(
                     (Square sq, Piece p) -> {
                         if (p == Piece.whiteKing) {
                             kingSquare.set(sq);
@@ -442,7 +442,7 @@ public class SyntacticMoveValidator {
             );
         }
         if (toMove == Color.Black) {
-            table.squareToPieceMap.forEach(
+            table.getSquareToPieceMap().forEach(
                     (Square sq, Piece p) -> {
                         if (p == Piece.blackKing) {
                             kingSquare.set(sq);

@@ -44,9 +44,9 @@ public class Player {
     public void move(Game game) {
         Boolean madeMove = false;
         while (!madeMove) {
-            Move move = moveGenerator.getMove();
+            Move move = moveGenerator.getMove(game.getTable());
             if (move != null) {
-                if (game.getTable().canMove(move)) {
+                if (game.getTable().canMove(move, true)) {
                     game.doMove(move);
                     game.getTable().displayTable();
                     madeMove = true;
@@ -55,7 +55,7 @@ public class Player {
                 }
             }
             else{
-                System.out.println("I did not understand the move!");
+                System.out.println("I did not understand the move");
             }
         }
     }

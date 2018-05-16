@@ -11,12 +11,12 @@ import static GameArchitecture.Piece.*;
 
 public class Table {
 
-    public Map<Square, Piece> squareToPieceMap = new LinkedHashMap<>(65);
+    private Map<Square, Piece> squareToPieceMap = new LinkedHashMap<>(65);
 
-    public Boolean possibleWhiteShortCastle = true;
-    public Boolean possibleWhiteLongCastle = true;
-    public Boolean possibleBlackShortCastle = true;
-    public Boolean possibleBlackLongCastle = true;
+    private Boolean possibleWhiteShortCastle = true;
+    private Boolean possibleWhiteLongCastle = true;
+    private Boolean possibleBlackShortCastle = true;
+    private Boolean possibleBlackLongCastle = true;
     private Square enPassantTargetSquare = null;
 
     private Color toMove = Color.White;
@@ -27,7 +27,7 @@ public class Table {
 
     public Game game;
 
-    public Table getCopy(){
+    public Table getCopy() {
         Table newTable = new Table();
         newTable.squareToPieceMap.putAll(this.squareToPieceMap);
         newTable.setPossibleBlackShortCastle(possibleBlackShortCastle);
@@ -42,7 +42,7 @@ public class Table {
         return newTable;
     }
 
-    public void doMove(Move move){
+    public void doMove(Move move) {
         this.updateMetadata(move);
 
         Boolean enPassant = this.handleEnPassant(move);
@@ -98,7 +98,7 @@ public class Table {
         }
     }
 
-    public static List<Table> computeAllPossibleFollowingPositions(Table table){
+    public static List<Table> computeAllPossibleFollowingPositions(Table table) {
         return null;
     }
 
@@ -207,8 +207,7 @@ public class Table {
                     }
                     try {
                         fen.append(table.getSquareToPieceMap().get(getSquare(column, line)).getFenNotation());
-                    }
-                    catch (NullPointerException e){
+                    } catch (NullPointerException e) {
                         //System.out.println("Null exception 100");
                     }
                 }
@@ -249,27 +248,53 @@ public class Table {
         return fen.toString();
     }
 
-    public Boolean canMove(Move move) {
+    public Boolean canMove(Move move, Boolean verbose) {
         if (usesNullSquares(move)) {
-            System.out.println("Using a non valid square.");
+            if (verbose)
+                System.out.println("Using a non valid square.");
             return false;
         }
 
         if (moveStartsOnEmptySquare(move)) {
-            System.out.println("Cannot move from a empty square!");
+            if (verbose)
+                System.out.println("Cannot move from a empty square!");
             return false;
         }
 
         if (moveMadeByWrongColor(move)) {
-            System.out.println("Wrong color to move!");
+            if (verbose)
+                System.out.println("Wrong color to move!");
+            return false;
+        }
+
+        if (capturesOwnPieces(move)) {
+            if (verbose)
+                System.out.println("Can not capture own piece");
             return false;
         }
 
         return isValidMoveSemantically(this, move);
     }
 
+    public static List<Move> getAllPossibleMoves(Table table, Square square) {
+        List<Move> moves = SemanticMoveValidator.getLegalMoves(table, square);
+        List<Move> possibleMoves = new ArrayList<>();
+        for (Move move : moves) {
+            if (move != null)
+                if (table.canMove(move, false))
+                    possibleMoves.add(move);
+        }
+        return possibleMoves;
+    }
+
     private Boolean usesNullSquares(Move move) {
         return move.getEndSquare() == null || move.getEndSquare() == null;
+    }
+
+    private Boolean capturesOwnPieces(Move move) {
+        Color startColor = this.squareToPieceMap.get(move.getStartSquare()).getColor();
+        Color endColor = this.squareToPieceMap.get(move.getEndSquare()).getColor();
+        return startColor == endColor;
     }
 
     private Boolean moveStartsOnEmptySquare(Move move) {
@@ -286,39 +311,22 @@ public class Table {
     public List<Move> computeAllPossibleMoves() {
         List<Move> possibleMoves = new ArrayList<>();
         for (Square square : Square.values()) {
-            Piece piece = this.squareToPieceMap.get(square);
+            try {
+                possibleMoves.addAll(Table.getAllPossibleMoves(this, square));
+            } catch (Exception e) {
 
-            if(this.toMove == Color.White){
-                switch (piece){
-                    case whitePawn: possibleMoves.addAll(SemanticMoveValidator.getLegalPawnMoves(this, square)); break;
-                    case whiteKnight: possibleMoves.addAll(SemanticMoveValidator.getLegalKnightMoves(this, square)); break;
-                    case whiteBishop: possibleMoves.addAll(SemanticMoveValidator.getLegalBishopMoves(this, square)); break;
-                    case whiteRook: possibleMoves.addAll(SemanticMoveValidator.getLegalRookMoves(this, square)); break;
-                    case whiteQueen: possibleMoves.addAll(SemanticMoveValidator.getLegalQueenMoves(this, square)); break;
-                    case whiteKing: possibleMoves.addAll(SemanticMoveValidator.getLegalKingMoves(this, square)); break;
-                }
-            }
-            if(this.toMove == Color.Black){
-                switch (piece){
-                    case blackPawn: possibleMoves.addAll(SemanticMoveValidator.getLegalPawnMoves(this, square)); break;
-                    case blackKnight: possibleMoves.addAll(SemanticMoveValidator.getLegalKnightMoves(this, square)); break;
-                    case blackBishop: possibleMoves.addAll(SemanticMoveValidator.getLegalBishopMoves(this, square)); break;
-                    case blackRook: possibleMoves.addAll(SemanticMoveValidator.getLegalRookMoves(this, square)); break;
-                    case blackQueen: possibleMoves.addAll(SemanticMoveValidator.getLegalQueenMoves(this, square)); break;
-                    case blackKing: possibleMoves.addAll(SemanticMoveValidator.getLegalKingMoves(this, square)); break;
-                }
             }
         }
         return possibleMoves;
     }
 
-    public static Table getNewTableAfterMove(Table table, Move move){
+    public static Table getNewTableAfterMove(Table table, Move move) {
         Table newTable = table.getCopy();
         newTable.doMove(move);
         return newTable;
     }
 
-    public static List<Table> getAllPossibleNextTables(Table table){
+    public static List<Table> getAllPossibleNextTables(Table table) {
         List<Table> possibleNextTables = new ArrayList<>();
         List<Move> possibleMoves = table.computeAllPossibleMoves();
         for (Move move : possibleMoves) {
@@ -961,7 +969,7 @@ public class Table {
         this.setEnPassantTargetSquare(enPassantTargetSquare);
     }
 
-// getters and setters
+    // getters and setters
     public Boolean getPossibleWhiteShortCastle() {
         return possibleWhiteShortCastle;
     }
@@ -1049,4 +1057,6 @@ public class Table {
         String myFen = Table.computeFenFromTable(this);
         return Objects.hash(myFen);
     }
+
+
 }

@@ -1,16 +1,25 @@
 package MoveGenerator.GeneticAlgorithm;
 
+import ChessLogic.Features;
 import GameArchitecture.Move;
 import GameArchitecture.Table;
 import MoveGenerator.Functions;
+import MoveGenerator.MoveGenerator;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class Individual {
+public class Individual implements MoveGenerator {
     Chromosome chromosome;
+
+    Evaluator evaluator;
+
+    public void setEvaluator(Evaluator evaluator) {
+        this.evaluator = evaluator;
+    }
 
     public Individual(Double precision, Integer valueBitCount){
         this.chromosome = new Chromosome(precision, valueBitCount);
@@ -32,7 +41,8 @@ public class Individual {
         return individual;
     }
 
-    public Move getMove(Evaluator evaluator, Table table){
+    @Override
+    public Move getMove(Table table){
         //of all the possible next moves, choose the move that leads to best position
         List<Move> possibleMoves = table.computeAllPossibleMoves();
         Map<Move, Double> moveToScoreMap = new LinkedHashMap<>();
@@ -41,19 +51,22 @@ public class Individual {
 
                 Table newTable = Table.getNewTableAfterMove(table, move);
 
-                Double score = evaluator.computeIndividualsEvaluationOfPosition(this, newTable);
+                //Double score = evaluator.computeIndividualsEvaluationOfPosition(this, newTable);
+                Double score = this.evaluateStaticPosition(newTable);
                 moveToScoreMap.put(move, score);
             }
         }
 
         AtomicReference<Move> bestMove = new AtomicReference<>();
-        AtomicReference<Double> maxScore = new AtomicReference<>(0.0);
+        AtomicReference<Double> minScore = new AtomicReference<>(1000.0);
+
+        // we search for the move with the minimum score from the pov of the opponent
 
         moveToScoreMap.forEach(
                 (move, score) -> {
-                    if(score> maxScore.get()){
+                    if(score < minScore.get()){
                         bestMove.set(move);
-                        maxScore.set(score);
+                        minScore.set(score);
                     }
                 }
         );
@@ -61,7 +74,23 @@ public class Individual {
         return bestMove.get();
     }
 
+    public Double evaluateStaticPosition(Table table){
+        Map<Features, Double> featureScores = new LinkedHashMap<>();
+        for (Features feature : Features.values()) {
+            featureScores.put(feature, feature.evaluate(table));
+        }
+        List<Double> positionFeatures = new ArrayList<>(featureScores.values());
+
+        return Functions.LinearCombination.evaluate(this.chromosome.getWeights(), positionFeatures);
+    }
+
     public Chromosome getChromosome() {
         return chromosome;
+    }
+
+    public static Individual computeRandomIndividual(Functions function, Double precision, Integer bitCount){
+        Individual individual = new Individual(precision, bitCount);
+        individual.getChromosome().setWeights(Weight.computeRandomWeights(function, precision, bitCount));
+        return individual;
     }
 }

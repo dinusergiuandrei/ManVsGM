@@ -1,5 +1,8 @@
 package GameArchitecture;
 
+import ChessLogic.SemanticMoveValidator;
+
+import java.util.List;
 import java.util.Objects;
 
 public enum Piece {
@@ -43,6 +46,26 @@ public enum Piece {
         this.fenNotation = fenNotation;
     }
 
+    public List<Move> getSemanticallyValidMoves(Table table, Square square){
+        switch (this){
+            case whitePawn:  return SemanticMoveValidator.getLegalPawnMoves(table, square);
+            case whiteKnight: return SemanticMoveValidator.getLegalKnightMoves(table, square);
+            case whiteBishop: return SemanticMoveValidator.getLegalBishopMoves(table, square);
+            case whiteRook: return SemanticMoveValidator.getLegalRookMoves(table, square);
+            case whiteQueen: return SemanticMoveValidator.getLegalQueenMoves(table, square);
+            case whiteKing: return SemanticMoveValidator.getLegalKingMoves(table, square);
+
+            case blackPawn: return SemanticMoveValidator.getLegalPawnMoves(table, square);
+            case blackKnight: return SemanticMoveValidator.getLegalKnightMoves(table, square);
+            case blackBishop: return SemanticMoveValidator.getLegalBishopMoves(table, square);
+            case blackRook: return SemanticMoveValidator.getLegalRookMoves(table, square);
+            case blackQueen: return SemanticMoveValidator.getLegalQueenMoves(table, square);
+            case blackKing: return SemanticMoveValidator.getLegalKingMoves(table, square);
+
+            default: return null;
+        }
+    }
+
     public static Piece getPiece(String alias){
         for(Piece piece : Piece.values()){
             if(Objects.equals(piece.alias, alias))
@@ -66,6 +89,26 @@ public enum Piece {
             case 'N': return whiteKnight;
             case 'P': return whitePawn;
             default: return noPiece;
+        }
+    }
+
+    public Double getValue(){
+        switch (this){
+
+            case whitePawn: return 1.0;
+            case whiteKnight: return 3.0;
+            case whiteBishop: return 3.0;
+            case whiteRook: return 5.0;
+            case whiteQueen: return 9.0;
+            case whiteKing: return 4.0;
+            case blackPawn: return 1.0;
+            case blackKnight: return 3.0;
+            case blackBishop: return 3.0;
+            case blackRook: return 5.0;
+            case blackQueen: return 9.0;
+            case blackKing: return 4.0;
+            case noPiece: return 0.0;
+            default: return 0.0;
         }
     }
 

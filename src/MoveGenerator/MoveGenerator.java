@@ -1,7 +1,8 @@
 package MoveGenerator;
 
 import GameArchitecture.Move;
+import GameArchitecture.Table;
 
 public interface MoveGenerator {
-    public Move getMove();
+    Move getMove(Table table);
 }

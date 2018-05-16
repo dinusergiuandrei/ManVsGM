@@ -1,7 +1,10 @@
+package App;
+
 import ChessLogic.Database;
 import ChessLogic.Game;
 import GameArchitecture.Player;
 import MoveGenerator.GeneticAlgorithm.GeneticAlgorithm;
+import MoveGenerator.GeneticAlgorithm.Individual;
 import MoveGenerator.TerminalMoveGenerator;
 import Parser.PgnDatabaseReader;
 
@@ -19,11 +22,13 @@ public class ManVsGM {
         //database = computeDatabase();
         //Database.saveStream(database, params.getDataBaseStreamSavePath());
 
-        database = readDatabase();
+        //database = readDatabase();
 
-        runGeneticAlgorithm(params, database);
+        //runGeneticAlgorithm(params, database);
 
         //startGame();
+
+        playAgainstRandomComputer();
     }
 
     private static Database computeDatabase(){
@@ -113,5 +118,20 @@ public class ManVsGM {
                 System.out.print(".");
             System.out.println("]");
         }
+    }
+
+    private static void playAgainstRandomComputer(){
+        int playerId = 0;
+        Game game = new Game();
+
+        Individual individual = Individual.computeRandomIndividual(params.getFunction(), params.getChromosomePrecision(), params.getChromosomeValueBitCount());
+
+        Player whitePlayer = new Player(++playerId, "White", "Player", new TerminalMoveGenerator(game));
+        Player blackPlayer = new Player(++playerId, "Ro", "Bot", individual);
+
+        game.setWhitePlayer(whitePlayer);
+        game.setBlackPlayer(blackPlayer);
+
+        game.start();
     }
 }

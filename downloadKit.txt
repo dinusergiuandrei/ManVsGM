@@ -11,7 +11,7 @@ import java.util.*;
 
 //Use this to download again the database. (either for an update, either in case of ruined files)
 
-public class ManVsGM {
+public class App.ManVsGM {
 
     static Map<String, String> fileNameToTokenMap = new LinkedHashMap<>();
 

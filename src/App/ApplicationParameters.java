@@ -1,3 +1,5 @@
+package App;
+
 import MoveGenerator.Functions;
 import MoveGenerator.GeneticAlgorithm.GeneticAlgorithmParameters;
 
@@ -28,8 +30,8 @@ public class ApplicationParameters {
     private Double crossOverRate = 0.7;
     private Integer iterationsCount = 10;
     private Integer runsCount = 1;
-    private Double chromosomePrecision = 0.00001;
-    private Integer chromosomeValueBitCount = 24;
+    private Double chromosomePrecision = 0.001;
+    private Integer chromosomeValueBitCount = 11;
 
     private Double minMoveMatchPercent = 0.4;
 
@@ -69,5 +71,45 @@ public class ApplicationParameters {
 
     public String getDataBasePath() {
         return dataBasePath;
+    }
+
+    public Functions getFunction() {
+        return function;
+    }
+
+    public String getDataBasePathOpenings() {
+        return dataBasePathOpenings;
+    }
+
+    public String getDataBasePathTest() {
+        return dataBasePathTest;
+    }
+
+    public Integer getPopulationSize() {
+        return populationSize;
+    }
+
+    public Double getMutationRate() {
+        return mutationRate;
+    }
+
+    public Double getCrossOverRate() {
+        return crossOverRate;
+    }
+
+    public Integer getIterationsCount() {
+        return iterationsCount;
+    }
+
+    public Integer getRunsCount() {
+        return runsCount;
+    }
+
+    public Double getChromosomePrecision() {
+        return chromosomePrecision;
+    }
+
+    public Integer getChromosomeValueBitCount() {
+        return chromosomeValueBitCount;
     }
 }

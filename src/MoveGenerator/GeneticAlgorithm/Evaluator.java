@@ -34,7 +34,7 @@ public class Evaluator {
                     String positionString = dataSetEntry.getPositionFenString();
                     Move expectedMove = dataSetEntry.getMove();
                     Table table = this.database.getFenToTableMap().get(positionString);
-                    Move realMove = individual.getMove(this, table);
+                    Move realMove = individual.getMove(table);
                     if (realMove == expectedMove) {
                         matchingMoves.getAndSet(matchingMoves.get() + 1);
                     }

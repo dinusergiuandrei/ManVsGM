@@ -19,7 +19,7 @@ public class TerminalMoveGenerator implements MoveGenerator {
     }
 
     @Override
-    public Move getMove() {
+    public Move getMove(Table table) {
         Move move = null;
         try {
             move = getSimpleMoveFromTerminal(game);

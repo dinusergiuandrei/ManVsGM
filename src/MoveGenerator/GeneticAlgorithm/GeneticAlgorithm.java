@@ -2,6 +2,7 @@ package MoveGenerator.GeneticAlgorithm;
 
 import ChessLogic.Database;
 import GameArchitecture.Move;
+import GameArchitecture.Table;
 import MoveGenerator.MoveGenerator;
 
 import java.util.ArrayList;
@@ -108,7 +109,7 @@ public class GeneticAlgorithm implements MoveGenerator {
     }
 
     @Override
-    public Move getMove() {
+    public Move getMove(Table table) {
         return null;
     }
 
