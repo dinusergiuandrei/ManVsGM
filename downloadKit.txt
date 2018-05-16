@@ -1,7 +1,7 @@
-import ChessLogic.Game;
-import GameArchitecture.Player;
-import ChessLogic.GameDetails;
-import Parser.PgnDatabaseReader;
+import chessLogic.Game;
+import gameArchitecture.Player;
+import chessLogic.GameDetails;
+import parser.PgnDatabaseReader;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -11,7 +11,7 @@ import java.util.*;
 
 //Use this to download again the database. (either for an update, either in case of ruined files)
 
-public class App.ManVsGM {
+public class app.ManVsGM {
 
     static Map<String, String> fileNameToTokenMap = new LinkedHashMap<>();
 
