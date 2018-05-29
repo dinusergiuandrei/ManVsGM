@@ -115,7 +115,7 @@ public class Table implements Serializable {
                     System.out.print(((char) piece.getColor().getName().charAt(0)) + piece.getAlias() + " ");
                 }
             }
-            System.out.println();
+            System.out.println("\n");
         }
     }
 

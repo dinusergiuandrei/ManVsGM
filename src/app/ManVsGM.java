@@ -1,9 +1,11 @@
 package app;
 
 import chessLogic.Game;
+import chessLogic.GameDetails;
 import database.Database;
 import gameArchitecture.Player;
 import moveGenerator.TerminalMoveGenerator;
+import moveGenerator.geneticAlgorithm.Chromosome;
 import moveGenerator.geneticAlgorithm.GeneticAlgorithm;
 import moveGenerator.geneticAlgorithm.Individual;
 import parser.PgnDatabaseReader;
@@ -28,26 +30,34 @@ public class ManVsGM {
                 runGeneticAlgorithm(params, database);
                 break;
             case RunGaComputingDatabase:
-                database = computeDatabase();
+                database = computeDatabase(params.getDataBasePath());
                 runGeneticAlgorithm(params, database);
                 break;
             case ComputeAndSaveDatabase:
-                database = computeDatabase();
+                database = computeDatabase(params.getDataBasePath());
                 saveStream(database, params.getDataBaseStreamSavePath());
                 break;
             case PlayGamePlayerVsPlayer:
-                playAgainstRandomComputer();
-                break;
-            case PlayGamePlayerVsComputer:
                 startGame();
                 break;
+            case PlayGamePlayerVsRandomComputer:
+                playAgainstRandomComputer();
+                break;
+            case PlayGamePlayerVsBestComputer:
+                playAgainstBestIndividual();
+                break;
+            case RunGaFromUserGames:
+                database = computeDatabase("database/user/games.pgn");
+                runGeneticAlgorithm(params, database);
+                break;
+
         }
         timeKeeper.toc("Operation completed successfully");
     }
 
-    private static Database computeDatabase(){
+    private static Database computeDatabase(String dataBasePath){
         Long startTime = System.currentTimeMillis();
-        Database database = parse(params.getDataBasePath(), params.getDataBaseLoadPercent(), params.getVerbose());
+        Database database = parse(dataBasePath, params.getDataBaseLoadPercent(), params.getVerbose());
         database.computeCache();
         System.out.println("Time to compute: " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds...");
         return database;
@@ -147,8 +157,48 @@ public class ManVsGM {
         game.setWhitePlayer(whitePlayer);
         game.setBlackPlayer(blackPlayer);
 
+        GameDetails gameDetails = new GameDetails();
+        gameDetails.tags.put("Event", "User game");
+        gameDetails.tags.put("White", whitePlayer.getFamilyName()+", "+whitePlayer.getGivenName());
+        gameDetails.tags.put("Black", blackPlayer.getFamilyName()+", "+blackPlayer.getGivenName());
+
+        game.setGameDetails(gameDetails);
+
         game.start();
+
+        try {
+            game.writeToFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
+    private static void playAgainstBestIndividual(){
+        try{
+            Chromosome chromosome = loadBestIndividual();
+            Individual individual = Individual.computeIndividualFromChromosome(chromosome);
 
+            int playerId = 0;
+            Game game = new Game();
+
+            Player whitePlayer = new Player(++playerId, "White", "Player", new TerminalMoveGenerator(game));
+            Player blackPlayer = new Player(++playerId, "Ro", "Bot", individual);
+
+            game.setWhitePlayer(whitePlayer);
+            game.setBlackPlayer(blackPlayer);
+
+
+            game.start();
+        }
+        catch (Exception e){
+            System.out.println("Playing against best individual: " + e.getMessage());
+        }
+    }
+
+    private static Chromosome loadBestIndividual() throws IOException, ClassNotFoundException {
+        Long startTime = System.currentTimeMillis();
+        Chromosome chromosome = Chromosome.loadFromStream(params.getBestIndividualPath());
+        System.out.println("Time to read: " + (System.currentTimeMillis() - startTime) / 1000.0 + " seconds...");
+        return chromosome;
+    }
 }

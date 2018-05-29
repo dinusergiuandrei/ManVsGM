@@ -4,12 +4,10 @@ import moveGenerator.geneticAlgorithm.GeneticAlgorithmParameters;
 import utils.Functions;
 
 public class ApplicationParameters {
-    private Operation operation = Operation.RunGaComputingDatabase;
+    private Operation operation = Operation.RunGaFromUserGames;
 
     private String dataBasePath = "database/players";
-    private String dataBasePathOpenings = "database/openings";
     private String dataBasePathAdams = "database/players/Adams.pgn";
-    private String dataBasePathTest = "database/test/test.pgn";
 
     private String dataBaseStreamSavePath = "database/stream/database.dat";
 
@@ -24,16 +22,16 @@ public class ApplicationParameters {
      * This is useful for using only samples of the database,
      * which is too large to be loaded entirely.
      */
-    private Double dataBaseLoadPercent = 0.0001;
+    private Double dataBaseLoadPercent = 1.0;
 
     /**
      * Parameters for the geneticAlgorithm
      */
-    private Integer populationSize = 30;
+    private Integer populationSize = 50;
     private Double mutationRate = 0.01;
     private Double crossOverRate = 0.7;
-    private Integer iterationsCount = 20;
-    private Integer runsCount = 1;
+    private Integer iterationsCount = 50;
+    private Integer runsCount = 10;
     private Double chromosomePrecision = 0.001;
     private Integer chromosomeValueBitCount = 11;
     private Double minMoveMatchPercent = 0.4;
@@ -90,6 +88,8 @@ public class ApplicationParameters {
         RunGaComputingDatabase,
         ComputeAndSaveDatabase,
         PlayGamePlayerVsPlayer,
-        PlayGamePlayerVsComputer
+        PlayGamePlayerVsRandomComputer,
+        PlayGamePlayerVsBestComputer,
+        RunGaFromUserGames
     }
 }

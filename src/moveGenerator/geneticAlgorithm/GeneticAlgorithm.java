@@ -62,7 +62,7 @@ public class GeneticAlgorithm implements MoveGenerator {
 
             Double bestRunScore = this.currentGeneration.computeBestScore(evaluator);
             Individual bestRunIndividual = this.currentGeneration.getBestIndividual();
-            if (bestRunScore > bestScore) {
+            if (bestRunScore >= bestScore) {
                 bestScore = bestRunScore;
                 bestIndividual = bestRunIndividual;
             }
@@ -122,6 +122,9 @@ public class GeneticAlgorithm implements MoveGenerator {
     }
 
     public Individual getBestIndividual() {
+        if(this.bestIndividual == null){
+            this.currentGeneration.computeBestScore(this.evaluator);
+        }
         return bestIndividual;
     }
 }

@@ -84,16 +84,18 @@ public class Database implements Serializable {
     public static void displayDetails(int index, int total) {
         double over;
         Integer tiles = 50;
-        if (index % (total / tiles) == 0) {
-            Double tilesD = Double.valueOf(tiles);
-            over = tilesD * (index * 1.0 / total * 1.0);
-            System.out.print("[");
-            for (int j = 0; j < over; ++j)
-                System.out.print("-");
-            System.out.print(">");
-            for (double j = over; j < tiles; ++j)
-                System.out.print(".");
-            System.out.println("]");
+        if(total>=tiles) {
+            if (index % (total / tiles) == 0) {
+                Double tilesD = Double.valueOf(tiles);
+                over = tilesD * (index * 1.0 / total * 1.0);
+                System.out.print("[");
+                for (int j = 0; j < over; ++j)
+                    System.out.print("-");
+                System.out.print(">");
+                for (double j = over; j < tiles; ++j)
+                    System.out.print(".");
+                System.out.println("]");
+            }
         }
     }
 

@@ -2,12 +2,13 @@ package chessLogic;
 
 import gameArchitecture.Move;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class GameDetails {
-    public Map<String, String> tags;
+    public Map<String, String> tags = new LinkedHashMap<>();
 
     public List<String> whiteMovesString = new LinkedList<>();
 

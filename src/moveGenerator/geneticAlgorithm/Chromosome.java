@@ -1,14 +1,12 @@
 package moveGenerator.geneticAlgorithm;
 
-import database.Database;
 import gameArchitecture.Table;
 import utils.Features;
 import utils.Functions;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -146,6 +144,18 @@ public class Chromosome implements Serializable {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static Chromosome loadFromStream(String path) throws IOException, ClassNotFoundException {
+        FileInputStream fis;
+        if (!Files.exists(Paths.get(path))) {
+            throw new FileNotFoundException("Could not find file at " + path);
+        }
+        fis = new FileInputStream(path);
+        ObjectInputStream in = new ObjectInputStream(fis);
+        Chromosome database = (Chromosome) in.readObject();
+        fis.close();
+        return database;
     }
 
     @Override

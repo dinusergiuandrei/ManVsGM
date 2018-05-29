@@ -130,7 +130,7 @@ public class Generation {
         AtomicReference<Double> bestScore = new AtomicReference<>(0.0);
         this.individualToValue.forEach(
                 (individual, score) -> {
-                    if(score> bestScore.get()){
+                    if(score >= bestScore.get()){
                         bestScore.set(score);
                         bestIndividual.set(individual);
                     }

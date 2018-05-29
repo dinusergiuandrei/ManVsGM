@@ -28,6 +28,4 @@ public class DataSetEntry implements Serializable {
     public void setMove(Move move) {
         this.move = move;
     }
-
-
 }

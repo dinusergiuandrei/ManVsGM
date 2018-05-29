@@ -1,0 +1,6 @@
+[Event, "User game"]
+[White, "White, Player"]
+[Black, "Ro, Bot"]
+1.d4 d5 2.c4 e5 3.e4 e4 4.e5 Qd5 5.d5 Nc6 6.c6 c6 7.Nc3 Be6 8.Ne4 Ba2 9.Nf3 Bd5 10.Nc3 Bd6 
+11.d6 d6 12.Nd5 Nf6 13.Nf6 f6 14.Bc4 d5 15.Bd3 Rb8 16.Kg1 Rb2 17.Re1 Kd7 18.Bb2 Kd6 19.Ra7 Rg8 20.Bh7 Rg2 
+21.Kg2 c5 22.Rf7 Kc6 23.Rf6 Kb5 24.Qd5 Ka4 25.Rb6 c4 26.Qb5  *
