@@ -21,17 +21,16 @@ import java.util.Map;
  * 3. In the switch in the public evaluate(Table table) method add the
  * case Feature: return evaluateFeature(table);
  */
+
 public enum Features {
     CenterControl,
     KingSafety,
-    PieceActivity,
     ConnectedRooks,
     KnightOutpostPossibility,
     KnightActivity,
     BishopActivity,
     ActiveQueen,
     ActiveKing,
-    PawnIslands,
     IsolatedPawns,
     PieceCount;
 
@@ -41,8 +40,6 @@ public enum Features {
                 return evaluateKingSafety(table);
             case CenterControl:
                 return evaluateCenterControl(table);
-            case PieceActivity:
-                return evaluatePieceActivity(table);
             case ConnectedRooks:
                 return evaluateConnectedRooks(table);
             case KnightOutpostPossibility:
@@ -55,8 +52,6 @@ public enum Features {
                 return evaluateActiveQueen(table);
             case ActiveKing:
                 return evaluateActiveKing(table);
-            case PawnIslands:
-                return evaluatePawnIslands(table);
             case IsolatedPawns:
                 return evaluateIsolatedPawns(table);
             case PieceCount:
@@ -152,7 +147,7 @@ public enum Features {
         Integer opponentPiecesClose = 0;
 
         for (Square square : neighborSquares) {
-            if(square != null && pieceMap.get(square) != null) {
+            if (square != null && pieceMap.get(square) != null) {
                 if (pieceMap.get(square).getColor() == toMove) {
                     ++ownPiecesClose;
                 }
@@ -162,17 +157,48 @@ public enum Features {
             }
         }
 
-        Double score = ((ownPiecesClose - opponentPiecesClose) / 8.0 + 1.0 ) / 2.0;
+        Double score = ((ownPiecesClose - opponentPiecesClose) / 8.0 + 1.0) / 2.0;
 
         return score;
     }
 
-    private double evaluatePieceActivity(Table table) {
-        return 0.1;
-    }
-
     private double evaluateConnectedRooks(Table table) {
-        return 0.005;
+        Color color = table.getToMove();
+        List<Square> rookSquares;
+        Piece piece = null;
+        if (color == Color.White)
+            piece = Piece.whiteRook;
+        if (color == Color.Black)
+            piece = Piece.blackRook;
+        rookSquares = table.getPositionsOfPiece(piece);
+        if (rookSquares.size() <= 1) {
+            return 0.0;
+        }
+
+        if (rookSquares.size() == 2) {
+            if (rookSquares.get(0).getLine() == rookSquares.get(1).getLine())
+                return 0.8;
+            if (rookSquares.get(0).getColumn() == rookSquares.get(1).getColumn())
+                return 1.0;
+        }
+
+        if (rookSquares.size() > 2) {
+            int columnMatch = 0;
+            int lineMatch = 0;
+            int sum = 0;
+            for (int i = 0; i < rookSquares.size(); i++) {
+                for (int j = i + 1; j < rookSquares.size(); j++) {
+                    if (rookSquares.get(i).getLine() == rookSquares.get(j).getLine())
+                        ++lineMatch;
+                    if (rookSquares.get(i).getColumn() == rookSquares.get(j).getColumn())
+                        ++columnMatch;
+                    ++sum;
+                }
+            }
+            return 0.8 * (lineMatch / sum) + (columnMatch / sum);
+        }
+
+        return 0.0;
     }
 
     private double evaluateKnightOutpostPossibility(Table table) {
@@ -180,27 +206,149 @@ public enum Features {
     }
 
     private double evaluateKnightActivity(Table table) {
-        return 0.23;
+        Color color = table.getToMove();
+        Piece piece = null;
+        if(color == Color.White){
+            piece = Piece.whiteKnight;
+        }
+        if(color == Color.Black){
+            piece = Piece.blackKnight;
+        }
+
+        List<Square> squares = table.getPositionsOfPiece(piece);
+
+        double result = 0.0;
+        for (Square square : squares) {
+            int advance = 0;
+            if(color == Color.White){
+                advance = square.getLine() ;
+            }
+            if(color == Color.Black){
+                advance = 9 - square.getLine();
+            }
+            result += advance/8 + Math.max(Math.abs(square.getColumn() - 'd'), Math.abs(square.getColumn() - 'e'));
+        }
+
+        return result/squares.size();
     }
 
     private double evaluateBishopActivity(Table table) {
-        return 0.24;
+        Color color = table.getToMove();
+        Piece piece = null;
+        if(color == Color.White){
+            piece = Piece.whiteBishop;
+        }
+        if(color == Color.Black){
+            piece = Piece.blackBishop;
+        }
+
+        List<Square> squares = table.getPositionsOfPiece(piece);
+
+        double result = 0.0;
+        for (Square square : squares) {
+            int advance = 0;
+            if(color == Color.White){
+                advance = square.getLine() ;
+            }
+            if(color == Color.Black){
+                advance = 9 - square.getLine();
+            }
+            result += advance/8 + Math.max(Math.abs(square.getColumn() - 'd'), Math.abs(square.getColumn() - 'e'));
+        }
+
+        return result/squares.size();
     }
 
     private double evaluateActiveQueen(Table table) {
-        return 0.30;
+        Color color = table.getToMove();
+        Piece piece = null;
+        if(color == Color.White){
+            piece = Piece.whiteQueen;
+        }
+        if(color == Color.Black){
+            piece = Piece.blackQueen;
+        }
+
+        List<Square> queenSquares = table.getPositionsOfPiece(piece);
+
+        double result = 0.0;
+        for (Square square : queenSquares) {
+            int advance = 0;
+            if(color == Color.White){
+                advance = square.getLine() ;
+            }
+            if(color == Color.Black){
+                advance = 9 - square.getLine();
+            }
+            result += advance/8 + Math.max(Math.abs(square.getColumn() - 'd'), Math.abs(square.getColumn() - 'e'));
+        }
+
+        return result/queenSquares.size();
     }
 
     private double evaluateActiveKing(Table table) {
-        return 0.015;
-    }
+        Color color = table.getToMove();
+        Piece piece = null;
+        if(color == Color.White){
+            piece = Piece.whiteKing;
+        }
+        if(color == Color.Black){
+            piece = Piece.blackKing;
+        }
 
-    private double evaluatePawnIslands(Table table) {
-        return 0.25;
+        List<Square> squares = table.getPositionsOfPiece(piece);
+
+        double result = 0.0;
+        for (Square square : squares) {
+            int advance = 0;
+            if(color == Color.White){
+                advance = square.getLine() ;
+            }
+            if(color == Color.Black){
+                advance = 9 - square.getLine();
+            }
+            result += advance/8 + Math.max(Math.abs(square.getColumn() - 'd'), Math.abs(square.getColumn() - 'e'));
+        }
+
+        return result/squares.size();
     }
 
     private double evaluateIsolatedPawns(Table table) {
-        return 0.3;
+        Color color = table.getToMove();
+        Piece piece = null;
+        if (color == Color.White)
+            piece = Piece.whitePawn;
+        if (color == Color.Black)
+            piece = Piece.blackPawn;
+
+        List<Square> pawnSquares = table.getPositionsOfPiece(piece);
+        int pawnIslands = 0;
+        for (int column = 'a'; column <= 'h'; ++column) {
+            int preColumn = column - 1;
+            boolean hasPre = false;
+            int nextColumn = column + 1;
+            boolean hasNext = false;
+            for (Square square : pawnSquares) {
+                if (square.getColumn() == preColumn){
+                    hasPre = true;
+                }
+                if(square.getColumn() == nextColumn){
+                    hasNext = true;
+                }
+            }
+            if(!hasPre && !hasNext)
+                ++pawnIslands;
+        }
+        if(pawnIslands == 0) {
+            if (pawnSquares.size() > 0) {
+                return 1.0;
+            }
+            else {
+                return 0.0;
+            }
+        }
+
+        return 1.0/(1+pawnIslands);
     }
 
     private double evaluatePieceCount(Table table) {
@@ -220,6 +368,5 @@ public enum Features {
 
         return result;
     }
-
 
 }

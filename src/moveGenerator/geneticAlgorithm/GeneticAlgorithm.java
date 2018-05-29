@@ -18,6 +18,8 @@ public class GeneticAlgorithm implements MoveGenerator {
 
     private GeneticAlgorithmParameters parameters;
 
+    private Individual bestIndividual;
+
     public GeneticAlgorithm(GeneticAlgorithmParameters parameters) {
         this.parameters = parameters;
         this.currentGeneration = new Generation(
@@ -59,8 +61,10 @@ public class GeneticAlgorithm implements MoveGenerator {
             runningTimes.add(runTimeKeeper.toc("Run " + run + " completed "));
 
             Double bestRunScore = this.currentGeneration.computeBestScore(evaluator);
+            Individual bestRunIndividual = this.currentGeneration.getBestIndividual();
             if (bestRunScore > bestScore) {
                 bestScore = bestRunScore;
+                bestIndividual = bestRunIndividual;
             }
         }
 
@@ -72,7 +76,7 @@ public class GeneticAlgorithm implements MoveGenerator {
         );
         System.out.println("Average run time: " + sum.get() * 1.0 / parameters.getRunsCount() / 1000.0 + " seconds.");
 
-        System.out.println("Best score : " + bestScore);
+        System.out.println("Best score : " + bestScore*100.0);
 
     }
 
@@ -117,4 +121,7 @@ public class GeneticAlgorithm implements MoveGenerator {
         return null;
     }
 
+    public Individual getBestIndividual() {
+        return bestIndividual;
+    }
 }

@@ -1,9 +1,14 @@
 package moveGenerator.geneticAlgorithm;
 
+import database.Database;
 import gameArchitecture.Table;
 import utils.Features;
 import utils.Functions;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,7 +19,7 @@ import java.util.Objects;
  * valueBitCount is the the number of bits each value is written on.
  * valueBitCount should be larger than ( (maxValue-minValue)/precision+1 ), or data loss occurs.
  */
-public class Chromosome {
+public class Chromosome implements Serializable {
     private List<Weight> weights = new ArrayList<>(Features.values().length);
 
     private Double precision;
@@ -121,6 +126,26 @@ public class Chromosome {
 
     public void setWeights(List<Weight> weights) {
         this.weights = weights;
+    }
+
+    public void saveChromosomeStream(String path){
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(path);
+            ObjectOutputStream out = new ObjectOutputStream(fos);
+            out.writeObject(this);
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

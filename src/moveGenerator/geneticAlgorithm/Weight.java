@@ -3,11 +3,12 @@ package moveGenerator.geneticAlgorithm;
 import utils.Features;
 import utils.Functions;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Weight {
+public class Weight implements Serializable {
     Double weightValue;
 
     Double minValue;

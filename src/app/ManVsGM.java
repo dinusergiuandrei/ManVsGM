@@ -63,6 +63,7 @@ public class ManVsGM {
     private static void runGeneticAlgorithm(ApplicationParameters params, Database database){
         GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm( params.computeGeneticAlgorithmParameters() );
         geneticAlgorithm.learnFrom(database, params.getMinMoveMatchPercent(), params.getVerbose());
+        geneticAlgorithm.getBestIndividual().getChromosome().saveChromosomeStream(params.getBestIndividualPath());
     }
 
     static void startGame() {
@@ -148,4 +149,6 @@ public class ManVsGM {
 
         game.start();
     }
+
+
 }

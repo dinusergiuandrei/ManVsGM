@@ -25,6 +25,8 @@ public class Generation {
 
     Functions function;
 
+    Individual bestIndividual;
+
     public Generation(Integer populationSize, Double mutationRate, Double crossOverRate, Double chromosomePrecision, Integer chromosomeValueBitCount, Functions function) {
         this.populationSize = populationSize;
         this.mutationRate = mutationRate;
@@ -107,9 +109,7 @@ public class Generation {
         final Double[] minScore = {1.0};
         for (Individual individual : this.individuals) {
             Double evaluation = evaluator.evaluateIndividual(individual);
-            if(evaluation > 0.0){
-                System.err.println("Somebody guessed a move");
-            }
+
             individualToValue.put(individual, evaluation);
             if (evaluation < minScore[0]) {
                 minScore[0] = evaluation;
@@ -136,6 +136,7 @@ public class Generation {
                     }
                 }
         );
+        this.bestIndividual = bestIndividual.get();
         return bestScore.get();
     }
 
@@ -174,5 +175,9 @@ public class Generation {
 
     public Integer getPopulationSize() {
         return populationSize;
+    }
+
+    public Individual getBestIndividual() {
+        return bestIndividual;
     }
 }

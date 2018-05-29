@@ -26,6 +26,11 @@ public class Evaluator {
     }
 
     public Double evaluateIndividual(Individual individual) {
+        //return evaluateSimple(individual)
+        return evaluateComplex(individual);
+    }
+
+    private Double evaluateSimple(Individual individual) {
         Double score;
         AtomicReference<Double> matchingMoves = new AtomicReference<>(0.0);
         AtomicReference<Double> totalMoves = new AtomicReference<>(0.0);
@@ -35,17 +40,52 @@ public class Evaluator {
                     Move expectedMove = dataSetEntry.getMove();
                     Table table = this.database.getFenToTableMap().get(positionString);
                     Move realMove = individual.getMove(table);
-                    if (realMove == expectedMove) {
-                        matchingMoves.getAndSet(matchingMoves.get() + 1);
-                        System.err.println("Somebody guessed a move!");
+                    if (realMove != null) {
+                        if (realMove.equals(expectedMove)) {
+                            matchingMoves.getAndSet(matchingMoves.get() + 1);
+                            //System.err.println("Somebody guessed a move!");
+                        }
+                        totalMoves.getAndSet(totalMoves.get() + 1);
+                    } else {
+                        if (expectedMove == null)
+                            matchingMoves.getAndSet(matchingMoves.get() + 1);
+                        totalMoves.getAndSet(totalMoves.get() + 1);
                     }
-                    totalMoves.getAndSet(totalMoves.get() + 1);
                 }
         );
         score = matchingMoves.get() / totalMoves.get();
 
         return score;
     }
+
+    private Double evaluateComplex(Individual individual){
+        Double score;
+        AtomicReference<Double> matchingMoves = new AtomicReference<>(0.0);
+        AtomicReference<Double> totalMoves = new AtomicReference<>(0.0);
+
+        database.getFenToPlayedMovesMap().forEach(
+                (fen, played) -> {
+                    Table table = this.database.getFenToTableMap().get(fen);
+                    Move realMove = individual.getMove(table);
+                    if (realMove != null) {
+                        if (played.contains(realMove)) {
+                            matchingMoves.getAndSet(matchingMoves.get() + 1);
+                        }
+                        totalMoves.getAndSet(totalMoves.get() + 1);
+                    } else {
+                        if (played.size() == 0) {
+                            matchingMoves.getAndSet(matchingMoves.get() + 1);
+                        }
+                        totalMoves.getAndSet(totalMoves.get() + 1);
+                    }
+                }
+        );
+
+        score = matchingMoves.get() / totalMoves.get();
+
+        return score;
+    }
+
 
     public Double computeIndividualsEvaluationOfPosition(Individual individual, Table table) {
         List<Weight> weights = individual.getChromosome().getWeights();

@@ -13,6 +13,8 @@ public class ApplicationParameters {
 
     private String dataBaseStreamSavePath = "database/stream/database.dat";
 
+    private String bestIndividualPath = "database/stream/best_individual.dat";
+
     public String getDataBaseStreamSavePath() {
         return dataBaseStreamSavePath;
     }
@@ -30,7 +32,7 @@ public class ApplicationParameters {
     private Integer populationSize = 30;
     private Double mutationRate = 0.01;
     private Double crossOverRate = 0.7;
-    private Integer iterationsCount = 5;
+    private Integer iterationsCount = 20;
     private Integer runsCount = 1;
     private Double chromosomePrecision = 0.001;
     private Integer chromosomeValueBitCount = 11;
@@ -77,6 +79,10 @@ public class ApplicationParameters {
     }
     public Operation getOperation() {
         return operation;
+    }
+
+    public String getBestIndividualPath() {
+        return bestIndividualPath;
     }
 
     public enum Operation{

@@ -250,6 +250,17 @@ public class Table implements Serializable {
         return fen.toString();
     }
 
+    public List<Square> getPositionsOfPiece(Piece piece){
+        List<Square> squares = new LinkedList<>();
+        this.getSquareToPieceMap().forEach(
+                (square, piece1) -> {
+                    if(piece == piece1)
+                        squares.add(square);
+                }
+        );
+        return squares;
+    }
+
     public Boolean canMove(Move move, Boolean verbose) {
         if (usesNullSquares(move)) {
             if (verbose)
